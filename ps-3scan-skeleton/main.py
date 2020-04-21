@@ -33,11 +33,24 @@ arr3 = np.array([[1, 0, 0, 0, 0],
                 [1, 0, 0, 0, 1],
                 [0, 1, 1, 1, 0]])
 
-# netGraphSkel = netGraphArr.get_networkx_graph_from_array(arr2)
+# Test 3D-Array
+arr4 = np.array([[[1, 0, 0, 0, 0],
+                [0, 1, 0, 0, 1],
+                [0, 1, 1, 1, 0],
+                [1, 0, 0, 0, 1]],
+                [[0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 1],
+                 [0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 1]]])
+
+# netGraphSkel = netGraphArr.get_networkx_graph_from_array(arr4)
+# print("NODES:", netGraphSkel.nodes())
+# print("EDGES:", netGraphSkel.edges())
+
 # plt.imshow(arr1)
 # plt.show()
-# nx.draw(netGraphSkel)  # networkx draw()
-# plt.draw()  # pyplot draw()
+# nx.draw(netGraphSkel)
+# plt.draw()
 # plt.show()
 
 # specify path and image
@@ -45,7 +58,7 @@ PATH = '/Users/philippaspangenberg/Documents/TestBilder/49-B5_contra_RB_cmp/'
 IMG = 'C2-49slices-B5_contra_RB_cmp'
 
 # 1) read tif image as numpy array
-im = io.imread(PATH + IMG + '.tif')
+im = io.imread(PATH + IMG + '.tif')                     # reads image as array (z, y, x)
 binArr = im/np.max(im)                                  # make binary array of 3D image/ thresholded 3D volume
 np.save(PATH + 'THR-' + IMG + '.npy', binArr)           # save numpy array of tif image
 print("successfully read image")
@@ -78,10 +91,10 @@ statsSkel.setStats()
 print("successfully generated statistics")
 
 # uncomment to show statistics
-print("---------Statistics----------")
-print("segments: ", statsSkel.totalSegments)
-print("endPts: ", statsSkel.countEndPoints)
-print("brPts: ", statsSkel.countBranchPoints)
+# print("---------Statistics----------")
+# print("segments: ", statsSkel.totalSegments)
+# print("endPts: ", statsSkel.countEndPoints)
+# print("brPts: ", statsSkel.countBranchPoints)
 # print("avgBranching: ", statsSkel.avgBranching)
 # print("countDict: ", statsSkel.countDict)
 # print("lengthDict: ", statsSkel.lengthDict)

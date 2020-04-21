@@ -6,6 +6,9 @@ import networkx as nx
 import numpy as np
 
 
+# pixel dimensions in microns with [z, y, x]
+DIM = [2.0, 1.015625, 1.015625]
+
 """
 Find the segments, lengths and tortuosity of a networkx graph by
         1) go through each of the disjoint graphs
@@ -116,7 +119,7 @@ class SegmentStats:
         # list of _disjointGraphs
         self._disjointGraphs = list(nx.connected_component_subgraphs(self.networkxGraph))
 
-    def _getLengthAndRemoveTracedPath(self, path, isCycle=False, remove=True):
+    def _getLengthAndRemoveTracedPath(self, path, dimensions=DIM, isCycle=False, remove=True):
         """
         Find length of a path as distance between nodes in it
         and Remove edges belonging to "path" from "self._subGraphSkeleton" by default
@@ -126,6 +129,10 @@ class SegmentStats:
 
         path : list
            list of nodes in the path
+
+        dimensions : list
+            list with pixel dimensions in desired unit (e.g. microns)
+            3D: [z, y, x]   2D: [y, x]
 
         isCycle : boolean
            Specify if path is a cycle or not, default not a cycle
@@ -169,6 +176,7 @@ class SegmentStats:
             elif isCycle:
                 item2 = path[0]
             vect = [j - i for i, j in zip(item, item2)]
+            vect = [a * b for a, b in zip(vect, dimensions)]    # multiply pixel length with original length
             length += np.linalg.norm(vect)
             shortestPathEdges.append(tuple((item, item2)))
         if remove:
@@ -279,7 +287,10 @@ class SegmentStats:
                     if countBranchNodesOnPath == 2 and isSegmentTraced:
                         self._setCountDict(sourceOnCycle)
                         curveLength = self._getLengthAndRemoveTracedPath(simplePath, remove=False)
-                        curveDisplacement = np.sqrt(np.sum((np.array(sourceOnCycle) - np.array(point)) ** 2))
+                        # curveDisplacement = np.sqrt(np.sum((np.array(sourceOnCycle) - np.array(point)) ** 2))
+                        vect = [j - i for i, j in zip(sourceOnCycle, point)]
+                        vect = [a * b for a, b in zip(vect, DIM)]  # multiply pixel length with original length
+                        curveDisplacement = np.linalg.norm(vect)
                         nthSegment = self.countDict[sourceOnCycle]
                         self.lengthDict[nthSegment, sourceOnCycle, point] = curveLength
                         self.tortuosityDict[nthSegment, sourceOnCycle, point] = curveLength / curveDisplacement
@@ -306,7 +317,10 @@ class SegmentStats:
                     continue
                 self._setCountDict(sourceOnTree)
                 curveLength = self._getLengthAndRemoveTracedPath(simplePath)
-                curveDisplacement = np.sqrt(np.sum((np.array(sourceOnTree) - np.array(item)) ** 2))
+                # curveDisplacement = np.sqrt(np.sum((np.array(sourceOnTree) - np.array(item)) ** 2))
+                vect = [j - i for i, j in zip(sourceOnTree, item)]
+                vect = [a * b for a, b in zip(vect, DIM)]  # multiply pixel length with original length
+                curveDisplacement = np.linalg.norm(vect)
                 nthSegment = self.countDict[sourceOnTree]
                 self.lengthDict[nthSegment, sourceOnTree, item] = curveLength
                 self.tortuosityDict[nthSegment, sourceOnTree, item] = curveLength / curveDisplacement
