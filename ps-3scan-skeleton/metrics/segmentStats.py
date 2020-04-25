@@ -5,6 +5,7 @@ from enum import Enum
 import networkx as nx
 import numpy as np
 
+from collections import defaultdict
 
 # pixel dimensions in microns with [z, y, x]
 DIM = [2.0, 1.015625, 1.015625]
@@ -47,8 +48,12 @@ class SegmentStats:
            SegmentStats.countDict - A dictionary with key as the node(branch or end point)
                                           and number of branches connected to it
 
-           SegmentStats.lengthDict - A dictionary with key as the (branching index (nth branch from the start node),
+           SegmentStats.lengthDict - A dictionary with the nth disjoint graph as the key containing a dictionary
+                                        with key as the (branching index (nth branch from the start node),
                                            start node, end node of the branch) value = length of the branch
+
+            SegmentStats.sumLengthDict - A dictionary with the nth disjoint graph as the key and the total length as
+                                            the value
 
            SegmentStats.tortuosityDict - A dictionary with key as the (branching index (nth branch from the start node),
                                              start node, end node of the branch) value = tortuosity of the branch
@@ -58,6 +63,12 @@ class SegmentStats:
 
            SegmentStats.typeGraphdict - A dictionary with the nth disjoint graph as the key and the type of graph as
                                         the value
+
+            SegmentStats.countBranchPointsDict - A dictionary with the nth disjoint graph as the key and the number of
+                                                    branch points as the value
+
+            SegmentStats.countEndPointsDict -  A dictionary with the nth disjoint graph as the key and the number of
+                                                    end points as the value
 
            SegmentStats.avgBranching - Average branching index (number of branches at a branch point) of the network
 
@@ -101,14 +112,19 @@ class SegmentStats:
     def __init__(self, networkxGraph):
         self.networkxGraph = networkxGraph
         # intitialize all the instance variables of SegmentStats class
-        self.contractionDict = {}
+        # self.contractionDict = {}
+        self.contractionDict = defaultdict(dict)
         self.countDict = {}
         self.cycleInfoDict = {}
         self.hausdorffDimensionDict = {}
         self.isolatedEdgeInfoDict = {}
-        self.lengthDict = {}
+        # self.lengthDict = {}
+        self.lengthDict = defaultdict(dict)
+        self.sumLengthDict = {}
         self.tortuosityDict = {}
         self.typeGraphdict = {}
+        self.countBranchPointsDict = {}
+        self.countEndPointsDict = {}
 
         self.cycles = 0
         self.edgesUntraced = 0
@@ -118,6 +134,7 @@ class SegmentStats:
         self._visitedPaths = []
         # list of _disjointGraphs
         self._disjointGraphs = list(nx.connected_component_subgraphs(self.networkxGraph))
+
 
     def _getLengthAndRemoveTracedPath(self, path, dimensions=DIM, isCycle=False, remove=True):
         """
@@ -204,36 +221,49 @@ class SegmentStats:
         """
         return all(len(set(p) & set(simplePath)) <= 2 for p in self._sortedSegments)
 
-    def _singleSegment(self, nodes):
+    def _singleSegment(self, nodes, disjointGraphId):
         # disjoint line or a bent line at 45 degrees appearing as dichtonomous tree but an error due to
         # improper binarization, so remove them and do not account for statistics
-        listOfPerms = list(itertools.combinations(nodes, 2))
-        if type(nodes[0]) == int:
-            modulus = [[start - end] for start, end in listOfPerms]
-            dists = [abs(i[0]) for i in modulus]
-        else:
-            dims = len(nodes[0])
-            modulus = [[start[dim] - end[dim] for dim in range(0, dims)] for start, end in listOfPerms]
-            dists = [sum(modulus[i][dim] * modulus[i][dim] for dim in range(0, dims)) for i in range(0, len(modulus))]
-        if len(list(nx.articulation_points(self._subGraphSkeleton))) == 1 and set(dists) != 1:
-            # each node is connected to one or two other nodes which are not a distance of 1 implies there is a
-            # one branch point with two end points in a single dichotomous tree"""
-            for sourceOnTree, item in listOfPerms:
-                if nx.has_path(self._subGraphSkeleton, sourceOnTree, item) and sourceOnTree != item:
-                    simplePaths = list(nx.all_simple_paths(self._subGraphSkeleton, source=sourceOnTree, target=item))
-                    simplePath = simplePaths[0]
-                    countBranchNodesOnPath = sum([1 for point in simplePath if point in nodes])
-                    if countBranchNodesOnPath == 2:
-                        curveLength = self._getLengthAndRemoveTracedPath(simplePath)
-                        self.isolatedEdgeInfoDict[sourceOnTree, item] = curveLength
-        else:
-            # each node is connected to one or two other nodes implies it is a line,
-            endPoints = [k for (k, v) in self._nodeDegreeDict.items() if v == 1]
-            sourceOnLine = endPoints[0]
-            targetOnLine = endPoints[1]
-            simplePath = nx.shortest_path(self._subGraphSkeleton, source=sourceOnLine, target=targetOnLine)
-            curveLength = self._getLengthAndRemoveTracedPath(simplePath)
-            self.isolatedEdgeInfoDict[sourceOnLine, targetOnLine] = curveLength
+        # listOfPerms = list(itertools.combinations(nodes, 2))
+        # if type(nodes[0]) == int:
+        #     modulus = [[start - end] for start, end in listOfPerms]
+        #     dists = [abs(i[0]) for i in modulus]
+        # else:
+        #     dims = len(nodes[0])
+        #     modulus = [[start[dim] - end[dim] for dim in range(0, dims)] for start, end in listOfPerms]
+        #     dists = [sum(modulus[i][dim] * modulus[i][dim] for dim in range(0, dims)) for i in range(0, len(modulus))]
+        # if len(list(nx.articulation_points(self._subGraphSkeleton))) == 1 and set(dists) != 1:
+        #     # each node is connected to one or two other nodes which are not a distance of 1 implies there is a
+        #     # one branch point with two end points in a single dichotomous tree"""
+        #     for sourceOnTree, item in listOfPerms:
+        #         if nx.has_path(self._subGraphSkeleton, sourceOnTree, item) and sourceOnTree != item:
+        #             simplePaths = list(nx.all_simple_paths(self._subGraphSkeleton, source=sourceOnTree, target=item))
+        #             simplePath = simplePaths[0]
+        #             countBranchNodesOnPath = sum([1 for point in simplePath if point in nodes])
+        #             if countBranchNodesOnPath == 2:
+        #                 curveLength = self._getLengthAndRemoveTracedPath(simplePath)
+        #                 self.isolatedEdgeInfoDict[sourceOnTree, item] = curveLength
+        # else:
+        #     # each node is connected to one or two other nodes implies it is a line,
+        #     endPoints = [k for (k, v) in self._nodeDegreeDict.items() if v == 1]
+        #     sourceOnLine = endPoints[0]
+        #     targetOnLine = endPoints[1]
+        #     simplePath = nx.shortest_path(self._subGraphSkeleton, source=sourceOnLine, target=targetOnLine)
+        #     curveLength = self._getLengthAndRemoveTracedPath(simplePath)
+        #     self.isolatedEdgeInfoDict[sourceOnLine, targetOnLine] = curveLength
+        # take lines into account for statistics
+        endPoints = [k for (k, v) in self._nodeDegreeDict.items() if v == 1]
+        sourceOnLine = endPoints[0]
+        targetOnLine = endPoints[1]
+        simplePath = nx.shortest_path(self._subGraphSkeleton, source=sourceOnLine, target=targetOnLine)
+        curveLength = self._getLengthAndRemoveTracedPath(simplePath)
+        self.isolatedEdgeInfoDict[sourceOnLine, targetOnLine] = curveLength
+        self.lengthDict[disjointGraphId][1, sourceOnLine, targetOnLine] = curveLength
+        self.sumLengthDict[disjointGraphId] = curveLength
+        vect = [j - i for i, j in zip(sourceOnLine, targetOnLine)]
+        vect = [a * b for a, b in zip(vect, DIM)]  # multiply pixel length with original length
+        curveDisplacement = np.linalg.norm(vect)
+        self.contractionDict[disjointGraphId][1, sourceOnLine, targetOnLine] = curveDisplacement / curveLength
 
     def _setCountDict(self, source):
         if source not in self._visitedSources:
@@ -248,7 +278,7 @@ class SegmentStats:
             if not logDisplacement == 0.0:
                 self.hausdorffDimensionDict[self.countDict[source], source, target] = np.log(length) / logDisplacement
 
-    def _singleCycle(self, cycle):
+    def _singleCycle(self, cycle, disjointGraphId):
         """
         Find statistics of a single cycle of a disjoint graph
         """
@@ -257,12 +287,16 @@ class SegmentStats:
         curveLength = self._getLengthAndRemoveTracedPath(cycle, isCycle=True)
         self.cycleInfoDict[self.cycles] = [0, curveLength]
         nthCycle = self.countDict[sourceOnCycle]
-        self.lengthDict[nthCycle, sourceOnCycle, cycle[len(cycle) - 1]] = curveLength
+        self.lengthDict[disjointGraphId][nthCycle, sourceOnCycle, cycle[len(cycle) - 1]] = curveLength
+        if disjointGraphId in self.sumLengthDict.keys():
+            self.sumLengthDict[disjointGraphId] += curveLength
+        else:
+            self.sumLengthDict[disjointGraphId] = curveLength
         self.tortuosityDict[nthCycle, sourceOnCycle, cycle[len(cycle) - 1]] = 0
-        self.contractionDict[nthCycle, sourceOnCycle, cycle[len(cycle) - 1]] = 0
+        self.contractionDict[disjointGraphId][nthCycle, sourceOnCycle, cycle[len(cycle) - 1]] = 0
         self.cycles = self.cycles + 1
 
-    def _cyclicTree(self, cycleList):
+    def _cyclicTree(self, cycleList, disjointGraphId):
         """
         Find statistics of a cyclic tree of a disjoint graph
         """
@@ -292,9 +326,13 @@ class SegmentStats:
                         vect = [a * b for a, b in zip(vect, DIM)]  # multiply pixel length with original length
                         curveDisplacement = np.linalg.norm(vect)
                         nthSegment = self.countDict[sourceOnCycle]
-                        self.lengthDict[nthSegment, sourceOnCycle, point] = curveLength
+                        self.lengthDict[disjointGraphId][nthSegment, sourceOnCycle, point] = curveLength
+                        if disjointGraphId in self.sumLengthDict.keys():
+                            self.sumLengthDict[disjointGraphId] += curveLength
+                        else:
+                            self.sumLengthDict[disjointGraphId] = curveLength
                         self.tortuosityDict[nthSegment, sourceOnCycle, point] = curveLength / curveDisplacement
-                        self.contractionDict[nthSegment, sourceOnCycle, point] = curveDisplacement / curveLength
+                        self.contractionDict[disjointGraphId][nthSegment, sourceOnCycle, point] = curveDisplacement / curveLength
                         self._setHausdorffDimensionDict(sourceOnCycle, point, curveLength, curveDisplacement)
                         self._visitedPaths.append(simplePath)
                         self._sortedSegments.append(sortedSegment)
@@ -304,9 +342,9 @@ class SegmentStats:
             self.cycles += 1
         for path in self._visitedPaths:
             self._getLengthAndRemoveTracedPath(path)
-        self._tree()
+        self._tree(disjointGraphId)
 
-    def _getStatsTree(self, listOfPerms, intersection):
+    def _getStatsTree(self, listOfPerms, intersection, disjointGraphId):
         for sourceOnTree, item in listOfPerms:
             if not (nx.has_path(self._subGraphSkeleton, sourceOnTree, item) and sourceOnTree != item):
                 continue
@@ -322,38 +360,47 @@ class SegmentStats:
                 vect = [a * b for a, b in zip(vect, DIM)]  # multiply pixel length with original length
                 curveDisplacement = np.linalg.norm(vect)
                 nthSegment = self.countDict[sourceOnTree]
-                self.lengthDict[nthSegment, sourceOnTree, item] = curveLength
+                self.lengthDict[disjointGraphId][nthSegment, sourceOnTree, item] = curveLength
+                if disjointGraphId in self.sumLengthDict.keys():
+                    self.sumLengthDict[disjointGraphId] += curveLength
+                else:
+                    self.sumLengthDict[disjointGraphId] = curveLength
                 self.tortuosityDict[nthSegment, sourceOnTree, item] = curveLength / curveDisplacement
-                self.contractionDict[nthSegment, sourceOnTree, item] = curveDisplacement / curveLength
+                self.contractionDict[disjointGraphId][nthSegment, sourceOnTree, item] = curveDisplacement / curveLength
                 self._setHausdorffDimensionDict(sourceOnTree, item, curveLength, curveDisplacement)
 
-    def _tree(self):
+    def _tree(self, disjointGraphId):
         """
         Find statistics of a tree like structure of disjoint graph
         """
         listOfPerms = list(itertools.product(self._branchPoints, self._endPoints))
-        self._getStatsTree(listOfPerms, 1)
+        self._getStatsTree(listOfPerms, 1, disjointGraphId)
 
-    def _branchToBranch(self):
+    def _branchToBranch(self, disjointGraphId):
         """
         Find untraced edges between two branch points
         """
         listOfPerms = list(itertools.permutations(self._branchPoints, 2))
-        self._getStatsTree(listOfPerms, 2)
+        self._getStatsTree(listOfPerms, 2, disjointGraphId)
 
-    def _findAccessComponentsDisjoint(self):
+    def _findAccessComponentsDisjoint(self, disjointGraphId):
         self._nodes = self._subGraphSkeleton.nodes()
         self._nodeDegreeDict = nx.degree(self._subGraphSkeleton)
         self._branchPoints = [k for (k, v) in self._nodeDegreeDict.items() if v != 2 and v != 1]
         self._endPoints = [k for (k, v) in self._nodeDegreeDict.items() if v == 1]
         self._branchPoints.sort()
         self._endPoints.sort()
+        if len(self._nodes) != 1:   # exclude single nodes from dict
+            self.countBranchPointsDict[disjointGraphId] = len(self._branchPoints)
+            self.countEndPointsDict[disjointGraphId] = len(self._endPoints)
         self._cycleList = nx.cycle_basis(self._subGraphSkeleton)
         self._cycleCount = len(self._cycleList)
         self._degreeList = list(self._nodeDegreeDict.values())
 
     def _findAccessComponentsNetworkx(self):
-        self.totalSegments = len(self.lengthDict)
+        # self.totalSegments = len(self.lengthDict)
+        for filament in self.lengthDict.keys():
+            self.totalSegments += len(self.lengthDict[filament])
         listCounts = list(self.countDict.values())
         self.avgBranching = 0
         if len(self.countDict) != 0:
@@ -373,26 +420,26 @@ class SegmentStats:
         start = time.time()
         countDisjointGraphs = len(self._disjointGraphs)
         for self._ithDisjointGraph, self._subGraphSkeleton in enumerate(self._disjointGraphs):
-            self._findAccessComponentsDisjoint()
+            self._findAccessComponentsDisjoint(self._ithDisjointGraph)
             if len(self._nodes) == 1:
                 self.typeGraphdict[self._ithDisjointGraph] = SubgraphTypes.singleNode.value
             elif (min(self._degreeList) == max(self._degreeList) and
                   nx.is_biconnected(self._subGraphSkeleton) and
                   self._cycleCount == 1):
-                self._singleCycle(self._cycleList[0])
+                self._singleCycle(self._cycleList[0], self._ithDisjointGraph)
                 self.typeGraphdict[self._ithDisjointGraph] = SubgraphTypes.singleCycle.value
             elif set(self._degreeList) == set((1, 2)) or set(self._degreeList) == {1}:
-                self._singleSegment(self._nodes)
+                self._singleSegment(self._nodes, self._ithDisjointGraph)
                 self.typeGraphdict[self._ithDisjointGraph] = SubgraphTypes.singleLine.value
             elif self._cycleCount != 0:
-                self._cyclicTree(self._cycleList)
+                self._cyclicTree(self._cycleList, self._ithDisjointGraph)
                 self.typeGraphdict[self._ithDisjointGraph] = SubgraphTypes.cyclic.value
             else:
-                self._tree()
+                self._tree(self._ithDisjointGraph)
                 self.typeGraphdict[self._ithDisjointGraph] = SubgraphTypes.acyclic.value
             # check if any unfinished business in _subGraphSkeleton, untraced edges
             if self._subGraphSkeleton.number_of_edges() != 0:
-                self._branchToBranch()
+                self._branchToBranch(self._ithDisjointGraph)
             assert self._subGraphSkeleton.number_of_edges() == 0, ("edges not removed are"
                                                                    "%i" % self._subGraphSkeleton.number_of_edges())
             progress = int((100 * self._ithDisjointGraph) / countDisjointGraphs)
