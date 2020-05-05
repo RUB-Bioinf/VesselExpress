@@ -7,6 +7,7 @@ import numpy as np
 
 from collections import defaultdict
 
+
 # pixel dimensions in microns with [z, y, x]
 DIM = [2.0, 1.015625, 1.015625]
 
@@ -79,6 +80,10 @@ class SegmentStats:
            SegmentStats.contractionDict - A dictionary with key as the (branching index (nth branch from the start node)
                                           ,start node, end node of the branch) value = contraction of the branch
 
+           SegmentStats.angleDict - A dictionary with the nth disjoint graph as the key containing a dictionary
+                                        with key as the (branching index (nth branch from the start node),
+                                           start node, end node of the branch) value = segment branching angle
+
            SegmentStats.hausdorffDimensionDict - A dictionary with key as the (branching index (nth branch from
                                                  the start node), start node,
                                                  end node of the branch) value = hausdorff dimension of the branch
@@ -125,6 +130,8 @@ class SegmentStats:
         self.typeGraphdict = {}
         self.countBranchPointsDict = {}
         self.countEndPointsDict = {}
+        self.angleDict = defaultdict(dict)
+        self._segmentDict = defaultdict(dict)
 
         self.cycles = 0
         self.edgesUntraced = 0
@@ -305,7 +312,7 @@ class SegmentStats:
             branchPointsOnCycle = [k for (k, v) in nodeDegreeDictFilt.items() if v != 2 and v != 1]
             sourceOnCycle = branchPointsOnCycle[0]
             if len(branchPointsOnCycle) == 1:
-                self._singleCycle(cycle)
+                self._singleCycle(cycle, disjointGraphId)
             else:
                 for point in cycle:
                     if point not in branchPointsOnCycle:
@@ -336,6 +343,7 @@ class SegmentStats:
                         self._setHausdorffDimensionDict(sourceOnCycle, point, curveLength, curveDisplacement)
                         self._visitedPaths.append(simplePath)
                         self._sortedSegments.append(sortedSegment)
+                        self._segmentDict[disjointGraphId][nthSegment, sourceOnCycle, point] = simplePath
                     sourceOnCycle = point
             self.cycleInfoDict[self.cycles] = [len(branchPointsOnCycle),
                                                self._getLengthAndRemoveTracedPath(cycle, isCycle=True, remove=False)]
@@ -368,6 +376,7 @@ class SegmentStats:
                 self.tortuosityDict[nthSegment, sourceOnTree, item] = curveLength / curveDisplacement
                 self.contractionDict[disjointGraphId][nthSegment, sourceOnTree, item] = curveDisplacement / curveLength
                 self._setHausdorffDimensionDict(sourceOnTree, item, curveLength, curveDisplacement)
+                self._segmentDict[disjointGraphId][nthSegment, sourceOnTree, item] = simplePath
 
     def _tree(self, disjointGraphId):
         """
@@ -383,6 +392,22 @@ class SegmentStats:
         listOfPerms = list(itertools.permutations(self._branchPoints, 2))
         self._getStatsTree(listOfPerms, 2, disjointGraphId)
 
+    def _getBranchingAngles(self, disjointGraphId):
+        """
+        Calculate branching angle for each segment of disjoint graph
+        """
+        for segmentKey in self._segmentDict[disjointGraphId]:
+            segment = self._segmentDict[disjointGraphId][segmentKey]
+            if self._startPoint in segment:  # exclude segment containing start point
+                continue
+            segPred = self._predDict[segment[0]]
+            vect1 = [j - i for i, j in zip(segPred, segment[0])]  # requires that brPt is first element
+            vect1 = [a * b for a, b in zip(vect1, DIM)]  # multiply pixel length with original length
+            vect2 = [j - i for i, j in zip(segment[0], segment[1])]
+            vect2 = [a * b for a, b in zip(vect2, DIM)]  # multiply pixel length with original length
+            angle = np.arccos(np.dot(vect1, vect2) / (np.linalg.norm(vect1) * np.linalg.norm(vect2)))
+            self.angleDict[disjointGraphId][segmentKey] = round(np.degrees(angle), 4)
+
     def _findAccessComponentsDisjoint(self, disjointGraphId):
         self._nodes = self._subGraphSkeleton.nodes()
         self._nodeDegreeDict = nx.degree(self._subGraphSkeleton)
@@ -390,6 +415,10 @@ class SegmentStats:
         self._endPoints = [k for (k, v) in self._nodeDegreeDict.items() if v == 1]
         self._branchPoints.sort()
         self._endPoints.sort()
+        # if disjoint graph contains branch points, set predecessors and starting point for segment angle calculation
+        if len(self._branchPoints) != 0 and len(self._endPoints) != 0:
+            self._startPoint = self._endPoints[0]   # take first endpoint in list as starting point
+            self._predDict = nx.dfs_predecessors(self._subGraphSkeleton, self._startPoint)
         if len(self._nodes) != 1:   # exclude single nodes from dict
             self.countBranchPointsDict[disjointGraphId] = len(self._branchPoints)
             self.countEndPointsDict[disjointGraphId] = len(self._endPoints)
@@ -442,9 +471,15 @@ class SegmentStats:
                 self._branchToBranch(self._ithDisjointGraph)
             assert self._subGraphSkeleton.number_of_edges() == 0, ("edges not removed are"
                                                                    "%i" % self._subGraphSkeleton.number_of_edges())
+            # calculate segment branching angles for all segments containing branch points
+            if self._segmentDict:
+                self._getBranchingAngles(self._ithDisjointGraph)
             progress = int((100 * self._ithDisjointGraph) / countDisjointGraphs)
             print("finding segment stats in progress {}% \r".format(progress), end="", flush=True)
             if True:
                 print()
         self._findAccessComponentsNetworkx()
         print("time taken to calculate segments and their lengths is %0.3f seconds" % (time.time() - start))
+
+
+
