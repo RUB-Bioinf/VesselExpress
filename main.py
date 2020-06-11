@@ -5,66 +5,106 @@ import skeleton.thinVolume as thinVol
 from skimage import io
 from skimage.external import tifffile as tif
 import skeleton.networkx_graph_from_array as netGraphArr
-import metrics.segmentStats as segStats
-from runscripts import animation
 import utils
 import os
 import statistics.graph as graph
+from skimage.morphology import skeletonize_3d
+import time
+import argparse
 
-# specify path directory and image name
-PATH = '/Users/philippaspangenberg/Documents/TestBilder/B6_contra_RB_cmp/'
-IMG = 'C2-B6_contra_RB_cmp'
+def executeVesselAnalysisPipeline(imgPath, imgName, skeletonMethod='scikit', debug=False):
+    """
+        This is a pipeline containing the following steps for retrieving statistics from 3D vessel images:
 
-if __name__ == "__main__":
+        1. ToDo: segment vessel image
+        2. generate skeleton
+        3. retrieve network graph
+        4. calculate statistics
+
+        Parameters
+        ----------
+        imgPath : string of image path
+        imgName : string of image name
+        skeletonMethod : string of skeletonization method
+        debug : bool
+            if debug, then plots are generated for each step
+    """
 
     # 1) read tif image as numpy array
-    # im = io.imread(PATH + IMG + '.tif')                     # reads image as array (z, y, x)
-    # binArr = im/np.max(im)                                  # make binary array of 3D image/ thresholded 3D volume
-    # np.save(PATH + 'THR-' + IMG + '.npy', binArr)           # save numpy array of tif image
-    # print("successfully read image")
+    start = time.time()
+    im = io.imread(imgPath + imgName + '.tif')              # reads image as array (z, y, x)
+    binArr = im / np.max(im)                                # make binary array of 3D image/ thresholded 3D volume
+    np.save(imgPath + 'THR-' + imgName + '.npy', binArr)    # save numpy array of tif image
+    print("time taken to read and binarize image is %0.3f seconds" % (time.time() - start))
+
+    if debug:
+        utils.plot3DGrid(binArr, 'Segmentation Mask')   # plot 3D grid of binary image
 
     # 2) generate skeleton
-    # binArr = np.load(PATH + 'THR-' + IMG + '.npy')
-    # resultSkel = thinVol.get_thinned(binArr)                # get skeleton
-    # np.save(PATH + 'SKEL-' + IMG + '.npy', resultSkel)      # save skeleton as numpy array
-    # tif.imsave(PATH + 'SKEL-' + IMG + '.tif', resultSkel.astype('int8'), bigtiff=True)  # save skeleton as tif image
-    # print("successfully generated skeleton")
+    if skeletonMethod == 'scikit':
+        start = time.time()
+        resultSkel = skeletonize_3d(binArr)
+        resultSkel = resultSkel / np.max(resultSkel)
+        print("time taken to calculate skeleton is %0.3f seconds" % (time.time() - start))
+    elif skeletonMethod == '3scan':
+        resultSkel = thinVol.get_thinned(binArr)  # get skeleton
 
-    # 3) get statistics from generated skeletons
-    resultSkel = np.load(PATH + 'SKEL-' + IMG + '.npy')
+    # save skeleton as numpy array and as tif image
+    np.save(imgPath + 'SKEL-' + imgName + '.npy', resultSkel)
+    tif.imsave(imgPath + 'SKEL-' + imgName + '.tif', resultSkel.astype('int8'), bigtiff=True)
+
+    if debug:
+        utils.plot3DGrid(resultSkel, 'Skeleton Mask')    # plot 3D grid of skeleton
+
+    # 3) retrieve network graph from generated skeleton
     netGraphSkel = netGraphArr.get_networkx_graph_from_array(resultSkel)
 
-    # statsSkel = segStats.SegmentStats(netGraphSkel)
-    # statsSkel.setStats()
+    # 4) calculate statistics from network graph
     statsSkel = graph.Graph(netGraphSkel)
     statsSkel.setStats()
-    print("successfully generated statistics")
-
-    # uncomment to show statistics
-    # print("---------Statistics----------")
-    # print("endPtsDict: ", statsSkel.countEndPointsDict)
-    # print("brPtsDict: ", statsSkel.countBranchPointsDict)
-    # print("sumLengthDict: ", statsSkel.sumLengthDict)
-    # print("lengthDict: ", statsSkel.lengthDict)
-    # print("straightnessDict: ", statsSkel.straightnessDict)
-    # print("angleDict: ", statsSkel.degreeDict)
 
     # save statistics as CSV files in directory
-    statsDir = PATH + '/Statistics/'
+    statsDir = imgPath + '/Statistics/'
     os.makedirs(os.path.dirname(statsDir), exist_ok=True)
 
-    utils.saveFilamentDictAsCSV(statsSkel.countBranchPointsDict, statsDir + IMG + '_Filament_No._Segment_Branch_Points.csv',
-                                'Filament No. Segment Branch Pts')
-    utils.saveFilamentDictAsCSV(statsSkel.countEndPointsDict, statsDir + IMG + '_Filament_No._Segment_Terminal_Points.csv',
-                                'Filament No. Segment Terminal Pts')
-    utils.saveFilamentDictAsCSV(statsSkel.sumLengthDict, statsDir + IMG + '_Filament_Length_(sum).csv',
+    utils.saveFilamentDictAsCSV(statsSkel.countBranchPointsDict, statsDir + imgName +
+                                '_Filament_No._Segment_Branch_Points.csv', 'Filament No. Segment Branch Pts')
+    utils.saveFilamentDictAsCSV(statsSkel.countEndPointsDict, statsDir + imgName +
+                                '_Filament_No._Segment_Terminal_Points.csv', 'Filament No. Segment Terminal Pts')
+    utils.saveFilamentDictAsCSV(statsSkel.sumLengthDict, statsDir + imgName + '_Filament_Length_(sum).csv',
                                 'Filament Length (sum)', 'um')
-    utils.saveSegmentDictAsCSV(statsSkel.lengthDict, statsDir + IMG + '_Segment_Length.csv', 'Segment Length', 'um')
-    utils.saveSegmentDictAsCSV(statsSkel.straightnessDict, statsDir + IMG + '_Segment_Straightness.csv',
+    utils.saveSegmentDictAsCSV(statsSkel.lengthDict, statsDir + imgName + '_Segment_Length.csv', 'Segment Length', 'um')
+    utils.saveSegmentDictAsCSV(statsSkel.straightnessDict, statsDir + imgName + '_Segment_Straightness.csv',
                                'Segment Straightness')
-    utils.saveSegmentDictAsCSV(statsSkel.degreeDict, statsDir + IMG + '_Segment_Branching_Angle.csv',
+    utils.saveSegmentDictAsCSV(statsSkel.degreeDict, statsDir + imgName + '_Segment_Branching_Angle.csv',
                                'Segment Branching Angle', '°')
     print("successfully saved statistics")
 
-    # 4) Visualization
-    #visualization = animation.getFrames(PATH + 'THR-' + IMG + '.npy', PATH + 'PSKEL-' + IMG + '.npy', 1)
+    if debug:
+        utils.plotSegStats(statsSkel.segmentsDict, statsSkel.branchPointsDict, statsSkel.endPointsDict)
+
+
+if __name__ == '__main__':
+    '''
+        Instead of using the main, you can directly use the executeVesselAnalysisPipeline!
+
+        example call:
+            python main.py /Users/philippaspangenberg/Documents/TestBilder/B5_contra_RB_cmp/ C2-B5_contra_RB_cmp 
+            scikit --debug False
+    '''
+
+    # Argument Parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument('imagePath', type=str, help='Path of image')
+    parser.add_argument('imageName', type=str, help='Name of image')
+    parser.add_argument('skeletonization', type=str, default='scikit', help='Which skeletonization method?')
+    parser.add_argument('--debug', type=bool, default=False, action='store', dest='debug', help='Show plots?')
+    results = parser.parse_args()
+
+    executeVesselAnalysisPipeline(
+        str(results.imagePath),         # path of image
+        str(results.imageName),         # name of image
+        str(results.skeletonization),   # skeletonization method
+        debug=bool(results.debug)       # show plots?
+    )
+

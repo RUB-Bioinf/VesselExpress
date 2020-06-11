@@ -17,6 +17,9 @@ class Graph:
         --------
         Graph.segmentsTotal - total number of segments (branches between branch/end point and branch/end point)
 
+        Graph.segmentsDict - A dictionary with the nth disjoint graph as the key containing a dictionary
+                                with key as the segment index (start node, end node) and value = list of nodes
+
         Graph.lengthDict - A dictionary with the nth disjoint graph as the key containing a dictionary
                                 with key as the segment index (start node, end node) and value = length of the segment
 
@@ -25,6 +28,12 @@ class Graph:
         Graph.straightnessDict - A dictionary with the nth disjoint graph as the key containing a dictionary
                                     with key as the segment index (start node, end node) and
                                     value = straightness of the segment
+
+        Graph.branchPointsDict - A dictionary with the nth disjoint graph as the key and the list of
+                                    branch points as the value
+
+        Graph.endPointsDict - A dictionary with the nth disjoint graph as the key and the list of
+                                    end points as the value
 
         Graph.countBranchPointsDict - A dictionary with the nth disjoint graph as the key and the number of
                                         branch points as the value
@@ -42,6 +51,8 @@ class Graph:
         self.lengthDict = defaultdict(dict)
         self.sumLengthDict = {}
         self.straightnessDict = defaultdict(dict)
+        self.branchPointsDict = {}
+        self.endPointsDict = {}
         self.countBranchPointsDict = {}
         self.countEndPointsDict = {}
         self.degreeDict = defaultdict(dict)
@@ -78,6 +89,8 @@ class Graph:
                 self.sumLengthDict[ithDisjointGraph] = sum(filament.lengthDict.values())
                 self.straightnessDict[ithDisjointGraph] = filament.straightnessDict
                 self.degreeDict[ithDisjointGraph] = filament.degreeDict
+                self.branchPointsDict[ithDisjointGraph] = filament.brPtsList
+                self.endPointsDict[ithDisjointGraph] = filament.endPtsList
                 self.countBranchPointsDict[ithDisjointGraph] = len(filament.brPtsList)
                 self.countEndPointsDict[ithDisjointGraph] = len(filament.endPtsList)
                 self.compTime += filament.compTime
