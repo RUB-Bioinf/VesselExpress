@@ -46,9 +46,9 @@ def plot3DGrid(arr, title):
     """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlabel('x')
+    ax.set_xlabel('z')
     ax.set_ylabel('y')
-    ax.set_zlabel('z')
+    ax.set_zlabel('x')
     ax.voxels(arr, edgecolor="k")
     plt.title(title)
     plt.show()
@@ -84,9 +84,9 @@ def plotSegStats(segmentsDict, brPtsDict, endPtsDict):
                 else:
                     ax.scatter(point[2], point[1], point[0], c='k', marker='o')
 
-    ax.set_xlabel('x')
+    ax.set_xlabel('z')
     ax.set_ylabel('y')
-    ax.set_zlabel('z')
+    ax.set_zlabel('x')
     plt.title('Graph with Branch and End Points')
     plt.show()
 

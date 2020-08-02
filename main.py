@@ -1,12 +1,11 @@
 import numpy as np
+import os
 # NOTE This does the pyx compilation of this extension
 import pyximport; pyximport.install() # NOQA
 import skeleton.thinVolume as thinVol
 from skimage import io
 from skimage.external import tifffile as tif
-import skeleton.networkx_graph_from_array as netGraphArr
 import utils
-import os
 import statistics.graph as graph
 from skimage.morphology import skeletonize_3d
 import time
@@ -48,23 +47,21 @@ def executeVesselAnalysisPipeline(imgPath, imgName, skeletonMethod='scikit', deb
         print("time taken to calculate skeleton is %0.3f seconds" % (time.time() - start))
     elif skeletonMethod == '3scan':
         resultSkel = thinVol.get_thinned(binArr)  # get skeleton
+        resultSkel = resultSkel*1.0
 
     # save skeleton as numpy array and as tif image
     np.save(imgPath + 'SKEL-' + imgName + '.npy', resultSkel)
-    tif.imsave(imgPath + 'SKEL-' + imgName + '.tif', resultSkel.astype('int8'), bigtiff=True)
+    tif.imsave(imgPath + 'SKEL-' + imgName + '.tif', resultSkel, bigtiff=True)
 
     if debug:
         utils.plot3DGrid(resultSkel, 'Skeleton Mask')    # plot 3D grid of skeleton
 
-    # 3) retrieve network graph from generated skeleton
-    netGraphSkel = netGraphArr.get_networkx_graph_from_array(resultSkel)
-
-    # 4) calculate statistics from network graph
-    statsSkel = graph.Graph(netGraphSkel)
+    # 3) calculate statistics from segmentation and skeleton mask
+    statsSkel = graph.Graph(binArr, resultSkel)
     statsSkel.setStats()
 
     # save statistics as CSV files in directory
-    statsDir = imgPath + '/Statistics/'
+    statsDir = imgPath + '/Statistics_' + skeletonMethod + '/'
     os.makedirs(os.path.dirname(statsDir), exist_ok=True)
 
     utils.saveFilamentDictAsCSV(statsSkel.countBranchPointsDict, statsDir + imgName +
@@ -78,6 +75,10 @@ def executeVesselAnalysisPipeline(imgPath, imgName, skeletonMethod='scikit', deb
                                'Segment Straightness')
     utils.saveSegmentDictAsCSV(statsSkel.degreeDict, statsDir + imgName + '_Segment_Branching_Angle.csv',
                                'Segment Branching Angle', '°')
+    utils.saveSegmentDictAsCSV(statsSkel.volumeDict, statsDir + imgName + '_Segment_Volume.csv',
+                               'Segment Volume', 'um^3')
+    utils.saveSegmentDictAsCSV(statsSkel.diameterDict, statsDir + imgName + '_Segment_Diameter.csv',
+                               'Segment Diameter', 'um')
     print("successfully saved statistics")
 
     if debug:

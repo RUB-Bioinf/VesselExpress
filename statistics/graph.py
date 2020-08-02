@@ -2,6 +2,8 @@ import networkx as nx
 from collections import defaultdict
 import time
 import statistics.filament as fil
+import skeleton.networkx_graph_from_array as netGraphArr
+from scipy import ndimage as ndi
 
 
 class Graph:
@@ -44,11 +46,13 @@ class Graph:
         Graph.degreeDict - A dictionary with the nth disjoint graph as the key containing a dictionary
                                 with key as the segment index (start node, end node) and value = segment branching angle
     """
-    def __init__(self, networkxGraph):
-        self.networkxGraph = networkxGraph
+    def __init__(self, segmentation, skeleton):
+        self.networkxGraph = netGraphArr.get_networkx_graph_from_array(skeleton)
         self.segmentsTotal = 0
         self.segmentsDict = defaultdict(dict)
         self.lengthDict = defaultdict(dict)
+        self.volumeDict = defaultdict(dict)
+        self.diameterDict = defaultdict(dict)
         self.sumLengthDict = {}
         self.straightnessDict = defaultdict(dict)
         self.branchPointsDict = {}
@@ -58,6 +62,10 @@ class Graph:
         self.degreeDict = defaultdict(dict)
         self.filaments = list(nx.connected_component_subgraphs(self.networkxGraph))
         self.compTime = 0
+        self.initTime = time.time()
+        self.distTransf = ndi.distance_transform_edt(segmentation, sampling=[2.0, 1.015625, 1.015625])
+        self.radiusMatrix = self.distTransf * skeleton
+        print("time taken for distance transform is %0.3f seconds" % (time.time() - self.initTime))
 
     def setStats(self):
         """
@@ -74,6 +82,7 @@ class Graph:
                 networkx graph of a skeleton
         """
         startTime = time.time()
+        countDisjointGraphs = len(self.filaments)
         for ithDisjointGraph, subGraphSkeleton in enumerate(self.filaments):
             nodeDegreeDict = nx.degree(subGraphSkeleton)
             endPoints = [k for (k, v) in nodeDegreeDict.items() if v == 1]
@@ -81,21 +90,25 @@ class Graph:
             if endPoints:
                 start = endPoints[0]  # take random end point as beginning
                 adjacencyDict = nx.to_dict_of_lists(subGraphSkeleton)
-                filament = fil.Filament(adjacencyDict, start)
+                filament = fil.Filament(adjacencyDict, start, self.radiusMatrix)
                 filament.dfs_iterative()
                 self.segmentsDict[ithDisjointGraph] = filament.segmentsDict
                 self.segmentsTotal = self.segmentsTotal + len(self.segmentsDict[ithDisjointGraph])
                 self.lengthDict[ithDisjointGraph] = filament.lengthDict
                 self.sumLengthDict[ithDisjointGraph] = sum(filament.lengthDict.values())
                 self.straightnessDict[ithDisjointGraph] = filament.straightnessDict
+                self.volumeDict[ithDisjointGraph] = filament.volumeDict
+                self.diameterDict[ithDisjointGraph] = filament.diameterDict
                 self.degreeDict[ithDisjointGraph] = filament.degreeDict
                 self.branchPointsDict[ithDisjointGraph] = filament.brPtsList
                 self.endPointsDict[ithDisjointGraph] = filament.endPtsList
                 self.countBranchPointsDict[ithDisjointGraph] = len(filament.brPtsList)
                 self.countEndPointsDict[ithDisjointGraph] = len(filament.endPtsList)
                 self.compTime += filament.compTime
+        print("filaments=", countDisjointGraphs)
+        print("segments = ", self.segmentsTotal)
         print("summed time taken for dfs calculations is %0.3f seconds" % (self.compTime))
-        print("total time for statistic calculation is %0.3f seconds" % (time.time() - startTime))
+        print("time taken for statistic calculation is %0.3f seconds" % (time.time() - startTime))
 
 
 
