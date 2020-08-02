@@ -79,6 +79,8 @@ def executeVesselAnalysisPipeline(imgPath, imgName, skeletonMethod='scikit', deb
                                'Segment Volume', 'um^3')
     utils.saveSegmentDictAsCSV(statsSkel.diameterDict, statsDir + imgName + '_Segment_Diameter.csv',
                                'Segment Diameter', 'um')
+    utils.saveSegmentDictAsCSV(statsSkel.branchPointsDict, statsDir + imgName + '_BranchPt_No._Branches.csv',
+                               'BranchPt No. Branches', category='Branch')
     print("successfully saved statistics")
 
     if debug:

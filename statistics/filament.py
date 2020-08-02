@@ -42,7 +42,7 @@ class Filament:
         self.start = start
         self.skelRadii = skelRadii
         self.endPtsList = []
-        self.brPtsList = []
+        self.brPtsDict = {}
         self.segmentsDict = {}
         self.lengthDict = {}
         self.straightnessDict = {}
@@ -80,10 +80,11 @@ class Filament:
                         segment = self._getSegment(vertex)
                         self._setSegStats(segment)
                 elif len(self.graph[vertex]) > 2:  # branch point found
-                    self.brPtsList.append(vertex)
+                    self.brPtsDict[vertex] = len(self.graph[vertex])
                     segment = self._getSegment(vertex)
                     self._setSegStats(segment)
         self.compTime = time.time() - startTime
+        self._postprocess()
 
     def _getSegment(self, node):
         """
@@ -235,10 +236,20 @@ class Filament:
         for segKey in self.lengthDict:
             if self.lengthDict[segKey] <= lowLim:
                 keysToRemoveList.append(segKey)
-        # delete those segments from dictionarys
+        # delete those segments from dictionaries
         for key in keysToRemoveList:
             del self.segmentsDict[key]
             del self.lengthDict[key]
             del self.straightnessDict[key]
+            del self.volumeDict[key]
+            del self.diameterDict[key]
             if key in self.degreeDict:
                 del self.degreeDict[key]
+            if key[0] in self.brPtsDict:
+                del self.brPtsDict[key[0]]
+            if key[1] in self.brPtsDict:
+                del self.brPtsDict[key[1]]
+            if key[0] in self.endPtsList:
+                self.endPtsList.remove(key[0])
+            if key[1] in self.endPtsList:
+                self.endPtsList.remove(key[1])

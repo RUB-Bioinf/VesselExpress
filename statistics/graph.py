@@ -100,9 +100,9 @@ class Graph:
                 self.volumeDict[ithDisjointGraph] = filament.volumeDict
                 self.diameterDict[ithDisjointGraph] = filament.diameterDict
                 self.degreeDict[ithDisjointGraph] = filament.degreeDict
-                self.branchPointsDict[ithDisjointGraph] = filament.brPtsList
+                self.branchPointsDict[ithDisjointGraph] = filament.brPtsDict
                 self.endPointsDict[ithDisjointGraph] = filament.endPtsList
-                self.countBranchPointsDict[ithDisjointGraph] = len(filament.brPtsList)
+                self.countBranchPointsDict[ithDisjointGraph] = len(filament.brPtsDict)
                 self.countEndPointsDict[ithDisjointGraph] = len(filament.endPtsList)
                 self.compTime += filament.compTime
         print("filaments=", countDisjointGraphs)

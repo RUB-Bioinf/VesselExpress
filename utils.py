@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from ast import literal_eval as make_tuple
 from collections import defaultdict
 
-def saveSegmentDictAsCSV(dictionary, path, measurement, unit=""):
+def saveSegmentDictAsCSV(dictionary, path, measurement, unit="", category="Segment"):
     """
         Save a dictionary with measurements as csv file
 
@@ -15,11 +15,11 @@ def saveSegmentDictAsCSV(dictionary, path, measurement, unit=""):
         measurement : string of measurement
         unit : string of unit
     """
-    list = [[measurement, "Unit", "Category", "FilamentID", "SegmentID"]]
+    list = [[measurement, "Unit", "Category", "FilamentID", category+"ID"]]
     for filament in dictionary.keys():
         for branch in dictionary[filament]:
             val = dictionary[filament][branch]
-            list_item = [val, unit, "Segment", filament, branch]
+            list_item = [val, unit, category, filament, branch]
             list.append(list_item)
     with open(path, 'w', newline='') as file:
         writer = csv.writer(file)
