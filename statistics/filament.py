@@ -230,14 +230,24 @@ class Filament:
         if self.start not in segment:  # if start point is included in segment its either a line or has no predecessor
             self.degreeDict[segment[0], segment[len(segment) - 1]] = self._getBranchingDegree(segment)
 
+    def _deletePath(self, path):
+        for i in range(len(path)-1):
+            self._removeEdge(path[i], path[i+1])
+
+    def _removeEdge(self, u, v):
+        self.graph.get(u).remove(v)
+        self.graph.get(v).remove(u)
+
     def _postprocess(self, lowLim=2.5):
         # find segments in lengthDict which are below the limit
         keysToRemoveList = []
+        brPtCandidates = set()
         for segKey in self.lengthDict:
             if self.lengthDict[segKey] <= lowLim:
                 keysToRemoveList.append(segKey)
         # delete those segments from dictionaries
         for key in keysToRemoveList:
+            self._deletePath(self.segmentsDict[key])
             del self.segmentsDict[key]
             del self.lengthDict[key]
             del self.straightnessDict[key]
@@ -245,11 +255,48 @@ class Filament:
             del self.diameterDict[key]
             if key in self.degreeDict:
                 del self.degreeDict[key]
-            if key[0] in self.brPtsDict:
-                del self.brPtsDict[key[0]]
-            if key[1] in self.brPtsDict:
-                del self.brPtsDict[key[1]]
             if key[0] in self.endPtsList:
                 self.endPtsList.remove(key[0])
             if key[1] in self.endPtsList:
                 self.endPtsList.remove(key[1])
+            # add branch points to possible deletable candidates
+            if key[0] in self.brPtsDict:
+                brPtCandidates.add(key[0])
+            if key[1] in self.brPtsDict:
+                brPtCandidates.add(key[1])
+        # check if branch points still remain branch points after postprocessing
+        for brPt in brPtCandidates:
+            # branch point becomes normal point connecting two segments together
+            if len(self.graph[brPt]) == 2:
+                # print("brPt ", brPt, " becomes normal point")
+                del self.brPtsDict[brPt]
+                # find both segments connected by the branch pt
+                for segKey in self.segmentsDict:
+                    if segKey[1] == brPt:
+                        seg1 = self.segmentsDict.get(segKey)
+                        segKey1 = segKey
+                    if segKey[0] == brPt:
+                        seg2 = self.segmentsDict.get(segKey)
+                        segKey2 = segKey
+                if seg1 != seg2:    # if segment is not a circle combine the 2 segments to one
+                    seg1.extend(seg2[1:])       # combine 2 segments to 1
+                    self._setSegStats(seg1)     # calculate statistics for new segment
+                    # delete old 2 segments from segment dictionaries
+                    del self.segmentsDict[segKey1]
+                    del self.lengthDict[segKey1]
+                    del self.straightnessDict[segKey1]
+                    del self.volumeDict[segKey1]
+                    del self.diameterDict[segKey1]
+                    del self.segmentsDict[segKey2]
+                    del self.lengthDict[segKey2]
+                    del self.straightnessDict[segKey2]
+                    del self.volumeDict[segKey2]
+                    del self.diameterDict[segKey2]
+            # branch point becomes end point
+            elif len(self.graph[brPt]) == 1:
+                # print("brPt ", brPt, " becomes endPoint")
+                self.endPtsList.append(brPt)
+            # all branches of a branch point were removed => delete branch point from dict
+            elif len(self.graph[brPt]) == 0:
+                # print("brPt", brPt, " becomes single point")
+                del self.brPtsDict[brPt]

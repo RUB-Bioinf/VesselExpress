@@ -94,4 +94,4 @@ def executeVesselAnalysisPipeline(imgPath, imgName, skeletonMethod='scikit', deb
         utils.plot3DGrid(resultSkel, 'Skeleton Mask')  # plot 3D grid of skeleton
         utils.plotSegStats(statsSkel.segmentsDict, statsSkel.branchPointsDict, statsSkel.endPointsDict)
 
-executeVesselAnalysisPipeline('/Users/philippaspangenberg/Desktop/synth_tubes/tube_3/', 'seg_tube_3_intensity_variation_noise', 'scikit')
+executeVesselAnalysisPipeline('/Users/philippaspangenberg/Desktop/synth_tubes/tube_9/', 'seg_tube_9_intensity_variation_noise', 'scikit')
