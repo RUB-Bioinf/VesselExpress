@@ -63,6 +63,7 @@ class Graph:
         self.degreeDict = defaultdict(dict)
         self.filaments = list(nx.connected_component_subgraphs(self.networkxGraph))
         self.compTime = 0
+        self.postProcessTime = 0
 
         # calculate distance transform matrix
         self.initTime = time.time()
@@ -110,6 +111,9 @@ class Graph:
                     self.countBranchPointsDict[ithDisjointGraph] = len(filament.brPtsDict)
                     self.countEndPointsDict[ithDisjointGraph] = len(filament.endPtsList)
                     self.compTime += filament.compTime
+                    self.postProcessTime += filament.postprocessTime
+                else:
+                    countDisjointGraphs = countDisjointGraphs - 1
         print("filaments=", countDisjointGraphs)
         print("segments = ", self.segmentsTotal)
         print("summed time taken for dfs calculations is %0.3f seconds" % (self.compTime))

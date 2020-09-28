@@ -51,6 +51,7 @@ class Filament:
         self.diameterDict = {}
         self._predDict = {}
         self.compTime = 0
+        self.postprocessTime = 0
 
     def dfs_iterative(self):
         """
@@ -84,7 +85,9 @@ class Filament:
                     segment = self._getSegment(vertex)
                     self._setSegStats(segment)
         self.compTime = time.time() - startTime
+        startPostprocessTime = time.time()
         self._postprocess()
+        self.postprocessTime = time.time() - startPostprocessTime
 
     def _getSegment(self, node):
         """
@@ -268,35 +271,38 @@ class Filament:
         for brPt in brPtCandidates:
             # branch point becomes normal point connecting two segments together
             if len(self.graph[brPt]) == 2:
-                # print("brPt ", brPt, " becomes normal point")
                 del self.brPtsDict[brPt]
                 # find both segments connected by the branch pt
-                for segKey in self.segmentsDict:
-                    if segKey[1] == brPt:
-                        seg1 = self.segmentsDict.get(segKey)
-                        segKey1 = segKey
-                    if segKey[0] == brPt:
-                        seg2 = self.segmentsDict.get(segKey)
-                        segKey2 = segKey
-                if seg1 != seg2:    # if segment is not a circle combine the 2 segments to one
-                    seg1.extend(seg2[1:])       # combine 2 segments to 1
-                    self._setSegStats(seg1)     # calculate statistics for new segment
-                    # delete old 2 segments from segment dictionaries
+                segments = [v for k, v in self.segmentsDict.items() if k[0] == brPt or k[1] == brPt]
+                # delete old segments from segment dictionaries (either one segment if circle otherwise 2 segments)
+                if len(segments) > 1:  # ToDo: prüfen wie das sein kann
+                    segKey1 = (segments[0][0], segments[0][-1])
                     del self.segmentsDict[segKey1]
                     del self.lengthDict[segKey1]
                     del self.straightnessDict[segKey1]
                     del self.volumeDict[segKey1]
                     del self.diameterDict[segKey1]
-                    del self.segmentsDict[segKey2]
-                    del self.lengthDict[segKey2]
-                    del self.straightnessDict[segKey2]
-                    del self.volumeDict[segKey2]
-                    del self.diameterDict[segKey2]
+                    if len(segments) != 1:  # if segment is not a circle delete second segment from dictionaries
+                        segKey2 = (segments[1][0], segments[1][-1])
+                        del self.segmentsDict[segKey2]
+                        del self.lengthDict[segKey2]
+                        del self.straightnessDict[segKey2]
+                        del self.volumeDict[segKey2]
+                        del self.diameterDict[segKey2]
+                        # combine both segments to one segment and calculate its statistics
+                        if segments[0][-1] == brPt and segments[1][0] == brPt:
+                            combSegments = segments[0] + segments[1][1:]
+                        elif segments[0][0] == brPt and segments[1][-1] == brPt:
+                            combSegments = segments[1] + segments[0][1:]
+                        # in this case the predecessor of the brPt has been deleted
+                        elif segments[0][0] == brPt and segments[1][0] == brPt:
+                            combSegments = segments[0][::-1] + segments[1][1:]
+                        elif segments[0][-1] == brPt and segments[1][-1] == brPt:
+                            combSegments = segments[0][:-1] + segments[1][::-1]
+                        self._setSegStats(combSegments)
             # branch point becomes end point
             elif len(self.graph[brPt]) == 1:
-                # print("brPt ", brPt, " becomes endPoint")
                 self.endPtsList.append(brPt)
             # all branches of a branch point were removed => delete branch point from dict
             elif len(self.graph[brPt]) == 0:
-                # print("brPt", brPt, " becomes single point")
                 del self.brPtsDict[brPt]
