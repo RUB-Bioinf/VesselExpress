@@ -1,0 +1,26 @@
+{
+  "global":
+  {
+     "imgFolder": "/bph/puredata1/bioinfdata/user/phispa/Test/"
+  },
+  "frangi":
+  {
+    "sigma_min": 2,
+    "sigma_max": 5,
+    "sigma_steps": 3,
+    "alpha": 0.5,
+    "beta": 500.0,
+    "gamma": 200.0
+  },
+  "threshold":
+  {
+    "ball_radius": 3,
+    "artifact_size": 5
+  },
+  "graphAnalysis":
+  {
+    "pixel_dimensions": "2.0,1.015625,1.015625",
+    "pruning_scale": 1.5,
+    "length_limit": 3
+  }
+}
