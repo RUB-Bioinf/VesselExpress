@@ -1,8 +1,5 @@
 {
-  "global":
-  {
-     "imgFolder": "/bph/puredata1/bioinfdata/user/phispa/Test/"
-  },
+  "imgFolder": "data",
   "frangi":
   {
     "sigma_min": 2,
