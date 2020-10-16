@@ -24,16 +24,16 @@ To run the pipeline please follow the instructions below:
 * download [ClearMap](https://github.com/ChristophKirst/ClearMap2) and import it into the project's root folder
 * install Snakemake following the [installation instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
 * in a terminal navigate to the project's root folder and type
-'''
+```
 snakemake --use-conda
-'''
+```
 
 Different parameters can be set by using the command line option '--config' or by changing the parameters in the
-config.json file. For parallel execution, the command line option -j can be used. A full description of command line
+config.json file. For parallel execution, the command line option '-j' can be used. A full description of command line
 arguments for Snakemake can be found [here](https://snakemake.readthedocs.io/en/v4.5.1/executable.html).
-'''
+```
 snakemake --config imgFolder='/path/to/images' --use-conda -j
-'''
+```
 
 
 
