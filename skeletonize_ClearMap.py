@@ -10,7 +10,7 @@ import ClearMap.ImageProcessing.Skeletonization.Skeletonization as skl
 if __name__ == '__main__':
     programStart = time.time()
 
-    parser = argparse.ArgumentParser(description='Computes ClearMap skeletonization on binary image file of type .tif')
+    parser = argparse.ArgumentParser(description='Computes ClearMap skeletonization on a binary image file of type .tif')
     parser.add_argument('-i', type=str, help='input tif image file to process')
     args = parser.parse_args()
 
@@ -27,7 +27,6 @@ if __name__ == '__main__':
     sink_skel = output_dir + "/Skeleton_" + file_name
     im_skel = skl.skeletonize(output_dir + "/Binary_" + file_name + '.npy', sink=sink_skel + '.npy', delete_border=True,
                               verbose=False)
-
     print("elapsed time: %0.3f seconds" % (time.time() - start))
 
     im_skel.array = im_skel.array.astype(np.uint8) * 255

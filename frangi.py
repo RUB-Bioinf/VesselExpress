@@ -1,12 +1,6 @@
 import time
-import os
-import glob
-import shutil
-import multiprocessing as mp
-from itertools import repeat
 import argparse
 
-#from frangi import Frangi_filter
 from Segmentation.frangi import Frangi_filter
 
 if __name__ == '__main__':

@@ -14,6 +14,7 @@ def saveSegmentDictAsCSV(dictionary, path, measurement, unit="", category="Segme
         path : string of path to save csv of dict
         measurement : string of measurement
         unit : string of unit
+        category : string of category
     """
     list = [[measurement, "Unit", "Category", "FilamentID", category+"ID"]]
     for filament in dictionary.keys():
@@ -26,6 +27,16 @@ def saveSegmentDictAsCSV(dictionary, path, measurement, unit="", category="Segme
         writer.writerows(list)
 
 def saveFilamentDictAsCSV(dictionary, path, measurement, unit=""):
+    """
+        Save a dictionary with measurements as csv file
+
+        Parameters
+        ----------
+        dictionary : dict
+        path : string of path to save csv of dict
+        measurement : string of measurement
+        unit : string of unit
+    """
     list = [[measurement, "Unit", "Category", "FilamentID"]]
     for filament in dictionary.keys():
         val = dictionary[filament]
@@ -64,7 +75,7 @@ def plotSegStats(segmentsDict, brPtsDict, endPtsDict):
             A dictionary with the nth disjoint graph as the key containing a dictionary
             with key as the segment index (start node, end node) and value = list of nodes
         brPtsDict : dictionary with the nth disjoint graph as the key and the list of branch points as the value
-        mendPtsDict : dictionary with the nth disjoint graph as the key and the list of branch points as the value
+        endPtsDict : dictionary with the nth disjoint graph as the key and the list of branch points as the value
     """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')

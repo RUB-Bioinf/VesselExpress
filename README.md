@@ -22,6 +22,7 @@ downloaded from GitHub and copied into the Graph folder. Many thanks to GitHub a
 ## Tutorial
 To run the pipeline please follow the instructions below:
 * download [ClearMap](https://github.com/ChristophKirst/ClearMap2) and import it into the project's root folder
+* instsll Miniconda following the [installation instructions](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
 * install Snakemake following the [installation instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
 * in a terminal navigate to the project's root folder and type
 ```

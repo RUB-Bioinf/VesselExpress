@@ -2,8 +2,6 @@ import time
 import tifffile
 import numpy as np
 import os
-import multiprocessing as mp
-from itertools import repeat
 import argparse
 
 from Graph import networkx_graph_from_array as netGrArr
@@ -16,6 +14,11 @@ def processImage(imgFile, parameterDict):
     dir = os.path.dirname(input_file)
     file_name = os.path.basename(dir)
 
+    if parameterDict.get("info_file") is True:
+        finfo = dir + '/' + file_name + '_info.csv'
+    else:
+        finfo = None
+
     # Graph construction
     print("Graph construction")
 
@@ -26,13 +29,15 @@ def processImage(imgFile, parameterDict):
 
     start = time.time()
     networkxGraph = netGrArr.get_networkx_graph_from_array(skeleton)
+    graphTime = round(time.time() - start, 3)
     print("elapsed time: %0.3f seconds" % (time.time() - start))
 
     # Statistical Analysis
     print("Statistical Analysis")
     start = time.time()
     stats = graph.Graph(binImage, skeleton, networkxGraph, parameterDict.get("pixel_dimensions"),
-                        pruningScale=parameterDict.get("pruning_scale"), lengthLimit=parameterDict.get("length_limit"))
+                        pruningScale=parameterDict.get("pruning_scale"), lengthLimit=parameterDict.get("length_limit"),
+                        infoFile=finfo)
     stats.setStats()
     print("elapsed time: %0.3f seconds" % (time.time() - start))
 
@@ -45,7 +50,7 @@ def processImage(imgFile, parameterDict):
                                 '_Filament_No._Segment_Branch_Points.csv', 'Filament No. Segment Branch Pts')
     utils.saveFilamentDictAsCSV(stats.countEndPointsDict, statsDir + file_name +
                                 '_Filament_No._Segment_Terminal_Points.csv', 'Filament No. Segment Terminal Pts')
-    utils.saveFilamentDictAsCSV(stats.sumLengthDict, statsDir+ file_name + '_Filament_Length_(sum).csv',
+    utils.saveFilamentDictAsCSV(stats.sumLengthDict, statsDir + file_name + '_Filament_Length_(sum).csv',
                                 'Filament Length (sum)', 'um')
     utils.saveSegmentDictAsCSV(stats.lengthDict, statsDir + file_name + '_Segment_Length.csv', 'Segment Length',
                                'um')
@@ -69,6 +74,7 @@ if __name__ == '__main__':
     parser.add_argument('-i', type=str, help='input skeleton tif image file to process')
     parser.add_argument('-pixel_dimensions', type=str, default="2.0,1.015625,1.015625",
                         help='Pixel dimensions in [z, y, x]')
+    parser.add_argument('-info_file', type=bool, default=False, help='set to true to create info file')
     # Pruning and postprocessing parameters
     parser.add_argument('-pruning_scale', type=float, default=1.5,
                         help='Pruning scale for insignificant branch removal')
@@ -77,6 +83,7 @@ if __name__ == '__main__':
 
     parameters = {
         "pixel_dimensions": [float(item) for item in args.pixel_dimensions.split(',')],
+        "info_file": args.info_file,
         "pruning_scale": args.pruning_scale,
         "length_limit": args.length_limit
     }

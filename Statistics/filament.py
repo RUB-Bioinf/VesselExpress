@@ -14,6 +14,13 @@ class Filament:
             beginning point for DFS (must be an end point)
             3D: [z, y, x]   2D: [y, x]
 
+        skelRadii : array containing the distance to the closest background point (=radius)
+
+        pixelDimensions : list of pixel dimensions [z, y, x]
+
+        lengthLimit : float
+            minimum length (all branches below this length will be removed)
+
         Examples
         --------
         Filament.endPtsList - A list containing all nodes with only one other node connected to them
@@ -32,6 +39,12 @@ class Filament:
         Filament.degreeDict - A dictionary with key as segment index (start node, end node) and
             value = segment branching angle
 
+        Filament.diameterDict - A dictionary with key as segment index (start node, end node) and
+            value = avg diameter of the segment
+
+        Filament.volumeDict - A dictionary with key as segment index (start node, end node) and
+            value = volume of the segment
+
         Notes
         --------
         straightness = curveDisplacement / curveLength
@@ -43,7 +56,6 @@ class Filament:
         self.pixelDims = pixelDimensions
         self.lengthLim = lengthLimit
         self.endPtsList = []
-        # self.brPtsList = []
         self.brPtsDict = {}
         self.segmentsDict = {}
         self.lengthDict = {}
@@ -54,6 +66,8 @@ class Filament:
         self._predDict = {}
         self.compTime = 0
         self.postprocessTime = 0
+        self.postprocBranches = 0
+        self.postprocEndPts = 0
 
     def dfs_iterative(self):
         """
@@ -83,13 +97,14 @@ class Filament:
                         segment = self._getSegment(vertex)
                         self._setSegStats(segment)
                 elif len(self.graph[vertex]) > 2:   # branch point found
-                    # self.brPtsList.append(vertex)
                     self.brPtsDict[vertex] = len(self.graph[vertex])
                     segment = self._getSegment(vertex)
                     self._setSegStats(segment)
         self.compTime = time.time() - startTime
+        # postprocessing
         postprocStart = time.time()
-        self._postprocess()
+        self._removeSegmentArtifacts()      # remove segments which are below a specified limit
+        self._removeBorderPtsFromEndPts()   # remove image border points from end points list
         self.postprocessTime = time.time() - postprocStart
 
     def _getSegment(self, node):
@@ -116,6 +131,22 @@ class Filament:
         return segmentList
 
     def _getBranchingDegree(self, segment, factor=0.25):
+        """
+            Calculates the branching degree of a segment
+
+            Parameters
+            ----------
+            segment : list
+                list of nodes in the segment
+
+            factor : float
+                length factor used for calculating the vectors of the segments
+
+            Returns
+            -------
+            degree : float
+                degree between the vectors of the segment and it's predecessor
+        """
         segPredList = self._getSegment(segment[0])
         if segPredList is None:
             return None
@@ -155,22 +186,9 @@ class Filament:
         segVect = [j - i for i, j in zip(segment[0], segPt)]
         segVect = [a * b for a, b in zip(segVect, self.pixelDims)]
 
-        # angle = np.arccos(np.dot(segPredVect, segVect) / (np.linalg.norm(segPredVect) * np.linalg.norm(segVect)))
         cosine_angle = np.dot(segPredVect, segVect) / (np.linalg.norm(segPredVect) * np.linalg.norm(segVect))
         angle = np.arccos(round(cosine_angle, 4))
-        #print("-----------------")
-        #print("segment=", segment)
-        #print("segmentLength=", len(segment))
-        # print("segmentPred=", segPredList)
-        # #print("segPredIndex=", (len(segPredList) - (round(len(segPredList) * factor))))
-        # #print("segPredPt=", segPredPt)
-        #print("segmentPredVectPts=", segPredPt, segment[0])
-        # print("segPredVect=", segPredVect)
-        # #print("segPt=", segPt)
-        # print("segPtIndex=", (len(segment) * factor))
-        #print("segmentVectPts=", segPt, segment[0])
-        # print("segVect=", segVect)
-        #print("degree=", degree)
+
         return round(np.degrees(angle), 4)
 
     def _setSegStats(self, segment):
@@ -189,12 +207,24 @@ class Filament:
         self.segmentsDict[segment[0], segment[len(segment) - 1]] = segment
         self.lengthDict[segment[0], segment[len(segment) - 1]] = segLength
         self.straightnessDict[segment[0], segment[len(segment) - 1]] = curveDisplacement / segLength
-        volumeDiameter = ms.getVolume(self.skelRadii, segment)
+        volumeDiameter = ms.getVolume(self.skelRadii, segment, segLength, self.pixelDims)
         self.volumeDict[segment[0], segment[len(segment) - 1]] = volumeDiameter[0]
         self.diameterDict[segment[0], segment[len(segment) - 1]] = volumeDiameter[1]
-        # self.volumeDict[segment[0], segment[len(segment) - 1]] = self._getVolume(segment)
         if self.start not in segment:   # if start point is included in segment its either a line or has no predecessor
             self.degreeDict[segment[0], segment[len(segment) - 1]] = self._getBranchingDegree(segment)
+
+    def _removeBorderPtsFromEndPts(self):
+        """
+            Removes all end points which are image border points from end points list.
+        """
+        z = self.skelRadii.shape[0]-1
+        y = self.skelRadii.shape[1]-1
+        x = self.skelRadii.shape[2]-1
+
+        for endPt in self.endPtsList:
+            if endPt[0] == z or endPt[1] == y or endPt[2] == x or endPt[0] == 0 or endPt[1] == 0 or endPt[2] == 0:
+                self.endPtsList.remove(endPt)
+                self.postprocEndPts += 1
 
     def _deletePath(self, path):
         for i in range(len(path) - 1):
@@ -204,13 +234,19 @@ class Filament:
         self.graph.get(u).remove(v)
         self.graph.get(v).remove(u)
 
-    def _postprocess(self):
+    def _removeSegmentArtifacts(self):
+        """
+            Removes all branches with a length below a specified limit and removes their statistics from the
+            dictionaries. After branch removal branch points are reassigned (either they remain branch point, become
+            normal point or end point) and statistics of new segments are recalculated.
+        """
         # find segments in lengthDict which are below the limit
         keysToRemoveList = []
         brPtCandidates = set()
         for segKey in self.lengthDict:
             if self.lengthDict[segKey] <= self.lengthLim:
                 keysToRemoveList.append(segKey)
+        self.postprocBranches = len(keysToRemoveList)
         # delete those segments from dictionaries
         for key in keysToRemoveList:
             self._deletePath(self.segmentsDict[key])
@@ -234,12 +270,10 @@ class Filament:
         for brPt in brPtCandidates:
             # branch point becomes normal point connecting two segments together
             if len(self.graph[brPt]) == 2:
-                #print("brPt ", brPt, " becomes normal point with neighbors=", self.graph[brPt])
                 del self.brPtsDict[brPt]
                 # find both segments connected by the branch pt
                 segments = [v for k, v in self.segmentsDict.items() if k[0] == brPt or k[1] == brPt]
                 # delete old segments from segment dictionaries (either one segment if circle otherwise 2 segments)
-                #print(segments)
                 if len(segments) > 1:
                     segKey1 = (segments[0][0], segments[0][-1])
                     del self.segmentsDict[segKey1]
@@ -261,17 +295,15 @@ class Filament:
                             combSegments = segments[1] + segments[0][1:]
                         # in this case the predecessor of the brPt has been deleted
                         elif segments[0][0] == brPt and segments[1][0] == brPt:
-                            combSegments = segments[0][::-1]+ segments[1][1:]
+                            combSegments = segments[0][::-1] + segments[1][1:]
                         elif segments[0][-1] == brPt and segments[1][-1] == brPt:
                             combSegments = segments[0][:-1] + segments[1][::-1]
                         self._setSegStats(combSegments)
             # branch point becomes end point
             elif len(self.graph[brPt]) == 1:
-                # print("brPt ", brPt, " becomes endPoint")
                 self.endPtsList.append(brPt)
             # all branches of a branch point were removed => delete branch point from dict
             elif len(self.graph[brPt]) == 0:
-                # print("brPt", brPt, " becomes single point")
                 del self.brPtsDict[brPt]
 
 

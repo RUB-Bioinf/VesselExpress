@@ -5,6 +5,11 @@ configfile: "config.json"
 PATH = config["imgFolder"]
 IMGS = [os.path.splitext(f)[0] for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
 
+if config["skeletonization"] == "ClearMap":
+    ruleorder: skeletonize_ClearMap > skeletonize_scikit
+else:
+    ruleorder: skeletonize_scikit > skeletonize_ClearMap
+
 rule all:
      input: expand(PATH + "/{img}/Statistics", img=IMGS)
 
@@ -36,12 +41,19 @@ rule threshold:
             -artifact_size {config[threshold][artifact_size]}
         """
 
-rule skeletonize:
+rule skeletonize_ClearMap:
     input: PATH + "/{img}/Binary_{img}.tif"
     output: PATH + "/{img}/Skeleton_{img}.tif"
     conda: "Envs/ClearMap.yml"
     benchmark: PATH + "/benchmarks/{img}.skeletonize.benchmark.txt"
-    shell: "python skeletonize.py -i {input}"
+    shell: "python skeletonize_ClearMap.py -i {input}"
+
+rule skeletonize_scikit:
+    input: PATH + "/{img}/Binary_{img}.tif"
+    output: PATH + "/{img}/Skeleton_{img}.tif"
+    conda: "Envs/PVAP.yml"
+    benchmark: PATH + "/benchmarks/{img}.skeletonize.benchmark.txt"
+    shell: "python skeletonize_scikit.py -i {input}"
 
 rule graphAnalysis:
     input: PATH + "/{img}/Skeleton_{img}.tif"
@@ -51,7 +63,8 @@ rule graphAnalysis:
     shell:
         """
             python graphAnalysis.py -i {input} -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
-            -pruning_scale {config[graphAnalysis][pruning_scale]} -length_limit {config[graphAnalysis][length_limit]}
+            -info_file {config[graphAnalysis][info_file]} -pruning_scale {config[graphAnalysis][pruning_scale]} \
+            -length_limit {config[graphAnalysis][length_limit]}
         """
 
 

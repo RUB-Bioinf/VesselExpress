@@ -18,7 +18,6 @@ if __name__ == '__main__':
 
     img = tifffile.imread(args.i)
     input_file = os.path.abspath(args.i).replace('\\', '/')
-    file = os.path.basename(args.i)
     output_dir = os.path.dirname(input_file)
 
     start = time.time()

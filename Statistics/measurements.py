@@ -28,22 +28,47 @@ def getLength(path, dimensions):
         length += np.linalg.norm(vect)
     return length
 
-def getVolume(skelRadii, segment):
+def getVolume(skelRadii, segment, segLength, dimensions, fast=True):
     """
         Calculate volume and average diameter of a segment
 
         Parameters
         ----------
+        skelRadii: numpy array
+            array containing the distance to the closest background point for each voxel
         segment : list
             list of nodes in the segment
+        segLength: float
+            segment length
+        dimensions: list
+            pixel dimensions [z, y, x]
+        fast: bool
+            if true computes fast volume calculation
 
         Returns
         -------
-        volume, average diameter : float
+        volume, diameter : float
     """
-    volume = 0
-    diameter = 0
-    for skelPt in segment:
-        volume = volume + math.pi * skelRadii[skelPt]**2
-        diameter = diameter + skelRadii[skelPt] * 2
-    return volume, diameter / len(segment)
+    sumRadii = 0
+    # faster version takes the average radius of the whole segment and calculates it's volume
+    if fast:
+        for skelPt in segment:
+            sumRadii += skelRadii[skelPt]
+        avgRadius = sumRadii / len(segment)
+        diameter = avgRadius * 2
+        volume = math.pi * avgRadius ** 2 * segLength
+    # slower version calculates the surface for each pixel multiplied by the distance to the next pixel
+    else:
+        volume = 0
+        for index, skelPt in enumerate(segment):
+            if index + 1 != len(segment):
+                vect = [j - i for i, j in zip(skelPt, segment[index+1])]
+                vect = [a * b for a, b in zip(vect, dimensions)]  # multiply with pixel dimensions
+                volume += math.pi * skelRadii[skelPt] ** 2 * np.linalg.norm(vect)
+            sumRadii += skelRadii[skelPt]
+        diameter = (sumRadii / len(segment)) * 2
+
+    return volume, diameter
+
+
+
