@@ -49,12 +49,13 @@ class Filament:
         --------
         straightness = curveDisplacement / curveLength
         """
-    def __init__(self, graph, start, skelRadii, pixelDimensions, lengthLimit):
+    def __init__(self, graph, start, skelRadii, pixelDimensions, lengthLimit, branchingThreshold):
         self.graph = graph
         self.start = start
         self.skelRadii = skelRadii
         self.pixelDims = pixelDimensions
         self.lengthLim = lengthLimit
+        self.branchingThr = branchingThreshold
         self.endPtsList = []
         self.brPtsDict = {}
         self.segmentsDict = {}
@@ -211,7 +212,7 @@ class Filament:
         self.volumeDict[segment[0], segment[len(segment) - 1]] = volumeDiameter[0]
         self.diameterDict[segment[0], segment[len(segment) - 1]] = volumeDiameter[1]
         if self.start not in segment:   # if start point is included in segment its either a line or has no predecessor
-            self.degreeDict[segment[0], segment[len(segment) - 1]] = self._getBranchingDegree(segment)
+            self.degreeDict[segment[0], segment[len(segment) - 1]] = self._getBranchingDegree(segment, self.branchingThr)
 
     def _removeBorderPtsFromEndPts(self):
         """

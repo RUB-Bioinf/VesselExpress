@@ -22,7 +22,7 @@ rule frangi:
     input: PATH + "/{img}/{img}.tif"
     output: PATH + "/{img}/Frangi_{img}.tiff"
     conda: "Envs/PVAP.yml"
-    benchmark: PATH + "/benchmarks/{img}.frangi.benchmark.txt"
+    #benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
     shell:
         """
             python frangi.py -i {input} -sigma_min {config[frangi][sigma_min]} -sigma_max {config[frangi][sigma_max]} \
@@ -34,7 +34,7 @@ rule threshold:
     input: PATH + "/{img}/Frangi_{img}.tiff"
     output: PATH + "/{img}/Binary_{img}.tif"
     conda: "Envs/Thresholding.yml"
-    benchmark: PATH + "/benchmarks/{img}.threshold.benchmark.txt"
+    #benchmark: PATH + "/{img}/benchmarks/{img}.threshold.benchmark.txt"
     shell:
         """
             python thresholding.py -i {input} -ball_radius {config[threshold][ball_radius]} \
@@ -45,26 +45,27 @@ rule skeletonize_ClearMap:
     input: PATH + "/{img}/Binary_{img}.tif"
     output: PATH + "/{img}/Skeleton_{img}.tif"
     conda: "Envs/ClearMap.yml"
-    benchmark: PATH + "/benchmarks/{img}.skeletonize.benchmark.txt"
+    #benchmark: PATH + "/{img}/benchmarks/{img}.skeletonize.benchmark.txt"
     shell: "python skeletonize_ClearMap.py -i {input}"
 
 rule skeletonize_scikit:
     input: PATH + "/{img}/Binary_{img}.tif"
     output: PATH + "/{img}/Skeleton_{img}.tif"
     conda: "Envs/PVAP.yml"
-    benchmark: PATH + "/benchmarks/{img}.skeletonize.benchmark.txt"
+    #benchmark: PATH + "/{img}/benchmarks/{img}.skeletonize.benchmark.txt"
     shell: "python skeletonize_scikit.py -i {input}"
 
 rule graphAnalysis:
     input: PATH + "/{img}/Skeleton_{img}.tif"
-    output: PATH + "/{img}/Statistics"
+    output: directory(PATH + "/{img}/Statistics")
     conda: "Envs/PVAP.yml"
-    benchmark: PATH + "/benchmarks/{img}.graphAnalysis.benchmark.txt"
+    #benchmark: PATH + "/{img}/benchmarks/{img}.graphAnalysis.benchmark.txt"
     shell:
         """
             python graphAnalysis.py -i {input} -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
             -info_file {config[graphAnalysis][info_file]} -pruning_scale {config[graphAnalysis][pruning_scale]} \
-            -length_limit {config[graphAnalysis][length_limit]}
+            -length_limit {config[graphAnalysis][length_limit]} \
+            -branching_threshold {config[graphAnalysis][branching_threshold]}
         """
 
 

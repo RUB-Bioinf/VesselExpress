@@ -29,7 +29,6 @@ def processImage(imgFile, parameterDict):
 
     start = time.time()
     networkxGraph = netGrArr.get_networkx_graph_from_array(skeleton)
-    graphTime = round(time.time() - start, 3)
     print("elapsed time: %0.3f seconds" % (time.time() - start))
 
     # Statistical Analysis
@@ -37,7 +36,7 @@ def processImage(imgFile, parameterDict):
     start = time.time()
     stats = graph.Graph(binImage, skeleton, networkxGraph, parameterDict.get("pixel_dimensions"),
                         pruningScale=parameterDict.get("pruning_scale"), lengthLimit=parameterDict.get("length_limit"),
-                        infoFile=finfo)
+                        branchingThreshold=parameterDict.get("branching_threshold"), infoFile=finfo)
     stats.setStats()
     print("elapsed time: %0.3f seconds" % (time.time() - start))
 
@@ -46,6 +45,8 @@ def processImage(imgFile, parameterDict):
     statsDir = dir + '/Statistics/'
     os.makedirs(os.path.dirname(statsDir), exist_ok=True)
 
+    utils.saveFilamentDictAsCSV(stats.countSegmentsDict, statsDir + file_name +
+                                '_Filament_No._Segments.csv', 'Filament No. Segments')
     utils.saveFilamentDictAsCSV(stats.countBranchPointsDict, statsDir + file_name +
                                 '_Filament_No._Segment_Branch_Points.csv', 'Filament No. Segment Branch Pts')
     utils.saveFilamentDictAsCSV(stats.countEndPointsDict, statsDir + file_name +
@@ -75,17 +76,19 @@ if __name__ == '__main__':
     parser.add_argument('-pixel_dimensions', type=str, default="2.0,1.015625,1.015625",
                         help='Pixel dimensions in [z, y, x]')
     parser.add_argument('-info_file', type=bool, default=False, help='set to true to create info file')
-    # Pruning and postprocessing parameters
     parser.add_argument('-pruning_scale', type=float, default=1.5,
                         help='Pruning scale for insignificant branch removal')
     parser.add_argument('-length_limit', type=float, default=3, help='Limit of vessel lengths')
+    parser.add_argument('-branching_threshold', type=float, default=0.25,
+                        help='segments length as vector estimate for branching angle calculation')
     args = parser.parse_args()
 
     parameters = {
         "pixel_dimensions": [float(item) for item in args.pixel_dimensions.split(',')],
         "info_file": args.info_file,
         "pruning_scale": args.pruning_scale,
-        "length_limit": args.length_limit
+        "length_limit": args.length_limit,
+        "branching_threshold": args.branching_threshold
     }
 
     processImage(args.i, parameters)

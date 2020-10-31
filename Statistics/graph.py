@@ -52,13 +52,16 @@ class Graph:
         Graph.diameterDict - A dictionary with the nth disjoint graph as the key containing a dictionary
                                 with key as the segment index (start node, end node) and value = avg diameter of the segment
     """
-    def __init__(self, segmentation, skeleton, networkxGraph, pixelDimensions, pruningScale, lengthLimit, infoFile):
+    def __init__(self, segmentation, skeleton, networkxGraph, pixelDimensions, pruningScale, lengthLimit,
+                 branchingThreshold, infoFile):
         self.networkxGraph = networkxGraph
         self.pixelDims = pixelDimensions
         self.prunScale = pruningScale
         self.lengthLim = lengthLimit
+        self.branchingThresh = branchingThreshold
         self.infoFile = infoFile
         self.segmentsDict = defaultdict(dict)
+        self.countSegmentsDict = {}
         self.lengthDict = defaultdict(dict)
         self.volumeDict = defaultdict(dict)
         self.diameterDict = defaultdict(dict)
@@ -119,11 +122,13 @@ class Graph:
             if endPoints:
                 start = endPoints[0]  # take random end point as beginning
                 adjacencyDict = nx.to_dict_of_lists(subGraphSkeleton)
-                filament = fil.Filament(adjacencyDict, start, self.radiusMatrix, self.pixelDims, self.lengthLim)
+                filament = fil.Filament(adjacencyDict, start, self.radiusMatrix, self.pixelDims, self.lengthLim,
+                                        self.branchingThresh)
                 filament.dfs_iterative()
                 self.segmentsDict[ithDisjointGraph] = filament.segmentsDict
                 # filament may have no segments left after postprocessing
                 if len(self.segmentsDict[ithDisjointGraph]) != 0:
+                    self.countSegmentsDict[ithDisjointGraph] = len(self.segmentsDict[ithDisjointGraph])
                     self.lengthDict[ithDisjointGraph] = filament.lengthDict
                     self.sumLengthDict[ithDisjointGraph] = sum(filament.lengthDict.values())
                     self.straightnessDict[ithDisjointGraph] = filament.straightnessDict
