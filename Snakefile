@@ -21,7 +21,7 @@ rule makeImgDir:
 rule frangi:
     input: PATH + "/{img}/{img}.tif"
     output: PATH + "/{img}/Frangi_{img}.tiff"
-    conda: "Envs/PVAP.yml"
+    conda: "Envs/vmtk.yml"
     #benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
     shell:
         """
@@ -33,7 +33,7 @@ rule frangi:
 rule threshold:
     input: PATH + "/{img}/Frangi_{img}.tiff"
     output: PATH + "/{img}/Binary_{img}.tif"
-    conda: "Envs/Thresholding.yml"
+    conda: "Envs/Pipeline.yml"
     #benchmark: PATH + "/{img}/benchmarks/{img}.threshold.benchmark.txt"
     shell:
         """
@@ -51,14 +51,14 @@ rule skeletonize_ClearMap:
 rule skeletonize_scikit:
     input: PATH + "/{img}/Binary_{img}.tif"
     output: PATH + "/{img}/Skeleton_{img}.tif"
-    conda: "Envs/PVAP.yml"
+    conda: "Envs/Pipeline.yml"
     #benchmark: PATH + "/{img}/benchmarks/{img}.skeletonize.benchmark.txt"
     shell: "python skeletonize_scikit.py -i {input}"
 
 rule graphAnalysis:
     input: PATH + "/{img}/Skeleton_{img}.tif"
     output: directory(PATH + "/{img}/Statistics")
-    conda: "Envs/PVAP.yml"
+    conda: "Envs/Pipeline.yml"
     #benchmark: PATH + "/{img}/benchmarks/{img}.graphAnalysis.benchmark.txt"
     shell:
         """
