@@ -88,6 +88,10 @@ class Graph:
             'postProcBranches': 0,
             'postProcEndPts': 0
         }
+        # dictionaries containing all filament statistics
+        self.segStatsDict = defaultdict(dict)
+        self.filStatsDict = defaultdict(dict)
+        self.branchesBrPtDict = defaultdict(dict)
 
         # calculate distance transform matrix
         self.initTime = time.time()
@@ -144,6 +148,11 @@ class Graph:
                     self.runTimeDict['postProcessing'] += filament.postprocessTime
                     self.infoDict['postProcBranches'] += filament.postprocBranches
                     self.infoDict['postProcEndPts'] += filament.postprocEndPts
+                    # fill dictionary containing all filament statistics
+                    self.segStatsDict[ithDisjointGraph] = filament.segmentStats
+                    self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = len(filament.endPtsList)
+                    self.filStatsDict[ithDisjointGraph]['BranchPoints'] = len(filament.brPtsDict)
+                    self.branchesBrPtDict[ithDisjointGraph] = filament.brPtsDict
                 else:
                     self.infoDict['filaments'] -= 1
         self.runTimeDict['statCalculation'] = round(time.time() - startTime, 3)

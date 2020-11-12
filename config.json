@@ -18,7 +18,6 @@
   "graphAnalysis":
   {
     "pixel_dimensions": "2.0,1.015625,1.015625",
-    "info_file": True,
     "pruning_scale": 1.5,
     "length_limit": 3,
     "branching_threshold": 0.25

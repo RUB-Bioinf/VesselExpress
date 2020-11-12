@@ -1,6 +1,7 @@
 import numpy as np
 import time
 import Statistics.measurements as ms
+from collections import defaultdict
 
 class Filament:
     """
@@ -69,6 +70,8 @@ class Filament:
         self.postprocessTime = 0
         self.postprocBranches = 0
         self.postprocEndPts = 0
+        # dictionary containing all segment statistics
+        self.segmentStats = defaultdict(dict)
 
     def dfs_iterative(self):
         """
@@ -150,7 +153,7 @@ class Filament:
         """
         segPredList = self._getSegment(segment[0])
         if segPredList is None:
-            return None
+            return "Null"
         segPredList.reverse()
         # take neighboring points from branching point
         if factor <= 0:
@@ -211,8 +214,14 @@ class Filament:
         volumeDiameter = ms.getVolume(self.skelRadii, segment, segLength, self.pixelDims)
         self.volumeDict[segment[0], segment[len(segment) - 1]] = volumeDiameter[0]
         self.diameterDict[segment[0], segment[len(segment) - 1]] = volumeDiameter[1]
-        if self.start not in segment:   # if start point is included in segment its either a line or has no predecessor
-            self.degreeDict[segment[0], segment[len(segment) - 1]] = self._getBranchingDegree(segment, self.branchingThr)
+        branchingDegree = self._getBranchingDegree(segment, self.branchingThr)
+        self.degreeDict[segment[0], segment[len(segment) - 1]] = branchingDegree
+        # fill dictionary for csv file containing all segment statistics
+        self.segmentStats[segment[0], segment[len(segment) - 1]]['diameter'] = volumeDiameter[1]
+        self.segmentStats[segment[0], segment[len(segment) - 1]]['straightness'] = curveDisplacement / segLength
+        self.segmentStats[segment[0], segment[len(segment) - 1]]['length'] = segLength
+        self.segmentStats[segment[0], segment[len(segment) - 1]]['volume'] = volumeDiameter[0]
+        self.segmentStats[segment[0], segment[len(segment) - 1]]['branchingAngle'] = branchingDegree
 
     def _removeBorderPtsFromEndPts(self):
         """
@@ -256,6 +265,8 @@ class Filament:
             del self.straightnessDict[key]
             del self.volumeDict[key]
             del self.diameterDict[key]
+            del self.segmentStats[key]
+
             if key in self.degreeDict:
                 del self.degreeDict[key]
             if key[0] in self.endPtsList:
@@ -275,13 +286,16 @@ class Filament:
                 # find both segments connected by the branch pt
                 segments = [v for k, v in self.segmentsDict.items() if k[0] == brPt or k[1] == brPt]
                 # delete old segments from segment dictionaries (either one segment if circle otherwise 2 segments)
-                if len(segments) > 1:
+                if len(segments) > 0:
                     segKey1 = (segments[0][0], segments[0][-1])
                     del self.segmentsDict[segKey1]
                     del self.lengthDict[segKey1]
                     del self.straightnessDict[segKey1]
                     del self.volumeDict[segKey1]
                     del self.diameterDict[segKey1]
+                    if segKey1 in self.degreeDict:
+                        del self.degreeDict[segKey1]
+                    del self.segmentStats[segKey1]
                     if len(segments) != 1:  # if segment is not a circle delete second segment from dictionaries
                         segKey2 = (segments[1][0], segments[1][-1])
                         del self.segmentsDict[segKey2]
@@ -289,6 +303,8 @@ class Filament:
                         del self.straightnessDict[segKey2]
                         del self.volumeDict[segKey2]
                         del self.diameterDict[segKey2]
+                        del self.degreeDict[segKey2]
+                        del self.segmentStats[segKey2]
                         # combine both segments to one segment and calculate its statistics
                         if segments[0][-1] == brPt and segments[1][0] == brPt:
                             combSegments = segments[0] + segments[1][1:]

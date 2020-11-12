@@ -63,7 +63,7 @@ rule graphAnalysis:
     shell:
         """
             python graphAnalysis.py -i {input} -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
-            -info_file {config[graphAnalysis][info_file]} -pruning_scale {config[graphAnalysis][pruning_scale]} \
+            -pruning_scale {config[graphAnalysis][pruning_scale]} \
             -length_limit {config[graphAnalysis][length_limit]} \
             -branching_threshold {config[graphAnalysis][branching_threshold]}
         """

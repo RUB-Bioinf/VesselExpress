@@ -4,6 +4,44 @@ import matplotlib.pyplot as plt
 from ast import literal_eval as make_tuple
 from collections import defaultdict
 
+def saveAllStatsAsCSV(dictionary, path, imgName):
+    list = [["Image", "FilamentID", "SegmentID", "Diameter (um)", "Straightness", "Length (um)", "Volume (um³)",
+             "Branching Angle (°)"]]
+    for filament in dictionary.keys():
+        for segment in dictionary[filament]:
+            diameter = dictionary[filament][segment]["diameter"]
+            straightness = dictionary[filament][segment]["straightness"]
+            length = dictionary[filament][segment]["length"]
+            volume = dictionary[filament][segment]["volume"]
+            angle = dictionary[filament][segment]["branchingAngle"]
+            list_item = [imgName, filament, segment, diameter, straightness, length, volume, angle]
+            list.append(list_item)
+    with open(path, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(list)
+
+def saveAllFilStatsAsCSV(dictionary, path, imgName):
+    list = [["Image", "FilamentID", "No. Terminal Points", "No. Branching Points"]]
+    for filament in dictionary.keys():
+        endPts = dictionary[filament]["TerminalPoints"]
+        brPts = dictionary[filament]["BranchPoints"]
+        list_item = [imgName, filament, endPts, brPts]
+        list.append(list_item)
+    with open(path, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(list)
+
+def saveBranchesBrPtAsCSV(dictionary, path, imgName):
+    list = [["Image", "FilamentID", "BranchID", "No. Branches per BranchPoint"]]
+    for filament in dictionary.keys():
+        for segment in dictionary[filament]:
+            branches = dictionary[filament][segment]
+            list_item = [imgName, filament, segment, branches]
+            list.append(list_item)
+    with open(path, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(list)
+
 def saveSegmentDictAsCSV(dictionary, path, measurement, unit="", category="Segment"):
     """
         Save a dictionary with measurements as csv file

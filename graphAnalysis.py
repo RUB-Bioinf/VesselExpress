@@ -14,10 +14,9 @@ def processImage(imgFile, parameterDict):
     dir = os.path.dirname(input_file)
     file_name = os.path.basename(dir)
 
-    if parameterDict.get("info_file") is True:
-        finfo = dir + '/' + file_name + '_info.csv'
-    else:
-        finfo = None
+    # change to receive info file
+    finfo = None
+    # finfo = dir + '/' + file_name + '_info.csv'
 
     # Graph construction
     print("Graph construction")
@@ -65,6 +64,12 @@ def processImage(imgFile, parameterDict):
                                'Segment Diameter', 'um')
     utils.saveSegmentDictAsCSV(stats.branchPointsDict, statsDir + file_name + '_BranchPt_No._Branches.csv',
                                'BranchPt No. Branches', category='Branch')
+
+    # uncomment to get files containing all statisics in one csv (segment, filament and branches)
+    #utils.saveAllStatsAsCSV(stats.segStatsDict, statsDir + file_name + '_All_Segment_Statistics.csv', file_name)
+    #utils.saveAllFilStatsAsCSV(stats.filStatsDict, statsDir + file_name + '_All_Filament_Statistics.csv', file_name)
+    #utils.saveBranchesBrPtAsCSV(stats.branchesBrPtDict, statsDir + file_name + '_BranchesPerBranchPt.csv', file_name)
+
     print("elapsed time: %0.3f seconds" % (time.time() - start))
 
 
@@ -75,7 +80,6 @@ if __name__ == '__main__':
     parser.add_argument('-i', type=str, help='input skeleton tif image file to process')
     parser.add_argument('-pixel_dimensions', type=str, default="2.0,1.015625,1.015625",
                         help='Pixel dimensions in [z, y, x]')
-    parser.add_argument('-info_file', type=bool, default=False, help='set to true to create info file')
     parser.add_argument('-pruning_scale', type=float, default=1.5,
                         help='Pruning scale for insignificant branch removal')
     parser.add_argument('-length_limit', type=float, default=3, help='Limit of vessel lengths')
@@ -85,7 +89,6 @@ if __name__ == '__main__':
 
     parameters = {
         "pixel_dimensions": [float(item) for item in args.pixel_dimensions.split(',')],
-        "info_file": args.info_file,
         "pruning_scale": args.pruning_scale,
         "length_limit": args.length_limit,
         "branching_threshold": args.branching_threshold

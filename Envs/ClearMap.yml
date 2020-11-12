@@ -214,5 +214,4 @@ dependencies:
 - zlib=1.2.11=h7b6447c_3
 - zstd=1.4.4=h0b5b093_3
 - pytorch=1.0.0=py3.6_cuda9.0.176_cudnn7.4.1_1
-prefix: /bph/home/phispa/.conda/envs/ClearMap
 
