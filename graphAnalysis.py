@@ -24,7 +24,8 @@ def processImage(imgFile, parameterDict):
     binImage = tifffile.imread(dir + "/Binary_" + file_name + '.tif')
     binImage = binImage / np.max(binImage)
     skeleton = tifffile.imread(dir + "/Skeleton_" + file_name + '.tif')
-    skeleton = skeleton / np.max(skeleton)
+    if np.max(skeleton) != 0:   # only if skeleton points are present
+        skeleton = skeleton / np.max(skeleton)
 
     start = time.time()
     networkxGraph = netGrArr.get_networkx_graph_from_array(skeleton)
@@ -58,6 +59,8 @@ def processImage(imgFile, parameterDict):
                                'Segment Straightness')
     utils.saveSegmentDictAsCSV(stats.degreeDict, statsDir + file_name + '_Segment_Branching_Angle.csv',
                                'Segment Branching Angle', '°')
+    utils.saveSegmentDictAsCSV(stats.degreeDict, statsDir + file_name + '_Segment_z_Angle.csv',
+                               'Segment z Angle', '°')
     utils.saveSegmentDictAsCSV(stats.volumeDict, statsDir + file_name + '_Segment_Volume.csv',
                                'Segment Volume', 'um^3')
     utils.saveSegmentDictAsCSV(stats.diameterDict, statsDir + file_name + '_Segment_Diameter.csv',
@@ -66,9 +69,9 @@ def processImage(imgFile, parameterDict):
                                'BranchPt No. Branches', category='Branch')
 
     # uncomment to get files containing all statisics in one csv (segment, filament and branches)
-    #utils.saveAllStatsAsCSV(stats.segStatsDict, statsDir + file_name + '_All_Segment_Statistics.csv', file_name)
-    #utils.saveAllFilStatsAsCSV(stats.filStatsDict, statsDir + file_name + '_All_Filament_Statistics.csv', file_name)
-    #utils.saveBranchesBrPtAsCSV(stats.branchesBrPtDict, statsDir + file_name + '_BranchesPerBranchPt.csv', file_name)
+    #utils.saveAllStatsAsCSV(stats.segStatsDict, dir + '_All_Segment_Statistics.csv', file_name)
+    #utils.saveAllFilStatsAsCSV(stats.filStatsDict, dir + '_All_Filament_Statistics.csv', file_name)
+    #utils.saveBranchesBrPtAsCSV(stats.branchesBrPtDict, dir + '_All_BranchesPerBranchPt.csv', file_name)
 
     print("elapsed time: %0.3f seconds" % (time.time() - start))
 

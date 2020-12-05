@@ -72,6 +72,7 @@ class Graph:
         self.countBranchPointsDict = {}
         self.countEndPointsDict = {}
         self.degreeDict = defaultdict(dict)
+        self.zAngleDict = defaultdict(dict)
         self.compTime = 0
         self.postProcessTime = 0
         self.runTimeDict = {
@@ -139,6 +140,7 @@ class Graph:
                     self.volumeDict[ithDisjointGraph] = filament.volumeDict
                     self.diameterDict[ithDisjointGraph] = filament.diameterDict
                     self.degreeDict[ithDisjointGraph] = filament.degreeDict
+                    self.zAngleDict[ithDisjointGraph] = filament.zAngleDict
                     self.branchPointsDict[ithDisjointGraph] = filament.brPtsDict
                     self.endPointsDict[ithDisjointGraph] = filament.endPtsList
                     self.countBranchPointsDict[ithDisjointGraph] = len(filament.brPtsDict)

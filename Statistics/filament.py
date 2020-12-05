@@ -63,6 +63,7 @@ class Filament:
         self.lengthDict = {}
         self.straightnessDict = {}
         self.degreeDict = {}
+        self.zAngleDict = {}
         self.volumeDict = {}
         self.diameterDict = {}
         self._predDict = {}
@@ -208,6 +209,7 @@ class Filament:
         vect = [j - i for i, j in zip(segment[0], segment[len(segment) - 1])]
         vect = [a * b for a, b in zip(vect, self.pixelDims)]  # multiply pixel length with pixel dimension
         curveDisplacement = np.linalg.norm(vect)
+        zAngle = ms.get_z_angle(segment, self.pixelDims)
         self.segmentsDict[segment[0], segment[len(segment) - 1]] = segment
         self.lengthDict[segment[0], segment[len(segment) - 1]] = segLength
         self.straightnessDict[segment[0], segment[len(segment) - 1]] = curveDisplacement / segLength
@@ -216,12 +218,14 @@ class Filament:
         self.diameterDict[segment[0], segment[len(segment) - 1]] = volumeDiameter[1]
         branchingDegree = self._getBranchingDegree(segment, self.branchingThr)
         self.degreeDict[segment[0], segment[len(segment) - 1]] = branchingDegree
+        self.zAngleDict[segment[0], segment[len(segment) - 1]] = zAngle
         # fill dictionary for csv file containing all segment statistics
         self.segmentStats[segment[0], segment[len(segment) - 1]]['diameter'] = volumeDiameter[1]
         self.segmentStats[segment[0], segment[len(segment) - 1]]['straightness'] = curveDisplacement / segLength
         self.segmentStats[segment[0], segment[len(segment) - 1]]['length'] = segLength
         self.segmentStats[segment[0], segment[len(segment) - 1]]['volume'] = volumeDiameter[0]
         self.segmentStats[segment[0], segment[len(segment) - 1]]['branchingAngle'] = branchingDegree
+        self.segmentStats[segment[0], segment[len(segment) - 1]]['zAngle'] = zAngle
 
     def _removeBorderPtsFromEndPts(self):
         """
@@ -265,6 +269,7 @@ class Filament:
             del self.straightnessDict[key]
             del self.volumeDict[key]
             del self.diameterDict[key]
+            del self.zAngleDict[key]
             del self.segmentStats[key]
 
             if key in self.degreeDict:
@@ -293,6 +298,7 @@ class Filament:
                     del self.straightnessDict[segKey1]
                     del self.volumeDict[segKey1]
                     del self.diameterDict[segKey1]
+                    del self.zAngleDict[segKey1]
                     if segKey1 in self.degreeDict:
                         del self.degreeDict[segKey1]
                     del self.segmentStats[segKey1]
@@ -304,6 +310,7 @@ class Filament:
                         del self.volumeDict[segKey2]
                         del self.diameterDict[segKey2]
                         del self.degreeDict[segKey2]
+                        del self.zAngleDict[segKey2]
                         del self.segmentStats[segKey2]
                         # combine both segments to one segment and calculate its statistics
                         if segments[0][-1] == brPt and segments[1][0] == brPt:

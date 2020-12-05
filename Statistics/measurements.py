@@ -70,5 +70,20 @@ def getVolume(skelRadii, segment, segLength, dimensions, fast=True):
 
     return volume, diameter
 
+def get_z_angle(segment, pixelDims):
+    zVector = [1, 0, 0]
+
+    if segment[len(segment) - 1] == segment[0]:  # in case of a circle, take pre-last point
+        segPt = segment[len(segment) - 2]
+    else:
+        segPt = segment[len(segment) - 1]
+
+    segVector = [j - i for i, j in zip(segment[0], segPt)]
+    segVector = [a * b for a, b in zip(segVector, pixelDims)]
+
+    cosine_angle = np.dot(zVector, segVector) / (np.linalg.norm(zVector) * np.linalg.norm(segVector))
+    angle = np.arccos(round(cosine_angle, 4))
+
+    return round(np.degrees(angle), 4)
 
 

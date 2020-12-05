@@ -6,7 +6,7 @@ from collections import defaultdict
 
 def saveAllStatsAsCSV(dictionary, path, imgName):
     list = [["Image", "FilamentID", "SegmentID", "Diameter (um)", "Straightness", "Length (um)", "Volume (um³)",
-             "Branching Angle (°)"]]
+             "Branching Angle (°)", "z Angle (°)"]]
     for filament in dictionary.keys():
         for segment in dictionary[filament]:
             diameter = dictionary[filament][segment]["diameter"]
@@ -14,7 +14,8 @@ def saveAllStatsAsCSV(dictionary, path, imgName):
             length = dictionary[filament][segment]["length"]
             volume = dictionary[filament][segment]["volume"]
             angle = dictionary[filament][segment]["branchingAngle"]
-            list_item = [imgName, filament, segment, diameter, straightness, length, volume, angle]
+            zAngle = dictionary[filament][segment]["zAngle"]
+            list_item = [imgName, filament, segment, diameter, straightness, length, volume, angle, zAngle]
             list.append(list_item)
     with open(path, 'w', newline='') as file:
         writer = csv.writer(file)
