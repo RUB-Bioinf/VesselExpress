@@ -20,6 +20,7 @@
     "pixel_dimensions": "2.0,1.015625,1.015625",
     "pruning_scale": 1.5,
     "length_limit": 3,
-    "branching_threshold": 0.25
+    "branching_threshold": 0.25,
+    "all_stats": 0
   }
 }

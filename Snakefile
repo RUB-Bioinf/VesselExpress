@@ -65,7 +65,8 @@ rule graphAnalysis:
             python graphAnalysis.py -i {input} -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
             -pruning_scale {config[graphAnalysis][pruning_scale]} \
             -length_limit {config[graphAnalysis][length_limit]} \
-            -branching_threshold {config[graphAnalysis][branching_threshold]}
+            -branching_threshold {config[graphAnalysis][branching_threshold]} \
+            -all_stats {config[graphAnalysis][all_stats]}
         """
 
 

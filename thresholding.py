@@ -27,7 +27,6 @@ if __name__ == '__main__':
     binImage = binary_closing(thrImage, ball(args.ball_radius))
     binImage = remove_small_objects(binImage, args.artifact_size)
     #print("binary foreground points=", np.count_nonzero(binImage), " for image ", input_file)
-    print("elapsed time: %0.3f seconds" % (time.time() - start))
 
     tifffile.imsave(output_dir + '/Binary_' + os.path.basename(output_dir) + '.tif', (binImage * 255).astype('uint8'),
                     photometric='minisblack')

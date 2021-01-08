@@ -16,11 +16,7 @@ if __name__ == '__main__':
     output_dir = os.path.dirname(input_file)
     binArr = tifffile.imread(args.i)
 
-
-    print("Skeletonization")
-    start = time.time()
     skel = skeletonize_3d(binArr)
-    print("elapsed time: %0.3f seconds" % (time.time() - start))
 
     tifffile.imsave(output_dir + '/Skeleton_' + os.path.basename(output_dir) + '.tif', skel.astype('uint8'),
                     photometric='minisblack')

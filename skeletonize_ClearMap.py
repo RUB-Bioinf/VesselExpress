@@ -22,12 +22,9 @@ if __name__ == '__main__':
     seg = seg / seg.max()
     np.save(output_dir + '/Binary_' + file_name + '.npy', seg)
 
-    print("Skeletonization")
-    start = time.time()
     sink_skel = output_dir + "/Skeleton_" + file_name
     im_skel = skl.skeletonize(output_dir + "/Binary_" + file_name + '.npy', sink=sink_skel + '.npy', delete_border=True,
                               verbose=False)
-    print("elapsed time: %0.3f seconds" % (time.time() - start))
 
     im_skel.array = im_skel.array.astype(np.uint8) * 255
     io.write(sink_skel + ".tif", im_skel)

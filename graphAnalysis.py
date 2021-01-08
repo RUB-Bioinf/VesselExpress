@@ -16,32 +16,25 @@ def processImage(imgFile, parameterDict):
 
     # change to receive info file
     finfo = None
-    # finfo = dir + '/' + file_name + '_info.csv'
+    #finfo = dir + '/' + file_name + '_info.csv'
 
     # Graph construction
-    print("Graph construction")
-
+    print("graph construction...")
     binImage = tifffile.imread(dir + "/Binary_" + file_name + '.tif')
     binImage = binImage / np.max(binImage)
     skeleton = tifffile.imread(dir + "/Skeleton_" + file_name + '.tif')
     if np.max(skeleton) != 0:   # only if skeleton points are present
         skeleton = skeleton / np.max(skeleton)
 
-    start = time.time()
     networkxGraph = netGrArr.get_networkx_graph_from_array(skeleton)
-    print("elapsed time: %0.3f seconds" % (time.time() - start))
 
     # Statistical Analysis
-    print("Statistical Analysis")
-    start = time.time()
     stats = graph.Graph(binImage, skeleton, networkxGraph, parameterDict.get("pixel_dimensions"),
                         pruningScale=parameterDict.get("pruning_scale"), lengthLimit=parameterDict.get("length_limit"),
                         branchingThreshold=parameterDict.get("branching_threshold"), infoFile=finfo)
     stats.setStats()
-    print("elapsed time: %0.3f seconds" % (time.time() - start))
 
-    # Export statistics to csv and save segmentation and skeleton mask as tif images
-    print("Saving statistics as csv files")
+    # Export statistics to csv files
     statsDir = dir + '/Statistics/'
     os.makedirs(os.path.dirname(statsDir), exist_ok=True)
 
@@ -68,12 +61,14 @@ def processImage(imgFile, parameterDict):
     utils.saveSegmentDictAsCSV(stats.branchPointsDict, statsDir + file_name + '_BranchPt_No._Branches.csv',
                                'BranchPt No. Branches', category='Branch')
 
-    # uncomment to get files containing all statisics in one csv (segment, filament and branches)
-    #utils.saveAllStatsAsCSV(stats.segStatsDict, dir + '_All_Segment_Statistics.csv', file_name)
-    #utils.saveAllFilStatsAsCSV(stats.filStatsDict, dir + '_All_Filament_Statistics.csv', file_name)
-    #utils.saveBranchesBrPtAsCSV(stats.branchesBrPtDict, dir + '_All_BranchesPerBranchPt.csv', file_name)
-
-    print("elapsed time: %0.3f seconds" % (time.time() - start))
+    # create files containing all statisics in one csv per category (segment, filament, branches and endPtsRatio)
+    if parameterDict.get("all_stats") == 1:
+        utils.saveAllStatsAsCSV(stats.segStatsDict, dir + '_All_Segment_Statistics.csv', file_name)
+        utils.saveAllFilStatsAsCSV(stats.filStatsDict, dir + '_All_Filament_Statistics.csv', file_name)
+        utils.saveBranchesBrPtAsCSV(stats.branchesBrPtDict, dir + '_All_BranchesPerBranchPt.csv', file_name)
+        utils.saveEndPtsRelativeAsCSV(stats.endPtsTopVsBottom, dir + '_EndPtsRatio.csv', file_name)
+    else:
+        print(parameterDict.get("all_stats"))
 
 
 if __name__ == '__main__':
@@ -88,13 +83,16 @@ if __name__ == '__main__':
     parser.add_argument('-length_limit', type=float, default=3, help='Limit of vessel lengths')
     parser.add_argument('-branching_threshold', type=float, default=0.25,
                         help='segments length as vector estimate for branching angle calculation')
+    parser.add_argument('-all_stats', type=int, default=0,
+                        help='if set to 1 create CSVs containing all statitsics for each category')
     args = parser.parse_args()
 
     parameters = {
         "pixel_dimensions": [float(item) for item in args.pixel_dimensions.split(',')],
         "pruning_scale": args.pruning_scale,
         "length_limit": args.length_limit,
-        "branching_threshold": args.branching_threshold
+        "branching_threshold": args.branching_threshold,
+        "all_stats": args.all_stats
     }
 
     processImage(args.i, parameters)

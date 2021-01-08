@@ -43,6 +43,14 @@ def saveBranchesBrPtAsCSV(dictionary, path, imgName):
         writer = csv.writer(file)
         writer.writerows(list)
 
+def saveEndPtsRelativeAsCSV(value, path, imgName):
+    list = [["Image", "EndPts_ratio"]]
+    list_item = [imgName, value]
+    list.append(list_item)
+    with open(path, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(list)
+
 def saveSegmentDictAsCSV(dictionary, path, measurement, unit="", category="Segment"):
     """
         Save a dictionary with measurements as csv file

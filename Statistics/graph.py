@@ -75,6 +75,7 @@ class Graph:
         self.zAngleDict = defaultdict(dict)
         self.compTime = 0
         self.postProcessTime = 0
+        self.endPtsTopVsBottom = 0
         self.runTimeDict = {
             'distTransformation': 0,
             'pruning': 0,
@@ -95,6 +96,7 @@ class Graph:
         self.branchesBrPtDict = defaultdict(dict)
 
         # calculate distance transform matrix
+        print("distance transformation...")
         self.initTime = time.time()
         self.distTransf = ndi.distance_transform_edt(segmentation, sampling=self.pixelDims)
         self.radiusMatrix = self.distTransf * skeleton
@@ -119,6 +121,7 @@ class Graph:
             Graph : networkx graph
                 networkx graph of a skeleton
         """
+        print("statistic calculation...")
         startTime = time.time()
         self.infoDict['filaments'] = len(self.filaments)
         for ithDisjointGraph, subGraphSkeleton in enumerate(self.filaments):
@@ -144,20 +147,29 @@ class Graph:
                     self.branchPointsDict[ithDisjointGraph] = filament.brPtsDict
                     self.endPointsDict[ithDisjointGraph] = filament.endPtsList
                     self.countBranchPointsDict[ithDisjointGraph] = len(filament.brPtsDict)
-                    self.countEndPointsDict[ithDisjointGraph] = len(filament.endPtsList)
+                    if self.countSegmentsDict[ithDisjointGraph] > 4:
+                        self.countEndPointsDict[ithDisjointGraph] = len(filament.endPtsList)
+                    else:
+                        self.countEndPointsDict[ithDisjointGraph] = 0
                     self.infoDict['segments'] += len(self.segmentsDict[ithDisjointGraph])
                     self.runTimeDict['dfsComp'] += filament.compTime
                     self.runTimeDict['postProcessing'] += filament.postprocessTime
                     self.infoDict['postProcBranches'] += filament.postprocBranches
                     self.infoDict['postProcEndPts'] += filament.postprocEndPts
+
                     # fill dictionary containing all filament statistics
                     self.segStatsDict[ithDisjointGraph] = filament.segmentStats
-                    self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = len(filament.endPtsList)
-                    self.filStatsDict[ithDisjointGraph]['BranchPoints'] = len(filament.brPtsDict)
+                    if self.countSegmentsDict[ithDisjointGraph] > 4:
+                        self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = self.countEndPointsDict[ithDisjointGraph]
+                    else:
+                        self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = 0
+                    self.filStatsDict[ithDisjointGraph]['BranchPoints'] = self.countBranchPointsDict[ithDisjointGraph]
                     self.branchesBrPtDict[ithDisjointGraph] = filament.brPtsDict
                 else:
                     self.infoDict['filaments'] -= 1
         self.runTimeDict['statCalculation'] = round(time.time() - startTime, 3)
+
+        self.endPtsTopVsBottom = self.top_endPts_vs_bottom_endPts()
 
         if self.infoFile:
             self._writeInfoFile()
@@ -218,4 +230,19 @@ class Graph:
         for c in nx.connected_components(G):
             yield G.subgraph(c)
 
-
+    def top_endPts_vs_bottom_endPts(self, gap=15):
+        z = self.radiusMatrix.shape[0] - 1
+        top_endPts = 0
+        bottom_endPts = 0
+        for filament in self.endPointsDict:
+            if self.countSegmentsDict[filament] > 4:
+                for endPts in self.endPointsDict[filament]:
+                    if endPts[0] < gap:
+                        bottom_endPts += 1
+                    if endPts[0] >= z-gap:
+                        top_endPts += 1
+        if bottom_endPts != 0:
+            ratio = round(top_endPts/bottom_endPts, 4)
+        else:
+            ratio = "NULL"
+        return ratio
