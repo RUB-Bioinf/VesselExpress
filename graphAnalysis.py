@@ -67,8 +67,6 @@ def processImage(imgFile, parameterDict):
         utils.saveAllFilStatsAsCSV(stats.filStatsDict, dir + '_All_Filament_Statistics.csv', file_name)
         utils.saveBranchesBrPtAsCSV(stats.branchesBrPtDict, dir + '_All_BranchesPerBranchPt.csv', file_name)
         utils.saveEndPtsRelativeAsCSV(stats.endPtsTopVsBottom, dir + '_EndPtsRatio.csv', file_name)
-    else:
-        print(parameterDict.get("all_stats"))
 
 
 if __name__ == '__main__':
