@@ -39,6 +39,10 @@ downloaded from GitHub and copied into the Graph folder. Many thanks to GitHub a
 
 http://www.bioinf.rub.de/
 
+[**Prof. Dr. Matthias Gunzer**](mailto:matthias.gunzer@uni-due.de): Institute for Experimental Immunology and Imaging, University Hospital Essen, University of Duisburg-Essen, Essen, Germany
+
+https://www.uni-due.de/experimental-immunology
+
 # Download and Install
 
 See the [Releases](https://github.com/RUB-Bioinf/LightSheetBrainVesselSkeletonization/releases) page on how to download the latest version of the pipeline.
