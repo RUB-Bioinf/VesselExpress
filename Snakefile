@@ -1,9 +1,9 @@
 import os
 
-configfile: "config.json"
+configfile: "./data/config.json"
 
 PATH = config["imgFolder"]
-IMGS = [os.path.splitext(f)[0] for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
+IMGS = [os.path.splitext(f)[0] for f in os.listdir(PATH) if f.endswith('tif') and os.path.isfile(os.path.join(PATH, f))]
 
 if config["skeletonization"] == "ClearMap":
     ruleorder: skeletonize_ClearMap > skeletonize_scikit
