@@ -5,28 +5,37 @@ from ast import literal_eval as make_tuple
 from collections import defaultdict
 
 def saveAllStatsAsCSV(dictionary, path, imgName):
-    list = [["Image", "FilamentID", "SegmentID", "Diameter (um)", "Straightness", "Length (um)", "Volume (um³)",
-             "Branching Angle (°)", "z Angle (°)"]]
+    # get all segment measurements as list from dictionary
+    fil_id = 0
+    key = 0
+    for idx in dictionary:
+        if bool(dictionary[idx]):
+            key = next(iter(dictionary[idx]))
+            fil_id = idx
+            break
+    ms_list = []
+    for i in dictionary[fil_id][key].keys():
+        ms_list.append(i)
+    list = [["image", "filamentID", "segmentID"]]   # header list
+    for i in ms_list:
+        list[0].append(i)
     for filament in dictionary.keys():
         for segment in dictionary[filament]:
-            diameter = dictionary[filament][segment]["diameter"]
-            straightness = dictionary[filament][segment]["straightness"]
-            length = dictionary[filament][segment]["length"]
-            volume = dictionary[filament][segment]["volume"]
-            angle = dictionary[filament][segment]["branchingAngle"]
-            zAngle = dictionary[filament][segment]["zAngle"]
-            list_item = [imgName, filament, segment, diameter, straightness, length, volume, angle, zAngle]
+            list_item = [imgName, filament, segment]
+            for stat in dictionary[filament][segment]:
+                list_item.append(dictionary[filament][segment][stat])
             list.append(list_item)
     with open(path, 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(list)
 
 def saveAllFilStatsAsCSV(dictionary, path, imgName):
-    list = [["Image", "FilamentID", "No. Terminal Points", "No. Branching Points"]]
+    list = [["Image", "FilamentID", "No. Segments", "No. Terminal Points", "No. Branching Points"]]
     for filament in dictionary.keys():
+        segs = dictionary[filament]["Segments"]
         endPts = dictionary[filament]["TerminalPoints"]
         brPts = dictionary[filament]["BranchPoints"]
-        list_item = [imgName, filament, endPts, brPts]
+        list_item = [imgName, filament, segs, endPts, brPts]
         list.append(list_item)
     with open(path, 'w', newline='') as file:
         writer = csv.writer(file)
@@ -51,7 +60,7 @@ def saveEndPtsRelativeAsCSV(value, path, imgName):
         writer = csv.writer(file)
         writer.writerows(list)
 
-def saveSegmentDictAsCSV(dictionary, path, measurement, unit="", category="Segment"):
+def saveSegmentDictAsCSV(dictionary, path, measurementTitle, measurement, unit="", category="Segment"):
     """
         Save a dictionary with measurements as csv file
 
@@ -63,7 +72,29 @@ def saveSegmentDictAsCSV(dictionary, path, measurement, unit="", category="Segme
         unit : string of unit
         category : string of category
     """
-    list = [[measurement, "Unit", "Category", "FilamentID", category+"ID"]]
+    list = [[measurementTitle, "Unit", "Category", "FilamentID", category+"ID"]]
+    for filament in dictionary.keys():
+        for branch in dictionary[filament]:
+            val = dictionary[filament][branch][measurement]
+            list_item = [val, unit, category, filament, branch]
+            list.append(list_item)
+    with open(path, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(list)
+
+def saveBranchPtDictAsCSV(dictionary, path, measurementTitle, unit="", category="Branch"):
+    """
+        Save a dictionary with measurements as csv file
+
+        Parameters
+        ----------
+        dictionary : defaultdict(dict)
+        path : string of path to save csv of dict
+        measurement : string of measurement
+        unit : string of unit
+        category : string of category
+    """
+    list = [[measurementTitle, "Unit", "Category", "FilamentID", "BranchID"]]
     for filament in dictionary.keys():
         for branch in dictionary[filament]:
             val = dictionary[filament][branch]
@@ -73,7 +104,7 @@ def saveSegmentDictAsCSV(dictionary, path, measurement, unit="", category="Segme
         writer = csv.writer(file)
         writer.writerows(list)
 
-def saveFilamentDictAsCSV(dictionary, path, measurement, unit=""):
+def saveFilamentDictAsCSV(dictionary, path, measurementTitle, measurement, unit=""):
     """
         Save a dictionary with measurements as csv file
 
@@ -84,9 +115,9 @@ def saveFilamentDictAsCSV(dictionary, path, measurement, unit=""):
         measurement : string of measurement
         unit : string of unit
     """
-    list = [[measurement, "Unit", "Category", "FilamentID"]]
+    list = [[measurementTitle, "Unit", "Category", "FilamentID"]]
     for filament in dictionary.keys():
-        val = dictionary[filament]
+        val = dictionary[filament][measurement]
         list_item = [val, unit, "Filament", filament]
         list.append(list_item)
     with open(path, 'w', newline='') as file:

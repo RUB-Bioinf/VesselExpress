@@ -21,6 +21,7 @@
     "pruning_scale": 1.5,
     "length_limit": 3,
     "branching_threshold": 0.25,
-    "all_stats": 0
+    "all_stats": 0,
+    "experimental_flag": 0
   }
 }

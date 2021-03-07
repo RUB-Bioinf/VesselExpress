@@ -31,42 +31,44 @@ def processImage(imgFile, parameterDict):
     # Statistical Analysis
     stats = graph.Graph(binImage, skeleton, networkxGraph, parameterDict.get("pixel_dimensions"),
                         pruningScale=parameterDict.get("pruning_scale"), lengthLimit=parameterDict.get("length_limit"),
-                        branchingThreshold=parameterDict.get("branching_threshold"), infoFile=finfo)
+                        branchingThreshold=parameterDict.get("branching_threshold"),
+                        expFlag=parameterDict.get("experimental_flag"), infoFile=finfo)
     stats.setStats()
 
     # Export statistics to csv files
     statsDir = dir + '/Statistics/'
     os.makedirs(os.path.dirname(statsDir), exist_ok=True)
 
-    utils.saveFilamentDictAsCSV(stats.countSegmentsDict, statsDir + file_name +
-                                '_Filament_No._Segments.csv', 'Filament No. Segments')
-    utils.saveFilamentDictAsCSV(stats.countBranchPointsDict, statsDir + file_name +
-                                '_Filament_No._Segment_Branch_Points.csv', 'Filament No. Segment Branch Pts')
-    utils.saveFilamentDictAsCSV(stats.countEndPointsDict, statsDir + file_name +
-                                '_Filament_No._Segment_Terminal_Points.csv', 'Filament No. Segment Terminal Pts')
-    utils.saveFilamentDictAsCSV(stats.sumLengthDict, statsDir + file_name + '_Filament_Length_(sum).csv',
-                                'Filament Length (sum)', 'um')
-    utils.saveSegmentDictAsCSV(stats.lengthDict, statsDir + file_name + '_Segment_Length.csv', 'Segment Length',
-                               'um')
-    utils.saveSegmentDictAsCSV(stats.straightnessDict, statsDir + file_name + '_Segment_Straightness.csv',
-                               'Segment Straightness')
-    utils.saveSegmentDictAsCSV(stats.degreeDict, statsDir + file_name + '_Segment_Branching_Angle.csv',
-                               'Segment Branching Angle', '°')
-    utils.saveSegmentDictAsCSV(stats.degreeDict, statsDir + file_name + '_Segment_z_Angle.csv',
-                               'Segment z Angle', '°')
-    utils.saveSegmentDictAsCSV(stats.volumeDict, statsDir + file_name + '_Segment_Volume.csv',
-                               'Segment Volume', 'um^3')
-    utils.saveSegmentDictAsCSV(stats.diameterDict, statsDir + file_name + '_Segment_Diameter.csv',
-                               'Segment Diameter', 'um')
-    utils.saveSegmentDictAsCSV(stats.branchPointsDict, statsDir + file_name + '_BranchPt_No._Branches.csv',
-                               'BranchPt No. Branches', category='Branch')
+    utils.saveFilamentDictAsCSV(stats.filStatsDict, statsDir + file_name +
+                                '_Filament_No._Segment_Branch_Points.csv', 'Filament No. Segment Branch Pts',
+                                'BranchPoints')
+    utils.saveFilamentDictAsCSV(stats.filStatsDict, statsDir + file_name +
+                                '_Filament_No._Segment_Terminal_Points.csv', 'Filament No. Segment Terminal Pts',
+                                'TerminalPoints')
+    utils.saveSegmentDictAsCSV(stats.segStatsDict, statsDir + file_name + '_Segment_Length.csv', 'Segment Length',
+                               'length', 'um')
+    utils.saveSegmentDictAsCSV(stats.segStatsDict, statsDir + file_name + '_Segment_Straightness.csv',
+                               'Segment Straightness', 'straightness')
+    utils.saveSegmentDictAsCSV(stats.segStatsDict, statsDir + file_name + '_Segment_Branching_Angle.csv',
+                               'Segment Branching Angle', 'branchingAngle', '°')
+    utils.saveSegmentDictAsCSV(stats.segStatsDict, statsDir + file_name + '_Segment_Volume.csv', 'Segment Volume',
+                               'volume',
+                               'um^3')
+    utils.saveSegmentDictAsCSV(stats.segStatsDict, statsDir + file_name + '_Segment_Diameter.csv', 'Segment Diameter',
+                               'diameter', 'um')
+    utils.saveBranchPtDictAsCSV(stats.branchPointsDict, statsDir + file_name + '_BranchPt_No._Branches.csv',
+                                'BranchPt No. Branches', category='Branch')
+    if parameterDict.get("experimental_flag") == 1:
+        utils.saveSegmentDictAsCSV(stats.segStatsDict, statsDir + file_name + '_Segment_z_Angle.csv', 'Segment z Angle',
+                                   'zAngle', '°')
 
     # create files containing all statisics in one csv per category (segment, filament, branches and endPtsRatio)
     if parameterDict.get("all_stats") == 1:
         utils.saveAllStatsAsCSV(stats.segStatsDict, dir + '_All_Segment_Statistics.csv', file_name)
         utils.saveAllFilStatsAsCSV(stats.filStatsDict, dir + '_All_Filament_Statistics.csv', file_name)
         utils.saveBranchesBrPtAsCSV(stats.branchesBrPtDict, dir + '_All_BranchesPerBranchPt.csv', file_name)
-        utils.saveEndPtsRelativeAsCSV(stats.endPtsTopVsBottom, dir + '_EndPtsRatio.csv', file_name)
+        if parameterDict.get("experimental_flag") == 1:
+            utils.saveEndPtsRelativeAsCSV(stats.endPtsTopVsBottom, dir + '_EndPtsRatio.csv', file_name)
 
 
 if __name__ == '__main__':
@@ -83,6 +85,8 @@ if __name__ == '__main__':
                         help='segments length as vector estimate for branching angle calculation')
     parser.add_argument('-all_stats', type=int, default=0,
                         help='if set to 1 create CSVs containing all statitsics for each category')
+    parser.add_argument('-experimental_flag', type=int, default=0,
+                        help='set to 1 for experimental statistics')
     args = parser.parse_args()
 
     parameters = {
@@ -90,7 +94,8 @@ if __name__ == '__main__':
         "pruning_scale": args.pruning_scale,
         "length_limit": args.length_limit,
         "branching_threshold": args.branching_threshold,
-        "all_stats": args.all_stats
+        "all_stats": args.all_stats,
+        "experimental_flag": args.experimental_flag
     }
 
     processImage(args.i, parameters)

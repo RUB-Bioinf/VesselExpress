@@ -3,7 +3,8 @@ import os
 configfile: "./data/config.json"
 
 PATH = config["imgFolder"]
-IMGS = [os.path.splitext(f)[0] for f in os.listdir(PATH) if f.endswith('tif') and os.path.isfile(os.path.join(PATH, f))]
+IMGS = [os.path.splitext(f)[0] for f in os.listdir(PATH) if (f.endswith('tif') or f.endswith('.jpg'))
+        and not f.startswith('.') and os.path.isfile(os.path.join(PATH, f))]
 
 if config["skeletonization"] == "ClearMap":
     ruleorder: skeletonize_ClearMap > skeletonize_scikit
@@ -11,11 +12,16 @@ else:
     ruleorder: skeletonize_scikit > skeletonize_ClearMap
 
 rule all:
-     input: expand(PATH + "/{img}/Statistics", img=IMGS)
+    input: expand(PATH + "/{img}/Statistics", img=IMGS)
 
 rule makeImgDir:
     input: PATH + "/{img}.tif"
     output: PATH + "/{img}/{img}.tif"
+    shell: "mv {input} {output}"
+
+rule jpgMakeImgDir:
+    input: PATH + "/{img}.jpg"
+    output: PATH + "/{img}/{img}.jpg"
     shell: "mv {input} {output}"
 
 rule frangi:
@@ -40,6 +46,12 @@ rule threshold:
             python thresholding.py -i {input} -ball_radius {config[threshold][ball_radius]} \
             -artifact_size {config[threshold][artifact_size]}
         """
+
+rule threshold_2D_jpg:
+    input: PATH + "/{img}/{img}.jpg"
+    output: PATH + "/{img}/Binary_{img}.tif"
+    conda: "Envs/Thresholding.yml"
+    shell: "python threshold2D.py -i {input} -artifact_size {config[threshold][artifact_size]}"
 
 rule skeletonize_ClearMap:
     input: PATH + "/{img}/Binary_{img}.tif"
@@ -66,7 +78,8 @@ rule graphAnalysis:
             -pruning_scale {config[graphAnalysis][pruning_scale]} \
             -length_limit {config[graphAnalysis][length_limit]} \
             -branching_threshold {config[graphAnalysis][branching_threshold]} \
-            -all_stats {config[graphAnalysis][all_stats]}
+            -all_stats {config[graphAnalysis][all_stats]} \
+            -experimental_flag {config[graphAnalysis][experimental_flag]}
         """
 
 

@@ -3,7 +3,7 @@ import os
 import tifffile
 import numpy as np
 import argparse
-from skimage.morphology import skeletonize_3d
+from skimage.morphology import skeletonize
 
 if __name__ == '__main__':
     programStart = time.time()
@@ -16,7 +16,7 @@ if __name__ == '__main__':
     output_dir = os.path.dirname(input_file)
     binArr = tifffile.imread(args.i)
 
-    skel = skeletonize_3d(binArr)
+    skel = skeletonize(binArr, method='lee')
 
     tifffile.imsave(output_dir + '/Skeleton_' + os.path.basename(output_dir) + '.tif', skel.astype('uint8'),
                     photometric='minisblack')

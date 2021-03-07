@@ -53,26 +53,20 @@ class Graph:
                                 with key as the segment index (start node, end node) and value = avg diameter of the segment
     """
     def __init__(self, segmentation, skeleton, networkxGraph, pixelDimensions, pruningScale, lengthLimit,
-                 branchingThreshold, infoFile):
+                 branchingThreshold, expFlag, infoFile):
         self.networkxGraph = networkxGraph
         self.pixelDims = pixelDimensions
         self.prunScale = pruningScale
         self.lengthLim = lengthLimit
         self.branchingThresh = branchingThreshold
         self.infoFile = infoFile
+        self.expFlag = expFlag
         self.segmentsDict = defaultdict(dict)
         self.countSegmentsDict = {}
-        self.lengthDict = defaultdict(dict)
-        self.volumeDict = defaultdict(dict)
-        self.diameterDict = defaultdict(dict)
-        self.sumLengthDict = {}
-        self.straightnessDict = defaultdict(dict)
         self.branchPointsDict = {}
         self.endPointsDict = {}
         self.countBranchPointsDict = {}
         self.countEndPointsDict = {}
-        self.degreeDict = defaultdict(dict)
-        self.zAngleDict = defaultdict(dict)
         self.compTime = 0
         self.postProcessTime = 0
         self.endPtsTopVsBottom = 0
@@ -90,7 +84,7 @@ class Graph:
             'postProcBranches': 0,
             'postProcEndPts': 0
         }
-        # dictionaries containing all filament statistics
+        # dictionaries containing all filament, segment and branch point statistics
         self.segStatsDict = defaultdict(dict)
         self.filStatsDict = defaultdict(dict)
         self.branchesBrPtDict = defaultdict(dict)
@@ -131,19 +125,12 @@ class Graph:
                 start = endPoints[0]  # take random end point as beginning
                 adjacencyDict = nx.to_dict_of_lists(subGraphSkeleton)
                 filament = fil.Filament(adjacencyDict, start, self.radiusMatrix, self.pixelDims, self.lengthLim,
-                                        self.branchingThresh)
+                                        self.branchingThresh, self.expFlag)
                 filament.dfs_iterative()
                 self.segmentsDict[ithDisjointGraph] = filament.segmentsDict
                 # filament may have no segments left after postprocessing
                 if len(self.segmentsDict[ithDisjointGraph]) != 0:
                     self.countSegmentsDict[ithDisjointGraph] = len(self.segmentsDict[ithDisjointGraph])
-                    self.lengthDict[ithDisjointGraph] = filament.lengthDict
-                    self.sumLengthDict[ithDisjointGraph] = sum(filament.lengthDict.values())
-                    self.straightnessDict[ithDisjointGraph] = filament.straightnessDict
-                    self.volumeDict[ithDisjointGraph] = filament.volumeDict
-                    self.diameterDict[ithDisjointGraph] = filament.diameterDict
-                    self.degreeDict[ithDisjointGraph] = filament.degreeDict
-                    self.zAngleDict[ithDisjointGraph] = filament.zAngleDict
                     self.branchPointsDict[ithDisjointGraph] = filament.brPtsDict
                     self.endPointsDict[ithDisjointGraph] = filament.endPtsList
                     self.countBranchPointsDict[ithDisjointGraph] = len(filament.brPtsDict)
@@ -157,19 +144,21 @@ class Graph:
                     self.infoDict['postProcBranches'] += filament.postprocBranches
                     self.infoDict['postProcEndPts'] += filament.postprocEndPts
 
-                    # fill dictionary containing all filament statistics
+                    # fill dictionaries containing all filament, segment and branch point statistics
                     self.segStatsDict[ithDisjointGraph] = filament.segmentStats
                     if self.countSegmentsDict[ithDisjointGraph] > 4:
                         self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = self.countEndPointsDict[ithDisjointGraph]
                     else:
                         self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = 0
                     self.filStatsDict[ithDisjointGraph]['BranchPoints'] = self.countBranchPointsDict[ithDisjointGraph]
+                    self.filStatsDict[ithDisjointGraph]['Segments'] = self.countSegmentsDict[ithDisjointGraph]
                     self.branchesBrPtDict[ithDisjointGraph] = filament.brPtsDict
                 else:
                     self.infoDict['filaments'] -= 1
         self.runTimeDict['statCalculation'] = round(time.time() - startTime, 3)
 
-        self.endPtsTopVsBottom = self.top_endPts_vs_bottom_endPts()
+        if self.expFlag == 1:
+            self.endPtsTopVsBottom = self.top_endPts_vs_bottom_endPts()
 
         if self.infoFile:
             self._writeInfoFile()

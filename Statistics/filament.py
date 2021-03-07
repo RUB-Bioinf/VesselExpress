@@ -50,22 +50,17 @@ class Filament:
         --------
         straightness = curveDisplacement / curveLength
         """
-    def __init__(self, graph, start, skelRadii, pixelDimensions, lengthLimit, branchingThreshold):
+    def __init__(self, graph, start, skelRadii, pixelDimensions, lengthLimit, branchingThreshold, expFlag):
         self.graph = graph
         self.start = start
         self.skelRadii = skelRadii
         self.pixelDims = pixelDimensions
         self.lengthLim = lengthLimit
         self.branchingThr = branchingThreshold
+        self.expFlag = expFlag
         self.endPtsList = []
         self.brPtsDict = {}
         self.segmentsDict = {}
-        self.lengthDict = {}
-        self.straightnessDict = {}
-        self.degreeDict = {}
-        self.zAngleDict = {}
-        self.volumeDict = {}
-        self.diameterDict = {}
         self._predDict = {}
         self.compTime = 0
         self.postprocessTime = 0
@@ -209,36 +204,41 @@ class Filament:
         vect = [j - i for i, j in zip(segment[0], segment[len(segment) - 1])]
         vect = [a * b for a, b in zip(vect, self.pixelDims)]  # multiply pixel length with pixel dimension
         curveDisplacement = np.linalg.norm(vect)
-        zAngle = ms.get_z_angle(segment, self.pixelDims)
         self.segmentsDict[segment[0], segment[len(segment) - 1]] = segment
-        self.lengthDict[segment[0], segment[len(segment) - 1]] = segLength
-        self.straightnessDict[segment[0], segment[len(segment) - 1]] = curveDisplacement / segLength
         volumeDiameter = ms.getVolume(self.skelRadii, segment, segLength, self.pixelDims)
-        self.volumeDict[segment[0], segment[len(segment) - 1]] = volumeDiameter[0]
-        self.diameterDict[segment[0], segment[len(segment) - 1]] = volumeDiameter[1]
         branchingDegree = self._getBranchingDegree(segment, self.branchingThr)
-        self.degreeDict[segment[0], segment[len(segment) - 1]] = branchingDegree
-        self.zAngleDict[segment[0], segment[len(segment) - 1]] = zAngle
         # fill dictionary for csv file containing all segment statistics
         self.segmentStats[segment[0], segment[len(segment) - 1]]['diameter'] = volumeDiameter[1]
         self.segmentStats[segment[0], segment[len(segment) - 1]]['straightness'] = curveDisplacement / segLength
         self.segmentStats[segment[0], segment[len(segment) - 1]]['length'] = segLength
         self.segmentStats[segment[0], segment[len(segment) - 1]]['volume'] = volumeDiameter[0]
         self.segmentStats[segment[0], segment[len(segment) - 1]]['branchingAngle'] = branchingDegree
-        self.segmentStats[segment[0], segment[len(segment) - 1]]['zAngle'] = zAngle
+
+        # experimental statistics
+        if self.expFlag == 1:
+            zAngle = ms.get_z_angle(segment, self.pixelDims)
+            self.segmentStats[segment[0], segment[len(segment) - 1]]['zAngle'] = zAngle
 
     def _removeBorderPtsFromEndPts(self):
         """
             Removes all end points which are image border points from end points list.
         """
-        z = self.skelRadii.shape[0]-1
-        y = self.skelRadii.shape[1]-1
-        x = self.skelRadii.shape[2]-1
-
-        for endPt in self.endPtsList:
-            if endPt[0] == z or endPt[1] == y or endPt[2] == x or endPt[0] == 0 or endPt[1] == 0 or endPt[2] == 0:
-                self.endPtsList.remove(endPt)
-                self.postprocEndPts += 1
+        ndims = self.skelRadii.ndim
+        if ndims == 3:
+            z = self.skelRadii.shape[0]-1
+            y = self.skelRadii.shape[1]-1
+            x = self.skelRadii.shape[2]-1
+            for endPt in self.endPtsList:
+                if endPt[0] == z or endPt[1] == y or endPt[2] == x or endPt[0] == 0 or endPt[1] == 0 or endPt[2] == 0:
+                    self.endPtsList.remove(endPt)
+                    self.postprocEndPts += 1
+        elif ndims == 2:
+            y = self.skelRadii.shape[0] - 1
+            x = self.skelRadii.shape[1] - 1
+            for endPt in self.endPtsList:
+                if endPt[0] == y or endPt[1] == x or endPt[0] == 0 or endPt[1] == 0:
+                    self.endPtsList.remove(endPt)
+                    self.postprocEndPts += 1
 
     def _deletePath(self, path):
         for i in range(len(path) - 1):
@@ -257,23 +257,15 @@ class Filament:
         # find segments in lengthDict which are below the limit
         keysToRemoveList = []
         brPtCandidates = set()
-        for segKey in self.lengthDict:
-            if self.lengthDict[segKey] <= self.lengthLim:
+        for segKey in self.segmentStats:
+            if self.segmentStats[segKey]['length'] <= self.lengthLim:
                 keysToRemoveList.append(segKey)
         self.postprocBranches = len(keysToRemoveList)
         # delete those segments from dictionaries
         for key in keysToRemoveList:
             self._deletePath(self.segmentsDict[key])
             del self.segmentsDict[key]
-            del self.lengthDict[key]
-            del self.straightnessDict[key]
-            del self.volumeDict[key]
-            del self.diameterDict[key]
-            del self.zAngleDict[key]
             del self.segmentStats[key]
-
-            if key in self.degreeDict:
-                del self.degreeDict[key]
             if key[0] in self.endPtsList:
                 self.endPtsList.remove(key[0])
             if key[1] in self.endPtsList:
@@ -294,23 +286,10 @@ class Filament:
                 if len(segments) > 0:
                     segKey1 = (segments[0][0], segments[0][-1])
                     del self.segmentsDict[segKey1]
-                    del self.lengthDict[segKey1]
-                    del self.straightnessDict[segKey1]
-                    del self.volumeDict[segKey1]
-                    del self.diameterDict[segKey1]
-                    del self.zAngleDict[segKey1]
-                    if segKey1 in self.degreeDict:
-                        del self.degreeDict[segKey1]
                     del self.segmentStats[segKey1]
                     if len(segments) != 1:  # if segment is not a circle delete second segment from dictionaries
                         segKey2 = (segments[1][0], segments[1][-1])
                         del self.segmentsDict[segKey2]
-                        del self.lengthDict[segKey2]
-                        del self.straightnessDict[segKey2]
-                        del self.volumeDict[segKey2]
-                        del self.diameterDict[segKey2]
-                        del self.degreeDict[segKey2]
-                        del self.zAngleDict[segKey2]
                         del self.segmentStats[segKey2]
                         # combine both segments to one segment and calculate its statistics
                         if segments[0][-1] == brPt and segments[1][0] == brPt:
