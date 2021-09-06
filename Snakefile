@@ -43,8 +43,8 @@ rule threshold:
     #benchmark: PATH + "/{img}/benchmarks/{img}.threshold.benchmark.txt"
     shell:
         """
-            python thresholding.py -i {input} -ball_radius {config[threshold][ball_radius]} \
-            -artifact_size {config[threshold][artifact_size]}
+            python thresholding.py -i {input} -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
+            -ball_radius {config[threshold][ball_radius]} -artifact_size {config[threshold][artifact_size]}
         """
 
 rule threshold_2D_jpg:
@@ -65,7 +65,7 @@ rule skeletonize_scikit:
     output: PATH + "/{img}/Skeleton_{img}.tif"
     conda: "Envs/Pipeline.yml"
     #benchmark: PATH + "/{img}/benchmarks/{img}.skeletonize.benchmark.txt"
-    shell: "python skeletonize_scikit.py -i {input}"
+    shell: "python skeletonize_scikit.py -i {input} -pixel_dimensions {config[graphAnalysis][pixel_dimensions]}"
 
 rule graphAnalysis:
     input: PATH + "/{img}/Skeleton_{img}.tif"
