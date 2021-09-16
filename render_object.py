@@ -2,6 +2,8 @@ import bpy
 import os
 from math import radians
 import argparse
+import sys
+
 
 # Expected image_color_mode: BW, RGB, RGBA
 # Expected render_engine: CYCLES, BLENDER_EEVEE, BLENDER_WORKBENCH
@@ -18,7 +20,7 @@ expected_file_format = ['JPEG', 'PNG', 'TIFF', 'IRIS', 'JPEG2000', 'BMP', 'TARGA
 
 
 def render_object(model_file_path: str, out_dir: str,
-                  save_raw: bool = True,
+                  save_raw: int = 1,
                   # Camera Params
                   camera_pos_x: float = -2.0, camera_pos_y: float = 3.0, camera_pos_z: float = 3.0,
                   camera_euler_angle_x: float = 422.0, camera_euler_angle_y: float = 0.0,
@@ -32,7 +34,7 @@ def render_object(model_file_path: str, out_dir: str,
                   # Render & Hardware Params
                   render_engine: str = 'CYCLES', render_device='GPU', render_distance: int = 500000,
                   # Rendered Image Params
-                  image_resolution_x: int = 1920, image_resolution_y: int = 1080, image_resolution_scale: float = 100.0,
+                  image_resolution_x: int = 1920, image_resolution_y: int = 1080, image_resolution_scale: float = 30.0,
                   image_color_mode: str = 'RGBA', image_bit_depth: int = 8, file_format: str = 'PNG',
                   image_compression: float = 0.0
                   ) -> (str, str):
@@ -186,7 +188,7 @@ def render_object(model_file_path: str, out_dir: str,
 
     # Saving the scene to device
     scene_out_file_name = None
-    if save_raw:
+    if save_raw == 1:
         scene_out_file_name = out_dir + os.sep + object_name + '.blend'
         print('Saving scene to: ' + scene_out_file_name)
         bpy.ops.wm.save_as_mainfile(filepath=scene_out_file_name)
@@ -212,103 +214,106 @@ def instantiate_group(nodes, group_name):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Loads a .stl 3D model into blender and renders it to a bitmap image file.')
+    if '--' in sys.argv:
+        argv = sys.argv[sys.argv.index('--') + 1:]
 
-    # Required Arguments
-    # Paths:
-    parser.add_argument('-model_file_path', required=True, type=str, help='Path to the model to use.')
-    parser.add_argument('-out_dir', required=True, type=str, help='Path to the directory to save the renders in.')
+        parser = argparse.ArgumentParser(
+            description='Loads a .stl 3D model into blender and renders it to a bitmap image file.')
 
-    # Optional Arguments
-    # Raw:
-    parser.add_argument('-save_raw', type=bool, default=True, help='Save the .blend file after rendering.')
+        # Required Arguments
+        # Paths:
+        parser.add_argument('-model_file_path', required=True, type=str, help='Path to the model to use.')
+        parser.add_argument('-out_dir', required=True, type=str, help='Path to the directory to save the renders in.')
 
-    # Camera Position
-    parser.add_argument('-camera_pos_x', type=float, default=-2.0, help='Original camera x-position.')
-    parser.add_argument('-camera_pos_y', type=float, default=3.0, help='Original camera y-position.')
-    parser.add_argument('-camera_pos_z', type=float, default=3.0, help='Original camera z-position.')
+        # Optional Arguments
+        # Raw:
+        parser.add_argument('-save_raw', type=int, default=1, help='Save the .blend file after rendering.')
 
-    # Camera Angle
-    parser.add_argument('-camera_angle_x', type=float, default=422.0, help='Original camera x-euler-angle.')
-    parser.add_argument('-camera_angle_y', type=float, default=0.0, help='Original camera y-euler-angle.')
-    parser.add_argument('-camera_angle_z', type=float, default=149.0, help='Original camera z-euler-angle.')
+        # Camera Position
+        parser.add_argument('-camera_pos_x', type=float, default=-2.0, help='Original camera x-position.')
+        parser.add_argument('-camera_pos_y', type=float, default=3.0, help='Original camera y-position.')
+        parser.add_argument('-camera_pos_z', type=float, default=3.0, help='Original camera z-position.')
 
-    # Background Color
-    parser.add_argument('-background_r', type=float, default=1.0,
-                        help='Background color: Red. Expected values: 0.0-1.0')
-    parser.add_argument('-background_g', type=float, default=1.0,
-                        help='Background color: Green. Expected values: 0.0-1.0')
-    parser.add_argument('-background_b', type=float, default=1.0,
-                        help='Background color: Blue. Expected values: 0.0-1.0')
-    parser.add_argument('-background_a', type=float, default=1.0,
-                        help='Background color: Alpha (Experimental). Expected values: 0.0-1.0')
-    parser.add_argument('-background_intensity', type=float, default=1.2, help='Background color intensity.')
+        # Camera Angle
+        parser.add_argument('-camera_angle_x', type=float, default=422.0, help='Original camera x-euler-angle.')
+        parser.add_argument('-camera_angle_y', type=float, default=0.0, help='Original camera y-euler-angle.')
+        parser.add_argument('-camera_angle_z', type=float, default=149.0, help='Original camera z-euler-angle.')
 
-    # Mesh Color and Material
-    parser.add_argument('-mesh_r', type=float, default=0.425,
-                        help='3D Object: Mesh color: Red Expected values: 0.0-1.0.')
-    parser.add_argument('-mesh_g', type=float, default=0.002,
-                        help='3D Object: Mesh color: Green Expected values: 0.0-1.0.')
-    parser.add_argument('-mesh_b', type=float, default=0.0013,
-                        help='3D Object: Mesh color: Blue Expected values: 0.0-1.0.')
-    parser.add_argument('-mesh_a', type=float, default=1.0,
-                        help='3D Object: Mesh color: Alpha (Experimental). Expected values: 0.0-1.0.')
-    parser.add_argument('-mesh_roughness', type=float, default=0.65,
-                        help='3D Object: Mesh roughness. Expected values: 0.0-1.0.')
+        # Background Color
+        parser.add_argument('-background_r', type=float, default=1.0,
+                            help='Background color: Red. Expected values: 0.0-1.0')
+        parser.add_argument('-background_g', type=float, default=1.0,
+                            help='Background color: Green. Expected values: 0.0-1.0')
+        parser.add_argument('-background_b', type=float, default=1.0,
+                            help='Background color: Blue. Expected values: 0.0-1.0')
+        parser.add_argument('-background_a', type=float, default=1.0,
+                            help='Background color: Alpha (Experimental). Expected values: 0.0-1.0')
+        parser.add_argument('-background_intensity', type=float, default=1.2, help='Background color intensity.')
 
-    # Rendering & Hardware Parameter
-    parser.add_argument('-render_engine', type=str, default='CYCLES',
-                        help='Rendering engine chosen. Expected Values: ' + str(expected_render_engine))
-    parser.add_argument('-render_device', type=str, default='GPU',
-                        help='Hardware device to render. Expected Values: ' + str(expected_render_device))
-    parser.add_argument('-render_distance', type=int, default=500000,
-                        help='Render distance. If your object is too large, increase this value.')
+        # Mesh Color and Material
+        parser.add_argument('-mesh_r', type=float, default=0.425,
+                            help='3D Object: Mesh color: Red Expected values: 0.0-1.0.')
+        parser.add_argument('-mesh_g', type=float, default=0.002,
+                            help='3D Object: Mesh color: Green Expected values: 0.0-1.0.')
+        parser.add_argument('-mesh_b', type=float, default=0.0013,
+                            help='3D Object: Mesh color: Blue Expected values: 0.0-1.0.')
+        parser.add_argument('-mesh_a', type=float, default=1.0,
+                            help='3D Object: Mesh color: Alpha (Experimental). Expected values: 0.0-1.0.')
+        parser.add_argument('-mesh_roughness', type=float, default=0.65,
+                            help='3D Object: Mesh roughness. Expected values: 0.0-1.0.')
 
-    # Rendered Image Params
-    parser.add_argument('-image_resolution_x', type=int, default=960, help='Output image pixel resolution: x')
-    parser.add_argument('-image_resolution_y', type=int, default=540, help='Output image pixel resolution: y')
-    parser.add_argument('-image_resolution_scale', type=float, default=100.0,
-                        help='Percentage image resolution scaling.')
-    parser.add_argument('-image_color_mode', type=str, default='RGBA',
-                        help='Output image color mode. Expected values: ' + str(expected_image_color_mode))
-    parser.add_argument('-image_bit_depth', type=int, default=8,
-                        help='Output image bit depth. Expected values: ' + str(expected_image_bit_depth))
-    parser.add_argument('-file_format', type=str, default='PNG',
-                        help='Output image file format. Expected values: ' + str(expected_file_format))
-    parser.add_argument('-image_compression', type=float, default=0.0,
-                        help='Output image compression. Expected values: 0.0-1.0.')
+        # Rendering & Hardware Parameter
+        parser.add_argument('-render_engine', type=str, default='CYCLES',
+                            help='Rendering engine chosen. Expected Values: ' + str(expected_render_engine))
+        parser.add_argument('-render_device', type=str, default='GPU',
+                            help='Hardware device to render. Expected Values: ' + str(expected_render_device))
+        parser.add_argument('-render_distance', type=int, default=500000,
+                            help='Render distance. If your object is too large, increase this value.')
 
-    # Parsing the arguments
-    args = parser.parse_args()
+        # Rendered Image Params
+        parser.add_argument('-image_resolution_x', type=int, default=960, help='Output image pixel resolution: x')
+        parser.add_argument('-image_resolution_y', type=int, default=540, help='Output image pixel resolution: y')
+        parser.add_argument('-image_resolution_scale', type=float, default=100.0,
+                            help='Percentage image resolution scaling.')
+        parser.add_argument('-image_color_mode', type=str, default='RGBA',
+                            help='Output image color mode. Expected values: ' + str(expected_image_color_mode))
+        parser.add_argument('-image_bit_depth', type=int, default=8,
+                            help='Output image bit depth. Expected values: ' + str(expected_image_bit_depth))
+        parser.add_argument('-file_format', type=str, default='PNG',
+                            help='Output image file format. Expected values: ' + str(expected_file_format))
+        parser.add_argument('-image_compression', type=float, default=0.0,
+                            help='Output image compression. Expected values: 0.0-1.0.')
 
-    # Starting the algorithm
-    render_object(model_file_path=args.model_file_path,
-                  out_dir=args.out_dir,
-                  save_raw=args.save_raw,
-                  camera_pos_x=args.camera_pos_x,
-                  camera_pos_y=args.camera_pos_y,
-                  camera_pos_z=args.camera_pos_z,
-                  camera_euler_angle_x=args.camera_euler_angle_x,
-                  camera_euler_angle_y=args.camera_euler_angle_y,
-                  camera_euler_angle_z=args.camera_euler_angle_z,
-                  background_r=args.background_r,
-                  background_g=args.background_g,
-                  background_b=args.background_b,
-                  background_a=args.background_a,
-                  background_intensity=args.background_intensity,
-                  mesh_r=args.mesh_r,
-                  mesh_g=args.mesh_g,
-                  mesh_b=args.mesh_b,
-                  mesh_a=args.mesh_a,
-                  mesh_roughness=args.mesh_roughness,
-                  render_engine=args.render_engine,
-                  render_device=args.render_device,
-                  render_distance=args.render_distance,
-                  image_resolution_x=args.image_resolution_x,
-                  image_resolution_y=args.image_resolution_y,
-                  image_resolution_scale=args.image_resolution_scale,
-                  image_color_mode=args.image_color_mode,
-                  image_bit_depth=args.image_bit_depth,
-                  file_format=args.file_format,
-                  image_compression=args.image_compression)
+        # Parsing the arguments
+        args = parser.parse_known_args(argv)[0]
+
+        # Starting the algorithm
+        render_object(model_file_path=args.model_file_path,
+                      out_dir=args.out_dir,
+                      save_raw=args.save_raw,
+                      camera_pos_x=args.camera_pos_x,
+                      camera_pos_y=args.camera_pos_y,
+                      camera_pos_z=args.camera_pos_z,
+                      camera_euler_angle_x=args.camera_angle_x,
+                      camera_euler_angle_y=args.camera_angle_y,
+                      camera_euler_angle_z=args.camera_angle_z,
+                      background_r=args.background_r,
+                      background_g=args.background_g,
+                      background_b=args.background_b,
+                      background_a=args.background_a,
+                      background_intensity=args.background_intensity,
+                      mesh_r=args.mesh_r,
+                      mesh_g=args.mesh_g,
+                      mesh_b=args.mesh_b,
+                      mesh_a=args.mesh_a,
+                      mesh_roughness=args.mesh_roughness,
+                      render_engine=args.render_engine,
+                      render_device=args.render_device,
+                      render_distance=args.render_distance,
+                      image_resolution_x=args.image_resolution_x,
+                      image_resolution_y=args.image_resolution_y,
+                      image_resolution_scale=args.image_resolution_scale,
+                      image_color_mode=args.image_color_mode,
+                      image_bit_depth=args.image_bit_depth,
+                      file_format=args.file_format,
+                      image_compression=args.image_compression)

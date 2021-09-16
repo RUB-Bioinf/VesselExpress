@@ -11,8 +11,14 @@ if config["skeletonization"] == "ClearMap":
 else:
     ruleorder: skeletonize_scikit > skeletonize_ClearMap
 
-rule all:
-    input: expand(PATH + "/{img}/Statistics", img=IMGS)
+if config["3D"] == 1:
+    rule all:
+        input: expand(PATH + "/{img}/Binary_{img}-render.PNG",img=IMGS),
+            expand(PATH + "/{img}/Statistics",img=IMGS),
+            expand(PATH + "/{img}/Skeleton_{img}-render.PNG",img=IMGS)
+else:
+    rule all:
+        input: expand(PATH + "/{img}/Statistics",img=IMGS)
 
 rule makeImgDir:
     input: PATH + "/{img}.tif"
@@ -38,13 +44,27 @@ rule frangi:
 
 rule threshold:
     input: PATH + "/{img}/Frangi_{img}.tiff"
-    output: PATH + "/{img}/Binary_{img}.tif"
+    output: binImg = PATH + "/{img}/Binary_{img}.tif", binObj = PATH + "/{img}/Binary_{img}.stl"
     conda: "Envs/Pipeline.yml"
     #benchmark: PATH + "/{img}/benchmarks/{img}.threshold.benchmark.txt"
     shell:
         """
             python thresholding.py -i {input} -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
             -ball_radius {config[threshold][ball_radius]} -artifact_size {config[threshold][artifact_size]}
+        """
+
+rule renderBinary:
+    input: rules.threshold.output.binObj
+    output: PATH + "/{img}/Binary_{img}-render.PNG"
+    conda: "Envs/Pipeline.yml"
+    shell:
+        """
+            /usr/bin/blender --background --python render_object.py -- -model_file_path {input} -out_dir {PATH}/{wildcards.img}/ \
+            -save_raw {config[rendering][save_raw]} -render_device {config[rendering][render_device]} \
+            -render_distance {config[rendering][render_distance]} \
+            -image_resolution_x {config[rendering][image_resolution_x]} \
+            -image_resolution_y {config[rendering][image_resolution_y]} \
+            -image_compression {config[rendering][image_compression]}
         """
 
 rule threshold_2D_jpg:
@@ -54,7 +74,7 @@ rule threshold_2D_jpg:
     shell: "python threshold2D.py -i {input} -artifact_size {config[threshold][artifact_size]}"
 
 rule skeletonize_ClearMap:
-    input: PATH + "/{img}/Binary_{img}.tif"
+    input: rules.threshold.output.binImg
     output: PATH + "/{img}/Skeleton_{img}.tif"
     conda: "Envs/ClearMap.yml"
     #benchmark: PATH + "/{img}/benchmarks/{img}.skeletonize.benchmark.txt"
@@ -66,6 +86,20 @@ rule skeletonize_scikit:
     conda: "Envs/Pipeline.yml"
     #benchmark: PATH + "/{img}/benchmarks/{img}.skeletonize.benchmark.txt"
     shell: "python skeletonize_scikit.py -i {input} -pixel_dimensions {config[graphAnalysis][pixel_dimensions]}"
+
+rule renderSkeleton:
+    input: PATH + "/{img}/Skeleton_{img}.tif"
+    output: PATH + "/{img}/Skeleton_{img}-render.PNG"
+    conda: "Envs/Pipeline.yml"
+    shell:
+        """
+            /usr/bin/blender --background --python render_object.py -- -model_file_path {input} -out_dir {PATH}/{wildcards.img}/ \
+            -save_raw {config[rendering][save_raw]} -render_device {config[rendering][render_device]} \
+            -render_distance {config[rendering][render_distance]} \
+            -image_resolution_x {config[rendering][image_resolution_x]} \
+            -image_resolution_y {config[rendering][image_resolution_y]} \
+            -image_compression {config[rendering][image_compression]}
+        """
 
 rule graphAnalysis:
     input: PATH + "/{img}/Skeleton_{img}.tif"
