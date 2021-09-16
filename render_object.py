@@ -32,7 +32,7 @@ def render_object(model_file_path: str, out_dir: str,
                   # Render & Hardware Params
                   render_engine: str = 'CYCLES', render_device='GPU', render_distance: int = 500000,
                   # Rendered Image Params
-                  image_resolution_x: int = 1920, image_resolution_y: int = 1080, image_resolution_scale: float = 30.0,
+                  image_resolution_x: int = 1920, image_resolution_y: int = 1080, image_resolution_scale: float = 100.0,
                   image_color_mode: str = 'RGBA', image_bit_depth: int = 8, file_format: str = 'PNG',
                   image_compression: float = 0.0
                   ) -> (str, str):
