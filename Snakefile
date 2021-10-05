@@ -73,7 +73,8 @@ rule threshold_2D_jpg:
     conda: "Envs/Thresholding.yml"
     shell:
         """
-            python threshold2D.py -i {input} -artifact_size {config[threshold][artifact_size]} \
+            python threshold2D.py -i {input} -ball_radius {config[threshold][ball_radius]} \
+            -artifact_size {config[threshold][artifact_size]} \
             -sigma_min {config[frangi][sigma_min]} -sigma_max {config[frangi][sigma_max]} \
             -sigma_steps {config[frangi][sigma_steps]} -alpha {config[frangi][alpha]} -beta {config[frangi][beta]} \
             -gamma {config[frangi][gamma]} -block_size {config[threshold][block_size]} \

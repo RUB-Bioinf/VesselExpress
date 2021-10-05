@@ -7,6 +7,7 @@ import os
 import argparse
 import matplotlib.pyplot as plt
 from skimage import color
+import numpy as np
 
 if __name__ == '__main__':
     programStart = time.time()
@@ -17,9 +18,9 @@ if __name__ == '__main__':
                         help='radius of ball structuring element for morphological closing')
     parser.add_argument('-artifact_size', type=int, default=5,
                         help='size of artifacts to be removed from the binary mask')
-    parser.add_argument('-sigma_min', type=int, default=1, help='Frangi sigma_min parameter')
-    parser.add_argument('-sigma_max', type=int, default=10, help='Frangi sigma_max parameter')
-    parser.add_argument('-sigma_steps', type=int, default=2, help='Frangi sigma_steps parameter')
+    parser.add_argument('-sigma_min', type=float, default=1, help='Frangi sigma_min parameter')
+    parser.add_argument('-sigma_max', type=float, default=10, help='Frangi sigma_max parameter')
+    parser.add_argument('-sigma_steps', type=float, default=2, help='Frangi sigma_steps parameter')
     parser.add_argument('-alpha', type=float, default=0.5, help='Frangi alpha parameter')
     parser.add_argument('-beta', type=float, default=0.5, help='Frangi beta parameter')
     parser.add_argument('-gamma', type=float, default=15, help='Frangi gamma parameter')
@@ -34,7 +35,7 @@ if __name__ == '__main__':
     img = color.rgb2gray(img)
     if args.denoise == 1:
         img = denoise_tv_chambolle(img, weight=0.9)
-    filtered = frangi(image=img, black_ridges=False, sigmas=range(args.sigma_min, args.sigma_max, args.sigma_steps),
+    filtered = frangi(image=img, black_ridges=False, sigmas=np.arange(args.sigma_min, args.sigma_max, args.sigma_steps),
                       alpha=args.alpha, beta=args.beta, gamma=args.gamma, mode='reflect')
 
     #threshold = threshold_li(filtered)
