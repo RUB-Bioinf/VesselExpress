@@ -71,7 +71,14 @@ rule threshold_2D_jpg:
     input: PATH + "/{img}/{img}.jpg"
     output: PATH + "/{img}/Binary_{img}.tif"
     conda: "Envs/Thresholding.yml"
-    shell: "python threshold2D.py -i {input} -artifact_size {config[threshold][artifact_size]}"
+    shell:
+        """
+            python threshold2D.py -i {input} -artifact_size {config[threshold][artifact_size]} \
+            -sigma_min {config[frangi][sigma_min]} -sigma_max {config[frangi][sigma_max]} \
+            -sigma_steps {config[frangi][sigma_steps]} -alpha {config[frangi][alpha]} -beta {config[frangi][beta]} \
+            -gamma {config[frangi][gamma]} -block_size {config[threshold][block_size]} \
+            -denoise {config[threshold][denoise]}
+        """
 
 rule skeletonize_ClearMap:
     input: rules.threshold.output.binImg

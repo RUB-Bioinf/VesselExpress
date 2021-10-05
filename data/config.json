@@ -14,7 +14,9 @@
   "threshold":
   {
     "ball_radius": 3,
-    "artifact_size": 5
+    "artifact_size": 5,
+    "block_size": 137,
+    "denoise": 1
   },
   "graphAnalysis":
   {
