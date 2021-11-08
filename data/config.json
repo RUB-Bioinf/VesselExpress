@@ -2,6 +2,7 @@
   "imgFolder": "data",
   "skeletonization": "scikit",
   "3D": 1,
+  "render": 1,
   "frangi":
   {
     "sigma_min": 2,

@@ -21,7 +21,8 @@ def Frangi_filter(file, sigma_min=2.0, sigma_max=6.0, sigma_steps=None, alpha=0.
 	else:
 		output_dir = os.path.dirname(input_file)
 
-	ofile = output_dir + '/' + prefix + file + 'f'
+	#ofile = output_dir + '/' + prefix + file + 'f'
+	ofile = output_dir + '/' + prefix + file
 
 	pype_part_1 = ['vmtkimagereader -f tiff -ifile ']
 	pype_part_2 = [(' --pipe vmtkimagecast -type float'
@@ -40,7 +41,7 @@ def Frangi_filter(file, sigma_min=2.0, sigma_max=6.0, sigma_steps=None, alpha=0.
 		f.close()
 
 	# execute command
-	pype_argument = pype_part_1[0] + input_file + pype_part_2[0] + ofile
+	pype_argument = pype_part_1[0] + "\"" + input_file + "\"" + pype_part_2[0] + "\"" + ofile + "\""
 	print(pype_argument)
 
 	if not no_output:

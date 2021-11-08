@@ -1,10 +1,10 @@
 import time
 import os
-import tifffile
 import argparse
-from skimage.morphology import skeletonize, binary_dilation
+from skimage.morphology import skeletonize
 
-from create_stl import get_mesh
+import utils
+
 
 if __name__ == '__main__':
     programStart = time.time()
@@ -18,16 +18,11 @@ if __name__ == '__main__':
     pixelDims = [float(item) for item in args.pixel_dimensions.split(',')]
     input_file = os.path.abspath(args.i).replace('\\', '/')
     output_dir = os.path.dirname(input_file)
-    binArr = tifffile.imread(args.i)
+    binArr = utils.read_img(args.i)
 
     skel = skeletonize(binArr, method='lee')
 
-    tifffile.imsave(output_dir + '/Skeleton_' + os.path.basename(output_dir) + '.tif', skel.astype('uint8'),
-                    photometric='minisblack')
-
-    if skel.ndim == 3:
-        skel = binary_dilation(skel)
-        skelMesh = get_mesh(skel, tuple(pixelDims))
-        skelMesh.save(output_dir + '/Skeleton_' + os.path.basename(output_dir) + '.stl')
+    utils.write_img(skel.astype('uint8'), output_dir + '/Skeleton_' + os.path.basename(output_dir) + '.'
+                    + input_file.split('.')[1])
 
     print("Skeletonization completed in %0.3f seconds" % (time.time() - programStart))

@@ -14,7 +14,7 @@ ENV PATH /opt/conda/bin:$PATH
 
 WORKDIR /home/user/
 
-COPY VesselExpress /home/user/VesselExpress
+COPY . /home/user/VesselExpress
 
 WORKDIR /home/user/VesselExpress/
 
@@ -22,6 +22,6 @@ RUN ln -sf /bin/bash /bin/sh
 
 RUN conda update conda
 
-RUN snakemake --use-conda --cores all --conda-frontend conda
+RUN snakemake --use-conda --cores all --conda-frontend conda --conda-create-envs-only
 
 CMD snakemake --use-conda --cores all --conda-frontend conda
