@@ -5,33 +5,47 @@
 [![Language](https://img.shields.io/github/languages/top/RUB-Bioinf/LightSheetBrainVesselSkeletonization?style=plastic)](https://github.com/RUB-Bioinf/LightSheetBrainVesselSkeletonization)
 [![](https://github.com/RUB-Bioinf/LightSheetBrainVesselSkeletonization/workflows/RepoTracker/badge.svg)](https://github.com/RUB-Bioinf/LightSheetBrainVesselSkeletonization/actions)
 
-# **Automated Analysis of 3D Light Sheet Brain Vessel Images**
 
-This repository contains Python scripts for extracting features of 3D light sheet brain vessel images which have been
-automated with the workflow management system [Snakemake](https://github.com/snakemake/snakemake).
+<p style="text-align:center; margin-bottom: 0px"><img src="imgs/logo.svg" alt="Logo" style="width: 15%;"></p>
+<h1 style="text-align: center; margin:0px; padding-top: 0px">VesselExpress</h1>
+<h3 style="text-align:center; margin-top: 5px">Rapid and fully automated bloodvasculature analysis in 3D light sheet image volumes of different organs.</h3>
 
-The automated analysis pipeline contains the following steps:
+VesselExpress is an open-source software designed for rapid, fully automated and scalable analysis of vascular datasets 
+in high-throughput sequences. It processes raw microscopic images (2D or 3D) of blood vessels in  parallel  and outputs 
+quantified  phenotypical  data  along with image and object files of the rendered vasculature. The processing steps include segmentation, skeletonization, graph construction and analysis and 
+optional rendering. These steps are automated in a pipeline with the workflow management system [Snakemake](https://github.com/snakemake/snakemake) 
+(see workflow [DAG](imgs/dag.pdf)). The whole pipeline can be run via Docker or locally. 
 
-1. Segmentation
-2. Skeleton extraction
-3. Graph construction
-4. Statistical analysis
+![VesselExpress](imgs/VesselExpress.png)
 
-***
-
-![Pipeline](pipeline.png)
-
-***
-
-For processing larger images it is recommended to use the ClearMap skeletonization by Kirst et al. To use that please clone their
+**Notes:** It is also possible to execute each step individually with the
+corresponding Python script. Existing modules can be exchanged in the [Snakefile](Snakefile) with custom scripts.
+For processing larger images it is recommended to use the ClearMap skeletonization by Kirst et al. Therefore please clone their
 [repository](https://github.com/MartinFinkenflugel/ClearMap2/tree/3617414d6d56709b452b2c5253631eecbede1b85)
-and copy the ClearMap folder into the projects root folder. For further information please read their 
-[paper](https://www.sciencedirect.com/science/article/abs/pii/S0092867420301094).
+and copy the ClearMap folder into the projects root folder. 
 For the graph construction the Python script
 [networkx_graph_from_array](https://github.com/3Scan/3scan-skeleton/blob/master/skeleton/networkx_graph_from_array.py)
 from the
 [3scan-skeleton repository](https://github.com/3Scan/3scan-skeleton#3d-image-skeletonization-tools) is used. This is
 downloaded from GitHub and copied into the Graph folder. Many thanks to GitHub and the contributors!
+
+***
+
+## Docker Version
+1. Install Docker for your operating system from [here](https://docs.docker.com/get-docker/).
+2. Start Docker.
+3. Pull the Docker image from DockerHub via `docker pull vesselexpress:latest` or navigate into the VesselExpress directory and call `docker build -t vesselexpress .`.
+4. Run the docker container with `docker run -v path-to-data-and-config:/vesselexpress/data`
+
+## Local Version (without Docker)
+1. Install Anaconda following the [installation instructions](https://docs.anaconda.com/anaconda/install/index.html).
+2. Install Snakemake following the [installation instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
+3. In a terminal navigate to the project's root folder and type
+`snakemake --use-conda --cores all --conda-frontend conda`
+
+Different parameters can be set by using the command line option '--config' or by changing the parameters in the
+config.json file. A full description of command line arguments for Snakemake can be found
+[here](https://snakemake.readthedocs.io/en/v4.5.1/executable.html).
 
 ## Correspondence
 
