@@ -1,9 +1,12 @@
-import bpy
-import os
-from math import radians
 import argparse
 import sys
 
+import bpy
+import os
+from math import radians
+
+model_file_path_default = 'C:\\Users\\nilfoe\\PycharmProjects\\skeleton_blender\\model\\Binary_B5_contra_RB_cmp.stl';
+out_dir_default = 'C:\\Users\\nilfoe\\PycharmProjects\\skeleton_blender\\out'
 
 # Expected image_color_mode: BW, RGB, RGBA
 # Expected render_engine: CYCLES, BLENDER_EEVEE, BLENDER_WORKBENCH
@@ -20,24 +23,27 @@ expected_file_format = ['JPEG', 'PNG', 'TIFF', 'IRIS', 'JPEG2000', 'BMP', 'TARGA
 
 
 def render_object(model_file_path: str, out_dir: str,
-                  save_raw: int = 1,
+                  save_raw: bool = True,
+                  save_glb: bool = True,
                   # Camera Params
                   camera_pos_x: float = -2.0, camera_pos_y: float = 3.0, camera_pos_z: float = 3.0,
                   camera_euler_angle_x: float = 422.0, camera_euler_angle_y: float = 0.0,
                   camera_euler_angle_z: float = 149.0,
                   # Background Color Params
-                  background_r: float = 1.0, background_g: float = 1.0, background_b: float = 1.0,
-                  background_a: float = 1.0, background_intensity: float = 1.2,
+                  background_r: float = 0.638, background_g: float = 0.638, background_b: float = 0.638,
+                  background_a: float = 1.0, background_intensity: float = 1.0,
                   # Mesh Color Params
-                  mesh_r: float = 0.425, mesh_g: float = 0.002, mesh_b: float = 0.0013,
-                  mesh_a: float = 1.0, mesh_roughness: float = 0.65,
+                  mesh_r: float = 0.528, mesh_g: float = 0.002, mesh_b: float = 0.0013, mesh_a: float = 1.0,
+                  # Mesh Material Properties
+                  mesh_roughness: float = 0.65, mesh_metallic: float = 0.0, mesh_sheen: float = 0.0,
+                  mesh_specular: float = 0.0,
                   # Render & Hardware Params
                   render_engine: str = 'CYCLES', render_device='GPU', render_distance: int = 500000,
                   # Rendered Image Params
-                  image_resolution_x: int = 1920, image_resolution_y: int = 1080, image_resolution_scale: float = 30.0,
+                  image_resolution_x: int = 1920, image_resolution_y: int = 1080, image_resolution_scale: float = 50.0,
                   image_color_mode: str = 'RGBA', image_bit_depth: int = 8, file_format: str = 'PNG',
                   image_compression: float = 0.0
-                  ) -> (str, str):
+                  ) -> (str, str, str):
     ########################################
     #### Setup #############################
     ########################################
@@ -137,8 +143,9 @@ def render_object(model_file_path: str, out_dir: str,
         raise Exception('Failed to detect the model in the scene.')
 
     # Creating the material for the rendered object
+    mat_name = 'VesselExpress vessel material'
     materials = bpy.data.materials
-    mat_name = 'skeleton'
+
     material = materials.get(mat_name)
     if not material:
         material = materials.new(mat_name)
@@ -146,10 +153,17 @@ def render_object(model_file_path: str, out_dir: str,
     material.use_nodes = True
     nodes = material.node_tree.nodes
     links = material.node_tree.links
+
+    # Linking the node graph to the material
     output = nodes.new(type='ShaderNodeOutputMaterial')
-    diffuse = nodes.new(type='ShaderNodeBsdfDiffuse')
+    diffuse = nodes.new(type='ShaderNodeBsdfPrincipled')
+
+    # Applying material property parameters
     diffuse.inputs[0].default_value = ([mesh_r, mesh_g, mesh_b, mesh_a])
-    diffuse.inputs[1].default_value = mesh_roughness
+    diffuse.inputs[4].default_value = mesh_metallic
+    diffuse.inputs[5].default_value = mesh_specular
+    diffuse.inputs[7].default_value = mesh_roughness
+    diffuse.inputs[10].default_value = mesh_sheen
 
     # Applying the material to the imported object
     link = links.new(diffuse.outputs['BSDF'], output.inputs['Surface'])
@@ -188,16 +202,23 @@ def render_object(model_file_path: str, out_dir: str,
 
     # Saving the scene to device
     scene_out_file_name = None
-    if save_raw == 1:
+    if save_raw:
         scene_out_file_name = out_dir + os.sep + object_name + '.blend'
         print('Saving scene to: ' + scene_out_file_name)
         bpy.ops.wm.save_as_mainfile(filepath=scene_out_file_name)
+
+    glb_out_file_name = None
+    if save_glb:
+        glb_out_file_name = out_dir + os.sep + object_name + '.glb'
+        bpy.ops.export_scene.gltf(filepath=glb_out_file_name, export_copyright='Created with VesselExpress',
+                                  export_texcoords=True, export_normals=True, export_tangents=True,
+                                  export_materials=True, export_colors=True)
 
     # Updating the scene, in case this runs not in headless mode
     bpy.context.view_layer.update()
     print('Render done.')
 
-    return render_out_filename, scene_out_file_name
+    return render_out_filename, scene_out_file_name, glb_out_file_name
 
 
 # Clear all nodes in a material
@@ -227,7 +248,8 @@ if __name__ == '__main__':
 
         # Optional Arguments
         # Raw:
-        parser.add_argument('-save_raw', type=int, default=1, help='Save the .blend file after rendering.')
+        parser.add_argument('-save_raw', type=int, default=1, help='Save the .blend project file after rendering.')
+        parser.add_argument('-save_glb', type=int, default=1, help='Save the .glb object file after rendering.')
 
         # Camera Position
         parser.add_argument('-camera_pos_x', type=float, default=-2.0, help='Original camera x-position.')
@@ -240,18 +262,18 @@ if __name__ == '__main__':
         parser.add_argument('-camera_angle_z', type=float, default=149.0, help='Original camera z-euler-angle.')
 
         # Background Color
-        parser.add_argument('-background_r', type=float, default=1.0,
+        parser.add_argument('-background_r', type=float, default=0.638,
                             help='Background color: Red. Expected values: 0.0-1.0')
-        parser.add_argument('-background_g', type=float, default=1.0,
+        parser.add_argument('-background_g', type=float, default=0.638,
                             help='Background color: Green. Expected values: 0.0-1.0')
-        parser.add_argument('-background_b', type=float, default=1.0,
+        parser.add_argument('-background_b', type=float, default=0.638,
                             help='Background color: Blue. Expected values: 0.0-1.0')
         parser.add_argument('-background_a', type=float, default=1.0,
                             help='Background color: Alpha (Experimental). Expected values: 0.0-1.0')
-        parser.add_argument('-background_intensity', type=float, default=1.2, help='Background color intensity.')
+        parser.add_argument('-background_intensity', type=float, default=1.0, help='Background color intensity.')
 
-        # Mesh Color and Material
-        parser.add_argument('-mesh_r', type=float, default=0.425,
+        # Mesh Color
+        parser.add_argument('-mesh_r', type=float, default=0.528,
                             help='3D Object: Mesh color: Red Expected values: 0.0-1.0.')
         parser.add_argument('-mesh_g', type=float, default=0.002,
                             help='3D Object: Mesh color: Green Expected values: 0.0-1.0.')
@@ -259,8 +281,16 @@ if __name__ == '__main__':
                             help='3D Object: Mesh color: Blue Expected values: 0.0-1.0.')
         parser.add_argument('-mesh_a', type=float, default=1.0,
                             help='3D Object: Mesh color: Alpha (Experimental). Expected values: 0.0-1.0.')
+
+        # Mesh Material
         parser.add_argument('-mesh_roughness', type=float, default=0.65,
                             help='3D Object: Mesh roughness. Expected values: 0.0-1.0.')
+        parser.add_argument('-mesh_metallic', type=float, default=0.0,
+                            help='3D Object: Mesh metallicness. Expected values: 0.0-1.0.')
+        parser.add_argument('-mesh_sheen', type=float, default=0.0,
+                            help='3D Object: Mesh sheen. Expected values: 0.0-1.0.')
+        parser.add_argument('-mesh_specular', type=float, default=0.0,
+                            help='3D Object: Mesh specularity. Expected values: 0.0-1.0.')
 
         # Rendering & Hardware Parameter
         parser.add_argument('-render_engine', type=str, default='CYCLES',
@@ -290,6 +320,7 @@ if __name__ == '__main__':
         # Starting the algorithm
         render_object(model_file_path=args.model_file_path,
                       out_dir=args.out_dir,
+                      save_glb=args.save_glb,
                       save_raw=args.save_raw,
                       camera_pos_x=args.camera_pos_x,
                       camera_pos_y=args.camera_pos_y,
@@ -307,6 +338,9 @@ if __name__ == '__main__':
                       mesh_b=args.mesh_b,
                       mesh_a=args.mesh_a,
                       mesh_roughness=args.mesh_roughness,
+                      mesh_sheen=args.mesh_sheen,
+                      mesh_specular=args.mesh_specular,
+                      mesh_metallic=args.mesh_metallic,
                       render_engine=args.render_engine,
                       render_device=args.render_device,
                       render_distance=args.render_distance,
