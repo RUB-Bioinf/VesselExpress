@@ -19,7 +19,6 @@ def processImage(skelImg, binImg, statsDir, parameterDict):
     #finfo = dir + '/' + file_name + '_info.csv'
 
     # Graph construction
-    print("graph construction...")
     binImage = utils.read_img(binImg)
     binImage = binImage / np.max(binImage)
     skeleton = utils.read_img(skelImg)
@@ -87,6 +86,7 @@ if __name__ == '__main__':
                         help='if set to 1 create CSVs containing all statistics for each category')
     parser.add_argument('-experimental_flag', type=int, default=0,
                         help='set to 1 for experimental statistics')
+    parser.add_argument('-prints', type=bool, default=False, help='set to True to print runtime')
     args = parser.parse_args()
 
     parameters = {
@@ -100,4 +100,5 @@ if __name__ == '__main__':
 
     processImage(args.skel_img, args.bin_img, args.output_dir, parameters)
 
-    print("Graph extraction and statistical analysis completed in %0.3f seconds" % (time.time() - programStart))
+    if args.prints:
+        print("Graph extraction and statistical analysis completed in %0.3f seconds" % (time.time() - programStart))
