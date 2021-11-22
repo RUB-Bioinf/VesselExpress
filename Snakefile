@@ -35,7 +35,11 @@ def get_input(imgs, exts, blender_exists, input_list=[]):
     input_list.append(expand(PATH + "/{img}/{img}.{ext}_Statistics", zip, img=imgs, ext=exts))
     if config['3D'] == 1 and config['render'] == 1 and blender_exists:
         input_list.append(expand(PATH + "/{img}/Binary_{img}-render.PNG", img=imgs))
+        input_list.append(expand(PATH + "/{img}/Binary_{img}.blend",img=imgs))
+        input_list.append(expand(PATH + "/{img}/Binary_{img}.glb",img=imgs))
         input_list.append(expand(PATH + "/{img}/Skeleton_{img}-render.PNG",img=imgs))
+        input_list.append(expand(PATH + "/{img}/Skeleton_{img}.blend",img=imgs))
+        input_list.append(expand(PATH + "/{img}/Skeleton_{img}.glb",img=imgs))
     return input_list
 
 
@@ -115,7 +119,7 @@ rule thresholding:
 
 rule renderBinary:
     input: PATH + "/{img}/Binary_{img}.stl"
-    output: PATH + "/{img}/Binary_{img}-render.PNG"
+    output: PATH + "/{img}/Binary_{img}-render.PNG", PATH + "/{img}/Binary_{img}.glb", PATH + "/{img}/Binary_{img}.blend"
     conda: ENV_PATH + "Pipeline.yml"
     shell:
             BLENDER_PATH + " --background --python render_object.py -- -model_file_path \"{input}\" -out_dir \"{PATH}/{wildcards.img}/\" \
@@ -145,7 +149,7 @@ rule skeletonize_scikit:
 
 rule renderSkeleton:
     input: PATH + "/{img}/Skeleton_{img}.stl"
-    output: PATH + "/{img}/Skeleton_{img}-render.PNG"
+    output: PATH + "/{img}/Skeleton_{img}-render.PNG", PATH + "/{img}/Skeleton_{img}.glb", PATH + "/{img}/Skeleton_{img}.blend"
     conda: ENV_PATH + "Pipeline.yml"
     shell:
             BLENDER_PATH + " --background --python render_object.py -- -model_file_path \"{input}\" -out_dir \"{PATH}/{wildcards.img}/\" \
@@ -169,7 +173,7 @@ if config['3D'] == 1:
         conda: ENV_PATH + "Pipeline.yml"
         shell:
             """
-                python create_stl.py -i \"{input}\" -o \"{output}\" -pixel_dimensions {config[graphAnalysis][pixel_dimensions]}
+                python -W ignore create_stl.py -i \"{input}\" -o \"{output}\" -pixel_dimensions {config[graphAnalysis][pixel_dimensions]}
             """
 
     rule createSkeletonObj:
@@ -178,6 +182,6 @@ if config['3D'] == 1:
         conda: ENV_PATH + "Pipeline.yml"
         shell:
             """
-                python create_stl.py -i \"{input}\" -o \"{output}\" -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
+                python -W ignore create_stl.py -i \"{input}\" -o \"{output}\" -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
                 -dilation True
             """

@@ -90,7 +90,6 @@ class Graph:
         self.branchesBrPtDict = defaultdict(dict)
 
         # calculate distance transform matrix
-        print("distance transformation...")
         self.initTime = time.time()
         self.distTransf = ndi.distance_transform_edt(segmentation, sampling=self.pixelDims)
         self.radiusMatrix = self.distTransf * skeleton
@@ -115,7 +114,7 @@ class Graph:
             Graph : networkx graph
                 networkx graph of a skeleton
         """
-        print("statistic calculation...")
+        # statistic calculation
         startTime = time.time()
         self.infoDict['filaments'] = len(self.filaments)
         for ithDisjointGraph, subGraphSkeleton in enumerate(self.filaments):

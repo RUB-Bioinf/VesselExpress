@@ -14,8 +14,10 @@ if __name__ == '__main__':
     parser.add_argument('-alpha', type=float, default=0.5, help='Frangi alpha parameter')
     parser.add_argument('-beta', type=float, default=500.0, help='Frangi beta parameter')
     parser.add_argument('-gamma', type=float, default=200.0, help='Frangi gamma parameter')
+    parser.add_argument('-prints', type=bool, default=False, help='set to True to print runtime')
     args = parser.parse_args()
 
     Frangi_filter(args.i, args.sigma_min, args.sigma_max, args.sigma_steps, args.alpha, args.beta, args.gamma)
 
-    print("Frangi filtering completed in %0.3f seconds" % (time.time() - programStart))
+    if args.prints:
+        print("Frangi filtering completed in %0.3f seconds" % (time.time() - programStart))

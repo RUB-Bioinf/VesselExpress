@@ -13,6 +13,7 @@ if __name__ == '__main__':
     parser.add_argument('-i', type=str, help='input tif image file to process')
     parser.add_argument('-pixel_dimensions', type=str, default="2.0,1.015625,1.015625",
                         help='Pixel dimensions in [z, y, x]')
+    parser.add_argument('-prints', type=bool, default=False, help='set to True to print runtime')
     args = parser.parse_args()
 
     pixelDims = [float(item) for item in args.pixel_dimensions.split(',')]
@@ -25,4 +26,5 @@ if __name__ == '__main__':
     utils.write_img(skel.astype('uint8'), output_dir + '/Skeleton_' + os.path.basename(output_dir) + '.'
                     + input_file.split('.')[1])
 
-    print("Skeletonization completed in %0.3f seconds" % (time.time() - programStart))
+    if args.prints:
+        print("Skeletonization completed in %0.3f seconds" % (time.time() - programStart))

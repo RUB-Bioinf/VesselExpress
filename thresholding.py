@@ -19,6 +19,7 @@ if __name__ == '__main__':
     parser.add_argument('-artifact_size', type=int, default=5,
                         help='size of artifacts to be removed from the binary mask')
     parser.add_argument('-block_size', type=int, default=137, help='block size for local thresholding')
+    parser.add_argument('-prints', type=bool, default=False, help='set to True to print runtime')
     args = parser.parse_args()
 
     pixelDims = [float(item) for item in args.pixel_dimensions.split(',')]
@@ -52,4 +53,5 @@ if __name__ == '__main__':
     utils.write_img((binImage * 255).astype('uint8'), output_dir + '/Binary_' + os.path.basename(output_dir) + '.'
                     + input_file.split('.')[1])
 
-    print("Thresholding completed in %0.3f seconds" % (time.time() - programStart))
+    if args.prints:
+        print("Thresholding completed in %0.3f seconds" % (time.time() - programStart))

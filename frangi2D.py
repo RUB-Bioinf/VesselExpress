@@ -19,6 +19,7 @@ if __name__ == '__main__':
     parser.add_argument('-beta', type=float, default=0.5, help='Frangi beta parameter')
     parser.add_argument('-gamma', type=float, default=15, help='Frangi gamma parameter')
     parser.add_argument('-denoise', type=int, default=1, help='set to 1 for prior denoising of image')
+    parser.add_argument('-prints', type=bool, default=False, help='set to True to print runtime')
     args = parser.parse_args()
 
     img = utils.read_img(args.i)
@@ -37,4 +38,5 @@ if __name__ == '__main__':
     utils.write_img(filtered.astype('uint16'), output_dir + '/Frangi_' + os.path.basename(output_dir) + '.'
                     + input_file.split('.')[1])
 
-    print("Frangi completed in %0.3f seconds" % (time.time() - programStart))
+    if args.prints:
+        print("Frangi completed in %0.3f seconds" % (time.time() - programStart))
