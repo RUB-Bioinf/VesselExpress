@@ -5,9 +5,6 @@ import bpy
 import os
 from math import radians
 
-model_file_path_default = 'C:\\Users\\nilfoe\\PycharmProjects\\skeleton_blender\\model\\Binary_B5_contra_RB_cmp.stl';
-out_dir_default = 'C:\\Users\\nilfoe\\PycharmProjects\\skeleton_blender\\out'
-
 # Expected image_color_mode: BW, RGB, RGBA
 # Expected render_engine: CYCLES, BLENDER_EEVEE, BLENDER_WORKBENCH
 # Expected render_device: CPU, GPU
@@ -47,6 +44,7 @@ def render_object(model_file_path: str, out_dir: str,
     ########################################
     #### Setup #############################
     ########################################
+    print('Render starting...')
 
     # Finding the model file on the file system
     if not os.path.exists(model_file_path):
@@ -156,17 +154,17 @@ def render_object(model_file_path: str, out_dir: str,
 
     # Linking the node graph to the material
     output = nodes.new(type='ShaderNodeOutputMaterial')
-    diffuse = nodes.new(type='ShaderNodeBsdfPrincipled')
+    principled = nodes.new(type='ShaderNodeBsdfPrincipled')
 
     # Applying material property parameters
-    diffuse.inputs[0].default_value = ([mesh_r, mesh_g, mesh_b, mesh_a])
-    diffuse.inputs[4].default_value = mesh_metallic
-    diffuse.inputs[5].default_value = mesh_specular
-    diffuse.inputs[7].default_value = mesh_roughness
-    diffuse.inputs[10].default_value = mesh_sheen
+    bpy.data.materials[mat_name].node_tree.nodes['Principled BSDF'].inputs[0].default_value = ([mesh_r, mesh_g, mesh_b, mesh_a])
+    bpy.data.materials[mat_name].node_tree.nodes['Principled BSDF'].inputs[4].default_value = mesh_metallic
+    bpy.data.materials[mat_name].node_tree.nodes['Principled BSDF'].inputs[5].default_value = mesh_specular
+    bpy.data.materials[mat_name].node_tree.nodes['Principled BSDF'].inputs[7].default_value = mesh_roughness
+    bpy.data.materials[mat_name].node_tree.nodes['Principled BSDF'].inputs[10].default_value = mesh_sheen
 
     # Applying the material to the imported object
-    link = links.new(diffuse.outputs['BSDF'], output.inputs['Surface'])
+    link = links.new(principled.outputs['BSDF'], output.inputs['Surface'])
     active_object.active_material = bpy.data.materials[mat_name]
 
     # Setting the render clipping distance for all cameras
@@ -351,3 +349,4 @@ if __name__ == '__main__':
                       image_bit_depth=args.image_bit_depth,
                       file_format=args.file_format,
                       image_compression=args.image_compression)
+                      
