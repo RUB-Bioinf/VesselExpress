@@ -65,10 +65,21 @@ if config["skeletonization"] == "ClearMap" and OS == 'Linux':
 else:
     ruleorder: skeletonize_scikit > skeletonize_ClearMap
 
+
 if config["3D"] == 1:
-    ruleorder: frangi3D > frangi2D
+    if config["segmentation"] == "frangi":
+        ruleorder: segmentation_frangi > segmentation_frangi2D > segmentation_franginet > segmentation_franginet_gpu
+    elif config["segmentation"] == "franginet":
+        ruleorder: segmentation_franginet > segmentation_frangi > segmentation_frangi2D > segmentation_franginet_gpu
+    elif config["segmentation"] == "franginet_gpu":
+        ruleorder: segmentation_franginet_gpu > segmentation_franginet > segmentation_frangi > segmentation_frangi2D
 else:
-    ruleorder: frangi2D > frangi3D
+    ruleorder: segmentation_frangi2D > segmentation_frangi > segmentation_franginet > segmentation_franginet_gpu
+
+# if config["3D"] == 1:
+#     ruleorder: frangi3D > frangi2D
+# else:
+#     ruleorder: frangi2D > frangi3D
 
 
 rule all:
@@ -79,7 +90,7 @@ rule makeImgDir:
     output: PATH + "/{img}/{img}.{ext}"
     shell: "mv \"{input}\" \"{output}\""
 
-rule frangi2D:
+rule segmentation_frangi2D:
     input: PATH + "/{img}/{img}.{ext}"
     output: PATH + "/{img}/Frangi_{img}.{ext}"
     conda: ENV_PATH + "Pipeline.yml"
@@ -91,9 +102,11 @@ rule frangi2D:
             -gamma {config[frangi][gamma]} -denoise {config[threshold][denoise]}
         """
 
-rule frangi3D:
+rule segmentation_frangi:
     input: PATH + "/{img}/{img}.{ext}"
     output: PATH + "/{img}/Frangi_{img}.{ext}"
+    wildcard_constraints:
+        ext="(tiff)"
     conda: ENV_PATH + "vmtk.yml"
     # benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
     shell:
@@ -101,6 +114,36 @@ rule frangi3D:
             python frangi3D.py -i \"{input}\" -sigma_min {config[frangi][sigma_min]} -sigma_max {config[frangi][sigma_max]} \
             -sigma_steps {config[frangi][sigma_steps]} -alpha {config[frangi][alpha]} -beta {config[frangi][beta]} \
             -gamma {config[frangi][gamma]}
+        """
+
+rule segmentation_franginet:
+    input: PATH + "/{img}/{img}.{ext}"
+    output: PATH + "/{img}/Frangi_{img}.{ext}"
+    wildcard_constraints:
+        ext="(tiff)"
+    conda: "Envs/Linux/frangi-cpu.yml"
+    #benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
+    shell:
+        """
+            python franginet.py -i {input} -o {output} -model {config[franginet][model]} -mode {config[franginet][mode]} \
+            -normalization {config[franginet][normalization]} -average {config[franginet][average]} \
+            -mode_img {config[franginet][mode_img]} -gpus {config[franginet][gpus]} \
+            -batch_size {config[franginet][batch_size]}
+        """
+
+rule segmentation_franginet_gpu:
+    input: PATH + "/{img}/{img}.{ext}"
+    output: PATH + "/{img}/Frangi_{img}.{ext}"
+    wildcard_constraints:
+        ext="(tiff)"
+    conda: "Envs/Linux/frangi-gpu.yml"
+    #benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
+    shell:
+        """
+            python franginet.py -i {input} -o {output} -model {config[franginet][model]} -mode {config[franginet][mode]} \
+            -normalization {config[franginet][normalization]} -average {config[franginet][average]} \
+            -mode_img {config[franginet][mode_img]} -gpus {config[franginet][gpus]} \
+            -batch_size {config[franginet][batch_size]}
         """
 
 rule thresholding:
@@ -112,7 +155,8 @@ rule thresholding:
     # benchmark: PATH + "/{img}/benchmarks/{img}.threshold.benchmark.txt"
     shell:
         """
-            python thresholding.py -i \"{input}\" -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
+            python thresholding.py -i \"{input}\" -value {config[threshold][value]} \
+            -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
             -ball_radius {config[threshold][ball_radius]} -artifact_size {config[threshold][artifact_size]} \
             -block_size {config[threshold][block_size]}
         """
@@ -123,11 +167,15 @@ rule renderBinary:
     conda: ENV_PATH + "Pipeline.yml"
     shell:
             BLENDER_PATH + " --background --python render_object.py -- -model_file_path \"{input}\" -out_dir \"{PATH}/{wildcards.img}/\" \
-            -save_raw {config[rendering][save_raw]} -render_device {config[rendering][render_device]} \
+            -save_raw {config[rendering][save_raw]} -save_glb {config[rendering][save_glb]} -render_device {config[rendering][render_device]} \
             -render_distance {config[rendering][render_distance]} \
             -image_resolution_x {config[rendering][image_resolution_x]} \
             -image_resolution_y {config[rendering][image_resolution_y]} \
-            -image_compression {config[rendering][image_compression]}"
+            -image_compression {config[rendering][image_compression]} \
+            -mesh_r {config[rendering_binary][mesh_r]} -mesh_g {config[rendering_binary][mesh_g]} \
+            -mesh_b {config[rendering_binary][mesh_b]} -mesh_roughness {config[rendering_binary][mesh_roughness]} \
+            -mesh_metallic {config[rendering_binary][mesh_metallic]} \
+            -mesh_sheen {config[rendering_binary][mesh_sheen]} -mesh_specular {config[rendering_binary][mesh_specular]}"
 
 rule skeletonize_ClearMap:
     input: PATH + "/{img}/Binary_{img}.{ext}"
@@ -153,11 +201,15 @@ rule renderSkeleton:
     conda: ENV_PATH + "Pipeline.yml"
     shell:
             BLENDER_PATH + " --background --python render_object.py -- -model_file_path \"{input}\" -out_dir \"{PATH}/{wildcards.img}/\" \
-            -save_raw {config[rendering][save_raw]} -render_device {config[rendering][render_device]} \
+            -save_raw {config[rendering][save_raw]} -save_glb {config[rendering][save_glb]} -render_device {config[rendering][render_device]} \
             -render_distance {config[rendering][render_distance]} \
             -image_resolution_x {config[rendering][image_resolution_x]} \
             -image_resolution_y {config[rendering][image_resolution_y]} \
-            -image_compression {config[rendering][image_compression]}"
+            -image_compression {config[rendering][image_compression]} \
+            -mesh_r {config[rendering_skeleton][mesh_r]} -mesh_g {config[rendering_skeleton][mesh_g]} \
+            -mesh_b {config[rendering_skeleton][mesh_b]} -mesh_roughness {config[rendering_skeleton][mesh_roughness]} \
+            -mesh_metallic {config[rendering_skeleton][mesh_metallic]} \
+            -mesh_sheen {config[rendering_skeleton][mesh_sheen]} -mesh_specular {config[rendering_skeleton][mesh_specular]}"
 
 rule graphAnalysis:
     input: skelImg = PATH + "/{img}/Skeleton_{img}.{ext}", binImg = PATH + "/{img}/Binary_{img}.{ext}"

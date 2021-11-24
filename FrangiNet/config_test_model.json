@@ -1,0 +1,29 @@
+{
+  "frangi_net": {
+    "mode": "guided",
+    "gpus": "0",
+    "info_mode": "vanilla: original version, guided: additional layer to reduce noise",
+    "info_gpus": "if frangi-gpu is selected, enter number of the gpus to be user",
+
+    "path_image": "FrangiNet/Train_Data/Test/",
+    "path_binary": "FrangiNet/Train_Data/Test_Binary/Binary_",
+    "path_save": "FrangiNet/Test_Metrics/",
+    "path_model": "FrangiNet/Train_Data/model.ckpt",
+    "info_image": "image and binary must have the same suffix-filename to be matched by the network",
+    "info_image2": "currently supported formats: *.tif, *.tiff",
+
+    "size_batch": 32,
+    "threshold_metric": 0.8,
+    "rotate_images": true,
+    "normalize_images": false,
+    "create_roc": true,
+    "create_prc": true,
+    "info_threshold_metric": "minimal f1 score for which threshols shall be stored (used later for binarization)",
+    "info_rotate_images": "height, width and depth will be cropped down to smallest dimension",
+
+    "use_mask": false,
+    "path_mask": "FrangiNet/Train_Data/Train_Mask/",
+    "path_valid_mask": "FrangiNet/Train_Data/Valid_Mask/",
+    "info_mask": "binary image, only areas markes as true/1 are considered by the network"
+  }
+}

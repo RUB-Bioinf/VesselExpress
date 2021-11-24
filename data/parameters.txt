@@ -1,0 +1,25 @@
+segmentation:
+*frangi: use vmtk-3D-Frangi-Filter
+*frangi2D: use 2D-Frangi-Filter
+*franginet: use franginet
+*franginet_gpu: use franginet with graphical units
+
+franginet -> mode_img:
+*OneCube: automated mask is generated and image is rotated in all three dimensions at once
+*OneCubeBatch,: same as OneCube but uses batches instead of whole image
+*Default: image is processed slice by slice without rotation
+
+franginet -> mode:
+must be the same as the mode for training the model (vanilla or guided)
+
+franginet -> average:
+*only if OneCube or OneCubeBatch is chosen and image is rotated
+*false: take the maximum
+*true: calculate the average of the three dimensions
+
+threshold -> value
+*if set to 0, Li-thresholding-algorithm is used
+*thresholds are stored in the corresponding thesholds.csv, arranged by f1-score
+
+graphAnalysis -> pixel_dimension
+*the order of dimensions is z, y, x

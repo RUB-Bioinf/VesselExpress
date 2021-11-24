@@ -78,6 +78,13 @@ Thank you for your help. Your feedback is much appreciated.
 
 Visit the [wiki](https://github.com/RUB-Bioinf/LightSheetBrainVesselSkeletonization/wiki) for additional information.
 
+# FrangiExpress
+
+[FrangiExpress](https://github.com/RUB-Bioinf/LightSheetBrainVesselSegmentation) is an additional segmentation module 
+based on a neural network approach.
+
+Reference: Weilin Fu (2019) Frangi-Net on High-Resolution Fundus (HRF) image database [Source Code]. https://doi.org/10.24433/CO.5016803.v2
+
 ****
 
 **Keywords**: stroke; Neuronal Vessel Morphology; High Throughput Light Sheet Microscopy; 3D Skeletonization

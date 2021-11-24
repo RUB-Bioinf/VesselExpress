@@ -1,0 +1,51 @@
+{
+  "frangi_net": {
+    "mode": "guided",
+    "gpus": "0",
+    "info_mode": "vanilla: original version, guided: additional layer to reduce noise",
+    "info_gpus": "if frangi-gpu is selected, enter number of the gpus to be user",
+
+    "path_image": "FrangiNet/Train_Data/Train/",
+    "path_binary": "FrangiNet/Train_Data/Train_Binary/Binary_",
+    "path_valid_image": "FrangiNet/Train_Data/Valid/",
+    "path_valid_binary": "FrangiNet/Train_Data/Valid_Binary/Binary_",
+    "path_save": "FrangiNet/Results/",
+    "info_image": "image and binary must have the same suffix-filename to be matched by the network",
+    "info_image2": "currently supported formats: *.tif, *.tiff",
+
+    "epoch_summary": 5,
+    "epoch_save": 5,
+    "epoch_overall": 20,
+    "size_batch": 32,
+    "threshold_metric": 0.68,
+    "rotate_images": true,
+    "normalize_images": false,
+    "info_threshold_metric": "minimal f1 score for which threshols shall be stored (used later for binarization)",
+    "info_rotate_images": "height, width and depth will be cropped down to smallest dimension",
+
+    "restrict_roc": false,
+    "restrict_image_amount": 3000,
+    "create_roc": false,
+    "create_prc": true,
+    "info_restrict_roc": "depending on hardware limitation, the specified amount is used to calculate roc",
+    "info_prc": "precision recall curve",
+
+    "is_restore": false,
+    "step_restore": 0,
+    "path_model": "FrangiNet/Train_Data/%d/model.ckpt",
+    "info_restore": "specify the epoch from which the model is loaded",
+
+    "early_stopping": false,
+    "delta_loss": 0.005,
+
+    "use_mask": false,
+    "path_mask": "FrangiNet/Train_Data/Train_Mask/",
+    "path_valid_mask": "FrangiNet/Train_Data/Valid_Mask/",
+    "info_mask": "binary image, only areas markes as true/1 are considered by the network",
+
+    "use_weight": false,
+    "path_weight": "FrangiNet/Train_Data/Train_Weight/Binary_",
+    "path_valid_weight": "FrangiNet/Train_Data/Valid_Weight/Binary_",
+    "info_weight": "special mask, value 0-5, where the values 2-5 are used to enhance specific structures"
+  }
+}
