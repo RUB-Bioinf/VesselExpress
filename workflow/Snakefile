@@ -1,5 +1,6 @@
 import os
 import platform
+import snakemake
 
 
 def get_files_and_extensions(path):
@@ -19,9 +20,9 @@ def get_files_and_extensions(path):
     return file_names, new_file_extensions
 
 
-def get_graphAnalysis_command(os):
+def get_graphAnalysis_command(os, script_path):
     command_str = \
-        "python graphAnalysis.py -skel_img \"{input.skelImg}\" -bin_img \"{input.binImg}\" \
+        "python " + script_path + "/graphAnalysis.py -skel_img \"{input.skelImg}\" -bin_img \"{input.binImg}\" \
         -output_dir \"{output}\" -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
         -pruning_scale {config[graphAnalysis][pruning_scale]} -length_limit {config[graphAnalysis][length_limit]} \
         -branching_threshold {config[graphAnalysis][branching_threshold]} \
@@ -31,41 +32,36 @@ def get_graphAnalysis_command(os):
     return command_str
 
 
-def get_input(imgs, exts, blender_exists, input_list=[]):
-    input_list.append(expand(PATH + "/{img}/{img}.{ext}_Statistics", zip, img=imgs, ext=exts))
+def get_input(imgs, exts, blender_exists, path, input_list=[]):
+    input_list.append(expand(path + "/{img}/{img}.{ext}_Statistics", zip, img=imgs, ext=exts))
     if config['3D'] == 1 and config['render'] == 1 and blender_exists:
-        input_list.append(expand(PATH + "/{img}/Binary_{img}-render.PNG", img=imgs))
-        input_list.append(expand(PATH + "/{img}/Binary_{img}.blend",img=imgs))
-        input_list.append(expand(PATH + "/{img}/Binary_{img}.glb",img=imgs))
-        input_list.append(expand(PATH + "/{img}/Skeleton_{img}-render.PNG",img=imgs))
-        input_list.append(expand(PATH + "/{img}/Skeleton_{img}.blend",img=imgs))
-        input_list.append(expand(PATH + "/{img}/Skeleton_{img}.glb",img=imgs))
+        input_list.append(expand(path + "/{img}/Binary_{img}-render.PNG", img=imgs))
+        input_list.append(expand(path + "/{img}/Binary_{img}.blend",img=imgs))
+        input_list.append(expand(path + "/{img}/Binary_{img}.glb",img=imgs))
+        input_list.append(expand(path + "/{img}/Skeleton_{img}-render.PNG",img=imgs))
+        input_list.append(expand(path + "/{img}/Skeleton_{img}.blend",img=imgs))
+        input_list.append(expand(path + "/{img}/Skeleton_{img}.glb",img=imgs))
     return input_list
 
 
-configfile: "data/config.json"
-
-PATH = config["imgFolder"]
+configfile: os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'data/config.json')
+PATH = os.path.abspath(os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'data'))
+SCRIPT_PATH = snakemake.workflow.srcdir('scripts')
+FRANGINET_PATH = os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'FrangiNet')
 IMGS, EXTS = get_files_and_extensions(path=PATH)
 OS = platform.system()
 
 if OS == 'Linux':
-    ENV_PATH = 'Envs/Linux/'
+    ENV_PATH = 'envs/Linux/'
     #BLENDER_PATH = '/usr/bin/blender'
     BLENDER_PATH = '/usr/bin/blender-2.83.4-linux64/blender'
 else:
-    ENV_PATH = 'Envs/Mac/'
+    ENV_PATH = 'envs/Mac/'
     BLENDER_PATH = '/Applications/Blender.app/Contents/MacOS/Blender'
 if os.path.exists(BLENDER_PATH):
     BLENDER = True
 else:
     BLENDER = False
-
-if config["skeletonization"] == "ClearMap" and OS == 'Linux':
-    ruleorder: skeletonize_ClearMap > skeletonize_scikit
-else:
-    ruleorder: skeletonize_scikit > skeletonize_ClearMap
-
 
 if config["3D"] == 1:
     if config["segmentation"] == "frangi":
@@ -77,14 +73,8 @@ if config["3D"] == 1:
 else:
     ruleorder: segmentation_frangi2D > segmentation_frangi > segmentation_franginet > segmentation_franginet_gpu
 
-# if config["3D"] == 1:
-#     ruleorder: frangi3D > frangi2D
-# else:
-#     ruleorder: frangi2D > frangi3D
-
-
 rule all:
-    input: get_input(IMGS, EXTS, BLENDER)
+    input: get_input(IMGS, EXTS, BLENDER, PATH)
 
 rule makeImgDir:
     input: PATH + "/{img}.{ext}"
@@ -95,13 +85,10 @@ rule segmentation_frangi2D:
     input: PATH + "/{img}/{img}.{ext}"
     output: PATH + "/{img}/Frangi_{img}.{ext}"
     conda: ENV_PATH + "Pipeline.yml"
-    shell:
-        """
-            python frangi2D.py -i \"{input}\" \
+    shell: "python " + SCRIPT_PATH + "/frangi2D.py -i \"{input}\" \
             -sigma_min {config[frangi][sigma_min]} -sigma_max {config[frangi][sigma_max]} \
             -sigma_steps {config[frangi][sigma_steps]} -alpha {config[frangi][alpha]} -beta {config[frangi][beta]} \
-            -gamma {config[frangi][gamma]} -denoise {config[threshold][denoise]}
-        """
+            -gamma {config[frangi][gamma]} -denoise {config[threshold][denoise]}"
 
 rule segmentation_frangi:
     input: PATH + "/{img}/{img}.{ext}"
@@ -110,42 +97,33 @@ rule segmentation_frangi:
         ext="(tiff)"
     conda: ENV_PATH + "vmtk.yml"
     # benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
-    shell:
-        """
-            python frangi3D.py -i \"{input}\" -sigma_min {config[frangi][sigma_min]} -sigma_max {config[frangi][sigma_max]} \
-            -sigma_steps {config[frangi][sigma_steps]} -alpha {config[frangi][alpha]} -beta {config[frangi][beta]} \
-            -gamma {config[frangi][gamma]}
-        """
+    shell: "python " + SCRIPT_PATH + "/frangi3D.py -i \"{input}\" -sigma_min {config[frangi][sigma_min]} \
+            -sigma_max {config[frangi][sigma_max]} -sigma_steps {config[frangi][sigma_steps]} \
+            -alpha {config[frangi][alpha]} -beta {config[frangi][beta]} -gamma {config[frangi][gamma]}"
 
 rule segmentation_franginet:
     input: PATH + "/{img}/{img}.{ext}"
     output: PATH + "/{img}/Frangi_{img}.{ext}"
     wildcard_constraints:
         ext="(tiff)"
-    conda: "Envs/Linux/frangi-cpu.yml"
+    conda: "envs/Linux/frangi-cpu.yml"
     #benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
-    shell:
-        """
-            python franginet.py -i {input} -o {output} -model {config[franginet][model]} -mode {config[franginet][mode]} \
-            -normalization {config[franginet][normalization]} -average {config[franginet][average]} \
-            -mode_img {config[franginet][mode_img]} -gpus {config[franginet][gpus]} \
-            -batch_size {config[franginet][batch_size]}
-        """
+    shell: "python " + SCRIPT_PATH + "/franginet.py -i {input} -o {output} -model " + FRANGINET_PATH + "{config[franginet][model]} \
+            -mode {config[franginet][mode]} -normalization {config[franginet][normalization]} \
+            -average {config[franginet][average]} -mode_img {config[franginet][mode_img]} \
+            -gpus {config[franginet][gpus]} -batch_size {config[franginet][batch_size]}"
 
 rule segmentation_franginet_gpu:
     input: PATH + "/{img}/{img}.{ext}"
     output: PATH + "/{img}/Frangi_{img}.{ext}"
     wildcard_constraints:
         ext="(tiff)"
-    conda: "Envs/Linux/frangi-gpu.yml"
+    conda: "envs/Linux/frangi-gpu.yml"
     #benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
-    shell:
-        """
-            python franginet.py -i {input} -o {output} -model {config[franginet][model]} -mode {config[franginet][mode]} \
-            -normalization {config[franginet][normalization]} -average {config[franginet][average]} \
-            -mode_img {config[franginet][mode_img]} -gpus {config[franginet][gpus]} \
-            -batch_size {config[franginet][batch_size]}
-        """
+    shell: "python " + SCRIPT_PATH + "/franginet.py -i {input} -o {output} -model" + FRANGINET_PATH + "{config[franginet][model]} \
+            -mode {config[franginet][mode]} -normalization {config[franginet][normalization]} \
+            -average {config[franginet][average]} -mode_img {config[franginet][mode_img]} \
+            -gpus {config[franginet][gpus]} -batch_size {config[franginet][batch_size]}"
 
 rule thresholding:
     input: PATH + "/{img}/Frangi_{img}.{ext}"
@@ -154,20 +132,17 @@ rule thresholding:
         ext="(tiff|png|jpg)"
     conda: ENV_PATH + "Thresholding.yml"
     # benchmark: PATH + "/{img}/benchmarks/{img}.threshold.benchmark.txt"
-    shell:
-        """
-            python thresholding.py -i \"{input}\" -value {config[threshold][value]} \
+    shell: "python " + SCRIPT_PATH + "/thresholding.py -i \"{input}\" -value {config[threshold][value]} \
             -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
             -ball_radius {config[threshold][ball_radius]} -artifact_size {config[threshold][artifact_size]} \
-            -block_size {config[threshold][block_size]}
-        """
+            -block_size {config[threshold][block_size]}"
 
 rule renderBinary:
     input: PATH + "/{img}/Binary_{img}.stl"
     output: PATH + "/{img}/Binary_{img}-render.PNG", PATH + "/{img}/Binary_{img}.glb", PATH + "/{img}/Binary_{img}.blend"
     conda: ENV_PATH + "Pipeline.yml"
     shell:
-            BLENDER_PATH + " --background --python render_object.py -- -model_file_path \"{input}\" -out_dir \"{PATH}/{wildcards.img}/\" \
+            BLENDER_PATH + " --background --python " + SCRIPT_PATH + "/render_object.py -- -model_file_path \"{input}\" -out_dir \"{PATH}/{wildcards.img}/\" \
             -save_raw {config[rendering][save_raw]} -save_glb {config[rendering][save_glb]} -render_device {config[rendering][render_device]} \
             -render_distance {config[rendering][render_distance]} \
             -image_resolution_x {config[rendering][image_resolution_x]} \
@@ -178,15 +153,6 @@ rule renderBinary:
             -mesh_metallic {config[rendering_binary][mesh_metallic]} \
             -mesh_sheen {config[rendering_binary][mesh_sheen]} -mesh_specular {config[rendering_binary][mesh_specular]}"
 
-rule skeletonize_ClearMap:
-    input: PATH + "/{img}/Binary_{img}.{ext}"
-    output: PATH + "/{img}/Skeleton_{img}.{ext}"
-    wildcard_constraints:
-        ext="(tiff)"
-    conda: ENV_PATH + "ClearMap.yml"
-    #benchmark: PATH + "/{img}/benchmarks/{img}.skeletonize.benchmark.txt"
-    shell: "python skeletonize_ClearMap.py -i \"{input}\""
-
 rule skeletonize_scikit:
     input: PATH + "/{img}/Binary_{img}.{ext}"
     output: PATH + "/{img}/Skeleton_{img}.{ext}"
@@ -194,14 +160,14 @@ rule skeletonize_scikit:
         ext="(tiff|png|jpg)"
     conda: ENV_PATH + "Pipeline.yml"
     #benchmark: PATH + "/{img}/benchmarks/{img}.skeletonize.benchmark.txt"
-    shell: "python skeletonize_scikit.py -i \"{input}\" -pixel_dimensions {config[graphAnalysis][pixel_dimensions]}"
+    shell: "python " + SCRIPT_PATH + "/skeletonize_scikit.py -i \"{input}\" -pixel_dimensions {config[graphAnalysis][pixel_dimensions]}"
 
 rule renderSkeleton:
     input: PATH + "/{img}/Skeleton_{img}.stl"
     output: PATH + "/{img}/Skeleton_{img}-render.PNG", PATH + "/{img}/Skeleton_{img}.glb", PATH + "/{img}/Skeleton_{img}.blend"
     conda: ENV_PATH + "Pipeline.yml"
     shell:
-            BLENDER_PATH + " --background --python render_object.py -- -model_file_path \"{input}\" -out_dir \"{PATH}/{wildcards.img}/\" \
+            BLENDER_PATH + " --background --python " + SCRIPT_PATH + "/render_object.py -- -model_file_path \"{input}\" -out_dir \"{PATH}/{wildcards.img}/\" \
             -save_raw {config[rendering][save_raw]} -save_glb {config[rendering][save_glb]} -render_device {config[rendering][render_device]} \
             -render_distance {config[rendering][render_distance]} \
             -image_resolution_x {config[rendering][image_resolution_x]} \
@@ -217,24 +183,19 @@ rule graphAnalysis:
     output: directory(PATH + "/{img}/{img}.{ext}_Statistics/")
     conda: ENV_PATH + "Pipeline.yml"
     #benchmark: PATH + "/{img}/benchmarks/{img}.graphAnalysis.benchmark.txt"
-    shell: get_graphAnalysis_command(OS)
+    shell: get_graphAnalysis_command(OS, SCRIPT_PATH)
 
 if config['3D'] == 1:
     rule createBinaryObj:
         input: PATH + "/{img}/Binary_{img}.tiff"
         output: PATH + "/{img}/Binary_{img}.stl"
         conda: ENV_PATH + "Pipeline.yml"
-        shell:
-            """
-                python -W ignore create_stl.py -i \"{input}\" -o \"{output}\" -pixel_dimensions {config[graphAnalysis][pixel_dimensions]}
-            """
+        shell: "python -W ignore " + SCRIPT_PATH + "/create_stl.py -i \"{input}\" -o \"{output}\" \
+                -pixel_dimensions {config[graphAnalysis][pixel_dimensions]}"
 
     rule createSkeletonObj:
         input: PATH + "/{img}/Skeleton_{img}.tiff"
         output: PATH + "/{img}/Skeleton_{img}.stl"
         conda: ENV_PATH + "Pipeline.yml"
-        shell:
-            """
-                python -W ignore create_stl.py -i \"{input}\" -o \"{output}\" -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
-                -dilation True
-            """
+        shell: "python -W ignore " + SCRIPT_PATH + "/create_stl.py -i \"{input}\" -o \"{output}\" \
+                -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} -dilation True"

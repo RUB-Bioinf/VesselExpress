@@ -1,10 +1,12 @@
 import networkx as nx
 from collections import defaultdict
 import time
-import Statistics.filament as fil
+import filament as fil
 from scipy import ndimage as ndi
-import Statistics.measurements as ms
 import csv
+
+import measurements as ms
+
 
 class Graph:
     """

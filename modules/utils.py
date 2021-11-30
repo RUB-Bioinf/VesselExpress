@@ -3,6 +3,10 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from ast import literal_eval as make_tuple
 from collections import defaultdict
+import imageio
+import tifffile
+import os
+
 
 def saveAllStatsAsCSV(dictionary, path, imgName):
     # get all segment measurements as list from dictionary
@@ -213,4 +217,20 @@ def getSegmentsDictFromFile(segmentsFile, fullSegDict, filamentNo):
             segDict[filamentNo][segKey] = fullSegDict[filamentNo][segKey]
 
     return segDict
+
+def read_img(filepath):
+    extension = os.path.splitext(filepath)[1]
+    if extension == '.tiff':
+        img = tifffile.imread(filepath)
+    else:
+        img = imageio.imread(filepath)
+    return img
+
+
+def write_img(img, filepath):
+    extension = os.path.splitext(filepath)[1]
+    if extension == '.tiff':
+        tifffile.imsave(filepath, img)
+    else:
+        imageio.imwrite(filepath, img)
 

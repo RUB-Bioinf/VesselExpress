@@ -25,6 +25,6 @@ RUN ln -sf /bin/bash /bin/sh
 
 RUN conda update conda
 
-RUN snakemake --use-conda --cores all --conda-frontend conda --conda-create-envs-only
+RUN snakemake --use-conda --cores all --conda-frontend conda --snakefile "./workflow/Snakefile" --conda-create-envs-only
 
-CMD snakemake --use-conda --cores all --conda-frontend conda
+CMD snakemake --use-conda --cores all --conda-frontend conda --snakefile "./workflow/Snakefile"

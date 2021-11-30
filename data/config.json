@@ -1,11 +1,10 @@
 {
   "imgFolder": "data",
-  "skeletonization": "scikit",
   "segmentation": "frangi",
   "3D": 1,
-  "render": 0,
+  "render": 1,
   "franginet": {
-    "model": "data/guided/model.ckpt",
+    "model": "models/guided/model.ckpt",
     "mode": "guided",
     "normalization": false,
     "average": true,

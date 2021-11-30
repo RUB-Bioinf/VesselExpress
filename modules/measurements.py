@@ -1,6 +1,7 @@
 import numpy as np
 import math
 
+
 def getLength(path, dimensions):
     """
         Find length of a path as distance between nodes in it

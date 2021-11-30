@@ -1,7 +1,13 @@
 import time
 import argparse
+import sys
+import os
 
-from Segmentation.frangi import Frangi_filter
+# import modules
+package = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'modules/'))
+sys.path.append(package)
+
+from frangi import Frangi_filter
 
 if __name__ == '__main__':
     programStart = time.time()

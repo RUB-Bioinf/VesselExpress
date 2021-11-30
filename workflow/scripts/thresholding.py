@@ -3,6 +3,12 @@ from skimage.filters import threshold_li, threshold_local
 from skimage.morphology import binary_closing, ball, disk, remove_small_objects
 import os
 import argparse
+import sys
+
+# import modules
+package = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'modules/'))
+sys.path.append(package)
+
 import utils
 
 

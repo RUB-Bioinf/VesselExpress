@@ -3,9 +3,15 @@ import numpy as np
 import os
 import argparse
 
-from Graph import networkx_graph_from_array as netGrArr
-import Statistics.graph as graph
-import Statistics.utils as stat_utils
+import sys
+import os
+
+# import modules
+package = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'modules/'))
+sys.path.append(package)
+
+import networkx_graph_from_array as netGrArr
+import graph
 import utils
 
 
@@ -37,35 +43,35 @@ def processImage(skelImg, binImg, statsDir, parameterDict):
     # Export statistics to csv files
     os.makedirs(statsDir, exist_ok=True)
 
-    stat_utils.saveFilamentDictAsCSV(stats.filStatsDict, os.path.join(statsDir, file_name +
+    utils.saveFilamentDictAsCSV(stats.filStatsDict, os.path.join(statsDir, file_name +
                                 '_Filament_No._Segment_Branch_Points.csv'), 'Filament No. Segment Branch Pts',
                                 'BranchPoints')
-    stat_utils.saveFilamentDictAsCSV(stats.filStatsDict, os.path.join(statsDir, file_name +
+    utils.saveFilamentDictAsCSV(stats.filStatsDict, os.path.join(statsDir, file_name +
                                 '_Filament_No._Segment_Terminal_Points.csv'), 'Filament No. Segment Terminal Pts',
                                 'TerminalPoints')
-    stat_utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_Length.csv'),
+    utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_Length.csv'),
                                     'Segment Length', 'length', 'um')
-    stat_utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_Straightness.csv'),
+    utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_Straightness.csv'),
                                     'Segment Straightness', 'straightness')
-    stat_utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_Branching_Angle.csv'),
+    utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_Branching_Angle.csv'),
                                     'Segment Branching Angle', 'branchingAngle', '°')
-    stat_utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_Volume.csv'),
+    utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_Volume.csv'),
                                     'Segment Volume', 'volume', 'um^3')
-    stat_utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_Diameter.csv'),
+    utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_Diameter.csv'),
                                     'Segment Diameter', 'diameter', 'um')
-    stat_utils.saveBranchPtDictAsCSV(stats.branchPointsDict, os.path.join(statsDir, file_name + '_BranchPt_No._Branches.csv'),
+    utils.saveBranchPtDictAsCSV(stats.branchPointsDict, os.path.join(statsDir, file_name + '_BranchPt_No._Branches.csv'),
                                      'BranchPt No. Branches', category='Branch')
     if parameterDict.get("experimental_flag") == 1:
-        stat_utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_z_Angle.csv'),
+        utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_z_Angle.csv'),
                                         'Segment z Angle', 'zAngle', '°')
 
     # create files containing all statisics in one csv per category (segment, filament, branches and endPtsRatio)
     if parameterDict.get("all_stats") == 1:
-        stat_utils.saveAllStatsAsCSV(stats.segStatsDict, dir + '_All_Segment_Statistics.csv', file_name)
-        stat_utils.saveAllFilStatsAsCSV(stats.filStatsDict, dir + '_All_Filament_Statistics.csv', file_name)
-        stat_utils.saveBranchesBrPtAsCSV(stats.branchesBrPtDict, dir + '_All_BranchesPerBranchPt.csv', file_name)
+        utils.saveAllStatsAsCSV(stats.segStatsDict, dir + '_All_Segment_Statistics.csv', file_name)
+        utils.saveAllFilStatsAsCSV(stats.filStatsDict, dir + '_All_Filament_Statistics.csv', file_name)
+        utils.saveBranchesBrPtAsCSV(stats.branchesBrPtDict, dir + '_All_BranchesPerBranchPt.csv', file_name)
         if parameterDict.get("experimental_flag") == 1:
-            stat_utils.saveEndPtsRelativeAsCSV(stats.endPtsTopVsBottom, dir + '_EndPtsRatio.csv', file_name)
+            utils.saveEndPtsRelativeAsCSV(stats.endPtsTopVsBottom, dir + '_EndPtsRatio.csv', file_name)
 
 
 if __name__ == '__main__':

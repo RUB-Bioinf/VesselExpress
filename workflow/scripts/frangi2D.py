@@ -5,6 +5,12 @@ import os
 import argparse
 import numpy as np
 from skimage import color
+import sys
+
+# import modules
+package = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'modules/'))
+sys.path.append(package)
+
 import utils
 
 if __name__ == '__main__':

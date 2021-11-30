@@ -1,7 +1,12 @@
 import time
-import os
 import argparse
 from skimage.morphology import skeletonize
+import sys
+import os
+
+# import modules
+package = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'modules/'))
+sys.path.append(package)
 
 import utils
 
