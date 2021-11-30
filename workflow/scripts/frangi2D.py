@@ -38,7 +38,7 @@ if __name__ == '__main__':
     if args.denoise == 1:
         img = denoise_tv_chambolle(img, weight=0.9)
     filtered = frangi(image=img, black_ridges=False, sigmas=np.arange(args.sigma_min, args.sigma_max, args.sigma_steps),
-                      alpha=args.alpha, beta=args.beta, gamma=args.gamma, mode='reflect')
+                      alpha=args.alpha, beta=args.beta, gamma=args.gamma)
     filtered = np.round(filtered / (filtered.max() / 65535))
 
     utils.write_img(filtered.astype('uint16'), output_dir + '/Frangi_' + os.path.basename(output_dir) + '.'
