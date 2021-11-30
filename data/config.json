@@ -1,7 +1,7 @@
 {
   "imgFolder": "data",
   "skeletonization": "scikit",
-  "segmentation": "franginet",
+  "segmentation": "frangi",
   "3D": 1,
   "render": 0,
   "franginet": {
@@ -24,7 +24,7 @@
   },
   "threshold":
   {
-    "value": 0.46208292,
+    "value": 0,
     "ball_radius": 3,
     "artifact_size": 5,
     "block_size": 137,
@@ -36,7 +36,7 @@
     "pruning_scale": 1.5,
     "length_limit": 3,
     "branching_threshold": 0.25,
-    "all_stats": 0,
+    "all_stats": 1,
     "experimental_flag": 0
   },
   "rendering":

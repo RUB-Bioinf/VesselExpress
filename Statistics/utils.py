@@ -26,7 +26,7 @@ def saveAllStatsAsCSV(dictionary, path, imgName):
                 list_item.append(dictionary[filament][segment][stat])
             list.append(list_item)
     with open(path, 'w', newline='') as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, delimiter=';')
         writer.writerows(list)
 
 def saveAllFilStatsAsCSV(dictionary, path, imgName):
@@ -38,7 +38,7 @@ def saveAllFilStatsAsCSV(dictionary, path, imgName):
         list_item = [imgName, filament, segs, endPts, brPts]
         list.append(list_item)
     with open(path, 'w', newline='') as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, delimiter=';')
         writer.writerows(list)
 
 def saveBranchesBrPtAsCSV(dictionary, path, imgName):
@@ -49,7 +49,7 @@ def saveBranchesBrPtAsCSV(dictionary, path, imgName):
             list_item = [imgName, filament, segment, branches]
             list.append(list_item)
     with open(path, 'w', newline='') as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, delimiter=';')
         writer.writerows(list)
 
 def saveEndPtsRelativeAsCSV(value, path, imgName):
@@ -57,7 +57,7 @@ def saveEndPtsRelativeAsCSV(value, path, imgName):
     list_item = [imgName, value]
     list.append(list_item)
     with open(path, 'w', newline='') as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, delimiter=';')
         writer.writerows(list)
 
 def saveSegmentDictAsCSV(dictionary, path, measurementTitle, measurement, unit="", category="Segment"):
@@ -79,7 +79,7 @@ def saveSegmentDictAsCSV(dictionary, path, measurementTitle, measurement, unit="
             list_item = [val, unit, category, filament, branch]
             list.append(list_item)
     with open(path, 'w', newline='') as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, delimiter=';')
         writer.writerows(list)
 
 def saveBranchPtDictAsCSV(dictionary, path, measurementTitle, unit="", category="Branch"):
@@ -101,7 +101,7 @@ def saveBranchPtDictAsCSV(dictionary, path, measurementTitle, unit="", category=
             list_item = [val, unit, category, filament, branch]
             list.append(list_item)
     with open(path, 'w', newline='') as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, delimiter=';')
         writer.writerows(list)
 
 def saveFilamentDictAsCSV(dictionary, path, measurementTitle, measurement, unit=""):
@@ -121,7 +121,7 @@ def saveFilamentDictAsCSV(dictionary, path, measurementTitle, measurement, unit=
         list_item = [val, unit, "Filament", filament]
         list.append(list_item)
     with open(path, 'w', newline='') as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, delimiter=';')
         writer.writerows(list)
 
 def plot3DGrid(arr, title):

@@ -7,8 +7,11 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
     rm ~/miniconda.sh
 
 RUN apt-get update
+RUN apt-get upgrade
 
-RUN apt-get install -y blender
+RUN apt-get install blender -y
+RUN wget https://download.blender.org/release/Blender2.83/blender-2.83.4-linux64.tar.xz
+RUN tar xvf blender-2.83.4-linux64.tar.xz -C /usr/bin/
 
 ENV PATH /opt/conda/bin:$PATH
 

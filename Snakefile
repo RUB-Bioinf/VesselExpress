@@ -51,7 +51,8 @@ OS = platform.system()
 
 if OS == 'Linux':
     ENV_PATH = 'Envs/Linux/'
-    BLENDER_PATH = '/usr/bin/blender'
+    #BLENDER_PATH = '/usr/bin/blender'
+    BLENDER_PATH = '/usr/bin/blender-2.83.4-linux64/blender'
 else:
     ENV_PATH = 'Envs/Mac/'
     BLENDER_PATH = '/Applications/Blender.app/Contents/MacOS/Blender'
