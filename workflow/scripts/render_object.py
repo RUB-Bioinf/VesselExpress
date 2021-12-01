@@ -157,8 +157,7 @@ def render_object(model_file_path: str, out_dir: str,
     principled = nodes.new(type='ShaderNodeBsdfPrincipled')
 
     # Applying material property parameters
-    bpy.data.materials[mat_name].node_tree.nodes['Principled BSDF'].inputs[0].default_value = (
-    [mesh_r, mesh_g, mesh_b, mesh_a])
+    bpy.data.materials[mat_name].node_tree.nodes['Principled BSDF'].inputs[0].default_value = ([mesh_r, mesh_g, mesh_b, mesh_a])
     bpy.data.materials[mat_name].node_tree.nodes['Principled BSDF'].inputs[4].default_value = mesh_metallic
     bpy.data.materials[mat_name].node_tree.nodes['Principled BSDF'].inputs[5].default_value = mesh_specular
     bpy.data.materials[mat_name].node_tree.nodes['Principled BSDF'].inputs[7].default_value = mesh_roughness
@@ -350,3 +349,9 @@ if __name__ == '__main__':
                       image_bit_depth=args.image_bit_depth,
                       file_format=args.file_format,
                       image_compression=args.image_compression)
+    else:
+        print('Not enough arguments supplied. Run this function and provide the necessary arguments.')                  
+    
+    # Done with main
+
+# Done with function
