@@ -16,6 +16,10 @@
 &nbsp;
 [![License](https://img.shields.io/github/license/RUB-Bioinf/VesselExpress?color=green&style=flat)](https://github.com/RUB-Bioinf/VesselExpress/LICENSE)
 &nbsp;
+[![Language](https://img.shields.io/github/languages/top/RUB-Bioinf/VesselExpress?style=flat)](https://github.com/RUB-Bioinf/VesselExpress)
+&nbsp;
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/RUB-Bioinf/VesselExpress.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/RUB-Bioinf/VesselExpress/context:python)
+&nbsp;
 ![Size](https://img.shields.io/github/repo-size/RUB-Bioinf/VesselExpress?style=flat)
 &nbsp;
 [![Issues](https://img.shields.io/github/issues/RUB-Bioinf/VesselExpress?style=flat)](https://github.com/RUB-Bioinf/VesselExpress/issues)
@@ -63,7 +67,7 @@ corresponding Python script. Existing modules can be exchanged with custom scrip
       or via `docker pull philippasp/vesselexpress` for the web version.
    2. or build the Docker image \
       by calling `docker build -t vesselexpress_cli .` from the VesselExpress directory for the command-line version\
-      or by calling `docker build -t vesselexpress .` from the Webinterface directory for the web version.
+      or by calling `docker build -f ./Webinterface/Dockerfile -t vesselexpress .` for the web version.
 4. Run the command-line version via `docker run -v path-to-data-and-config:/vesselexpress/data`. The first part of the command specifies the path on your host 
    containing image files to process and the configuration file. An example configuration file and image can be found in
    the data folder.
@@ -83,7 +87,7 @@ Different parameters can be set by using the command line option '--config' or b
 
 For the web version follow these instructions:
 1. Install Blender from [here](https://www.blender.org/download/) (optional).
-2. Navigate to the Webinterface directory and type `pip install -r requirements.txt`.
+2. Type `pip install -r /Webinterface/requirements.txt`.
 3. Type `python /Webinterface/server/app.py` to run the web application.
 4. In your browser navigate to `localhost:5000` to open the webpage.
 
@@ -107,12 +111,12 @@ You can use this YouTube Video for vizualized instructions on how to download, s
 [![Video Likes](https://img.shields.io/youtube/likes/ScMzIvxBSi4?style=social)](https://www.youtube.com/watch?v=ScMzIvxBSi4)
 
 
-# Example Data
+## Example Data
 
 Download our example data from [here]().
 
 
-# Feedback & Bug Reports
+## Feedback & Bug Reports
 
 We strive to always improve and make this pipeline accessible to the public.
 We hope to make it as easy to use as possible.
@@ -120,7 +124,7 @@ We hope to make it as easy to use as possible.
 Should you encounter an error, bug or need help, please feel free to reach out to us via the [Issues](https://github.com/RUB-Bioinf/VesselExpress/issues) page.
 Thank you for your help. Your feedback is much appreciated.
 
-# References
+## References
 Weilin Fu (2019) Frangi-Net on High-Resolution Fundus (HRF) image database https://doi.org/10.24433/CO.5016803.v2 \
 Pesavento, M & Vemuri, P. 3D Image Skeletonization Tools.  (2019). https://github.com/pranathivemuri/skeletonization/commit/b7bd1ce06e557905a32307677c77c1b94305ba5c
 ****
