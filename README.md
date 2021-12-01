@@ -30,11 +30,8 @@
 &nbsp;&nbsp;
 [![Follow us on Twitter](https://img.shields.io/twitter/follow/saskra1?style=social&logo=twitter)](https://twitter.com/intent/follow?screen_name=saskra1)
 
-
-
 # VesselExpress
-###Rapid and fully automated bloodvasculature analysis in 3D light sheet image volumes of different organs.</h3>
-
+### Rapid and fully automated bloodvasculature analysis in 3D light sheet image volumes of different organs.</h3>
 
 [![Language](https://img.shields.io/github/languages/top/RUB-Bioinf/VesselExpress?style=flat)](https://github.com/RUB-Bioinf/VesselExpress)
 &nbsp;
