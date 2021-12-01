@@ -1,5 +1,5 @@
 
-<p style="text-align:center; margin-bottom: 0px"><img src="imgs/logo.svg" alt="Logo" style="width: 15%;"></p>
+<p style="text-align:center; margin-bottom: 0px"><img src="VesselExpress/imgs/logo.svg" alt="Logo" style="width: 15%;"></p>
 
 [![GitHub Stars](https://img.shields.io/github/stars/RUB-Bioinf/VesselExpress.svg?style=social&label=Star)](https://github.com/RUB-Bioinf/VesselExpress) 
 &nbsp;
@@ -39,25 +39,16 @@
 
 
 VesselExpress is an open-source software designed for rapid, fully automated and scalable analysis of vascular datasets 
-in high-throughput sequences.
-It processes raw microscopic images (2D or 3D) of blood vessels in  parallel  and outputs quantified  phenotypical  data  along with image and object files of the rendered vasculature.
-The processing steps include segmentation, skeletonization, graph construction and analysis and optional rendering.
-These steps are automated in a pipeline with the workflow management system [Snakemake](https://github.com/snakemake/snakemake) 
-(see workflow [DAG](imgs/dag.pdf)).
-The whole pipeline can be run via Docker or locally. 
+in high-throughput sequences. It processes raw microscopic images (2D or 3D) of blood vessels in  parallel  and outputs 
+quantified  phenotypical  data  along with image and object files of the rendered vasculature. The processing steps include segmentation, skeletonization, graph construction with analysis and 
+optional rendering. These steps are automated in a pipeline with the workflow management system [Snakemake](https://github.com/snakemake/snakemake) 
+(see workflow [DAG](VesselExpress/imgs/dag.pdf)). The whole pipeline can be run via Docker or locally from the command line or 
+web browser using the web interface. 
 
-![VesselExpress](imgs/VesselExpress.png)
+![VesselExpress](VesselExpress/imgs/VesselExpress.png)
 
 **Notes:** It is also possible to execute each step individually with the
-corresponding Python script. Existing modules can be exchanged in the [Snakefile](Snakefile) with custom scripts.
-For processing larger images it is recommended to use the ClearMap skeletonization by Kirst et al. Therefore please clone their
-[repository](https://github.com/MartinFinkenflugel/ClearMap2/tree/3617414d6d56709b452b2c5253631eecbede1b85)
-and copy the ClearMap folder into the projects root folder. 
-For the graph construction the Python script
-[networkx_graph_from_array](https://github.com/3Scan/3scan-skeleton/blob/master/skeleton/networkx_graph_from_array.py)
-from the
-[3scan-skeleton repository](https://github.com/3Scan/3scan-skeleton#3d-image-skeletonization-tools) is used.
-This is downloaded from GitHub and copied into the Graph folder. Many thanks to GitHub and the contributors!
+corresponding Python script. Existing modules can be exchanged with custom scripts in the [Snakefile](VesselExpress/workflow/Snakefile).
 
 ***
 
@@ -72,21 +63,38 @@ This is downloaded from GitHub and copied into the Graph folder. Many thanks to 
 &nbsp;
 [![Docker Version](https://img.shields.io/docker/v/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)
 
-
 1. Install Docker for your operating system from [here](https://docs.docker.com/get-docker/).
 2. Start Docker.
-3. Pull the Docker image from DockerHub via `docker pull vesselexpress:latest` or navigate into the VesselExpress directory and call `docker build -t vesselexpress .`.
-4. Run the docker container with `docker run -v path-to-data-and-config:/vesselexpress/data`
+3. Get the Docker image
+   1. from DockerHub \
+      via ```docker pull philippasp/vesselexpress_cli```
+      for the command-line version \
+      or via `docker pull philippasp/vesselexpress` for the web version.
+   2. or build the Docker image \
+      by calling `docker build -t vesselexpress_cli .` from the VesselExpress directory for the command-line version\
+      or by calling `docker build -t vesselexpress .` from the Webinterface directory for the web version.
+4. Run the command-line version via `docker run -v path-to-data-and-config:/vesselexpress/data`. The first part of the command specifies the path on your host 
+   containing image files to process and the configuration file. An example configuration file and image can be found in
+   the data folder.
+5. Run the web version via `docker run -p 5000:5000 vesselexpress`. Naviagte to `localhost:5000` in your browser to open the web interface.
 
 ## Local Version (without Docker)
+For the command-line version follow these instructions:
 1. Install Anaconda following the [installation instructions](https://docs.anaconda.com/anaconda/install/index.html).
-2. Install Snakemake following the [installation instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
-3. In a terminal navigate to the project's root folder and type
+2. Install Snakemake following the [installation instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
+3. Install Blender from [here](https://www.blender.org/download/) (optional).
+4. In a terminal navigate to the project's root folder and type
 `snakemake --use-conda --cores all --conda-frontend conda`
 
 Different parameters can be set by using the command line option '--config' or by changing the parameters in the
-config.json file. A full description of command line arguments for Snakemake can be found
+[config.json](VesselExpress/data/config.json) file. A full description of command line arguments for Snakemake can be found
 [here](https://snakemake.readthedocs.io/en/v4.5.1/executable.html).
+
+For the web version follow these instructions:
+1. Install Blender from [here](https://www.blender.org/download/) (optional).
+2. Navigate to the Webinterface directory and type `pip install -r requirements.txt`.
+3. Type `python /Webinterface/server/app.py`
+4. In your browser navigate to `localhost:5000` to open the webpage.
 
 ## Correspondence
 
@@ -107,14 +115,10 @@ You can use this YouTube Video for vizualized instructions on how to download, s
 &nbsp;
 [![Video Likes](https://img.shields.io/youtube/likes/ScMzIvxBSi4?style=social)](https://www.youtube.com/watch?v=ScMzIvxBSi4)
 
-# Download and Install
 
-See the [Releases](https://github.com/RUB-Bioinf/LightSheetBrainVesselSkeletonization/releases) page on how to download the latest version of the pipeline.
-Then refer to [this guide in the wiki](https://github.com/RUB-Bioinf/LightSheetBrainVesselSkeletonization/wiki/Running-the-Pipeline) on how to set up and run the pipeline.
+# Example Data
 
-## Example Data
-
-Please follow [this guide](https://github.com/RUB-Bioinf/https://github.com/RUB-Bioinf/VesselExpress/wiki/Example-Data) on how to download example data.
+Download our example data from [here]().
 
 
 # Feedback & Bug Reports
@@ -125,17 +129,9 @@ We hope to make it as easy to use as possible.
 Should you encounter an error, bug or need help, please feel free to reach out to us via the [Issues](https://github.com/RUB-Bioinf/VesselExpress/issues) page.
 Thank you for your help. Your feedback is much appreciated.
 
-# Misc
-
-Visit the [wiki](https://github.com/RUB-Bioinf/LightSheetBrainVesselSkeletonization/wiki) for additional information.
-
-# FrangiExpress
-
-[FrangiExpress](https://github.com/RUB-Bioinf/LightSheetBrainVesselSegmentation) is an additional segmentation module 
-based on a neural network approach.
-
-Reference: Weilin Fu (2019) Frangi-Net on High-Resolution Fundus (HRF) image database [Source Code]. https://doi.org/10.24433/CO.5016803.v2
-
+# References
+Weilin Fu (2019) Frangi-Net on High-Resolution Fundus (HRF) image database https://doi.org/10.24433/CO.5016803.v2 \
+Pesavento, M & Vemuri, P. 3D Image Skeletonization Tools.  (2019). https://github.com/pranathivemuri/skeletonization/commit/b7bd1ce06e557905a32307677c77c1b94305ba5c
 ****
 
 **Keywords**: stroke; Neuronal Vessel Morphology; High Throughput Light Sheet Microscopy; 3D Skeletonization
