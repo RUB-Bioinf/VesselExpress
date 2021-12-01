@@ -14,8 +14,8 @@
   },
   "frangi":
   {
-    "sigma_min": 2,
-    "sigma_max": 5,
+    "sigma_min": 2.0,
+    "sigma_max": 5.0,
     "sigma_steps": 3,
     "alpha": 0.5,
     "beta": 500.0,
@@ -31,11 +31,11 @@
   },
   "graphAnalysis":
   {
-    "pixel_dimensions": "2.0,1.015625,1.015625",
+    "pixel_dimensions": "1.0,1.0,1.0",
     "pruning_scale": 1.5,
     "length_limit": 3,
     "branching_threshold": 0.25,
-    "all_stats": 1,
+    "all_stats": 0,
     "experimental_flag": 0
   },
   "rendering":

@@ -1,0 +1,130 @@
+body, html {
+    padding: 0;
+    margin: 0;
+    font-family: "verdana";
+    margin-bottom: 0px !important;
+    padding-bottom: 0 !important;
+    width: 100%;
+}
+
+.ui.button {
+    width: 100%;
+    height: 45px;
+    border-radius: 10px;
+}
+
+.ui.color1.button {
+    background-color: #F0F0F0;
+}
+
+.ui.color2.button {
+    background-color: #00796b !important;
+    color: white !important;
+}
+
+.ui.color2.button:hover {
+    background-color: #004c40 !important;
+    color: white !important;
+}
+
+
+.ui.toggle.checkbox input:focus:checked ~ .box:before,
+.ui.toggle.checkbox input:focus:checked ~ label:before {
+    background-color: teal !important
+}
+
+.ui.toggle.checkbox .box:before, .ui.toggle.checkbox label:before {
+    background-color: pink;
+}
+
+
+#sidebar {
+    background-color: #E1E1E1;
+}
+
+.block-center {
+    text-align: center !important;
+}
+
+.mtop {
+    margin-top: 5px !important;
+}
+
+.padlr {
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+}
+
+.padlrbig {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+.mleftright {
+    margin-left: 5px !important;
+    margin-right: 5px !important;
+}
+
+.mbottom {
+    margin-bottom: 10px !important;
+}
+
+.ui.segment {
+    border-top-left-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+    border-top-right-radius: 0px !important;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+}
+
+.ui.vertical.menu {
+    margin-bottom: 0px !important;
+    padding-bottom: 0px !important;
+}
+
+.ui.menu {
+    border-radius: 0px !important;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+input[type=number] {
+    text-align: center !important;
+}
+
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: inner-spin-button;
+    width: 14px !important;
+    height: 55px !important;
+    margin-right: -12px !important;
+    border-left: 7px solid #bbb;
+    border-right-radius: 5px !important;
+    opacity: .7 !important;
+}
+
+#pushed_container {
+    -webkit-transform: translate3d(-250px, 0, 0) !important;
+    transform: translate3d(-250px, 0, 0) !important;
+    width: 65%;
+}
+
+.border-1 {
+    margin-top: 15px;
+    padding-top: 10px;
+    border: 2px dashed #004c40;
+    border-radius: 5px;
+}
+
+.rendergenerated {
+    margin-top: 2px !important;
+}
+
+.rendergenerated:hover {
+    background-color: #00796b !important;
+    color: white !important;
+    margin-top: 2px !important;
+    transform: scale(1.1);
+}
+
+
+

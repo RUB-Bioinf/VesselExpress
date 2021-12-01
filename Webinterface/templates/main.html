@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% block content %}
+    <!-- Initialise the Dropzone -->
+    {{ dropzone.load_css() }}
+    {{ dropzone.load_js() }}
+    {{ dropzone.style('border: 2px dashed #C80000; border-radius:5px; height: 225px; width: 100%;
+                       overflow: auto; white-space: normal;') }}
+    <!-- Customize options of the dropzone -->
+    {{ dropzone.config(max_files=512, timeout=0,
+    allowed_file_custom=true, allowed_file_type= "image/*, .tif, .tiff, .jpg, .jpeg, .png",
+    default_message='<i class="huge cloud upload alternate icon"></i>
+                     <header id="dragdropheader" style="margin-top:15px">
+                     Drag & Drop to Upload Files
+                     </header>',
+    custom_options='addRemoveLinks: true, parallelUploads: 512, uploadMultiple: true, maxFilesize: 4000'
+    ) }}
+    <div class="ui tiny modal" id="IEmodal">
+        <div class="header">VesselExpress - Internet Explorer</div>
+        <div class="content">
+            Seems like you are using Internet Explorer. For the best experience try using the latest version of another
+            browser like Mozilla FireFox, Google Chrome, Safari or Microsoft Edge.
+        </div>
+        <div class="center actions">
+            <div class="ui block-center color2 positive button" style="width: 200px; height: 35px">Accept</div>
+        </div>
+    </div>
+
+    <div class="ui tiny modal" id="pixelinfo">
+        <div class="header">Pixel size calculation</div>
+        <div class="content">
+            The x and y pixel size can be calculated by dividing the respective x or y pixel size of the CCD/sCMOS
+            camera in microns by the total magnification of the imaging system used for acquiring the images.
+            <br>
+            For example the x and y pixel sizes in an image acquired with a CCD camera having 6 X 6 micron pixels on an
+            optical imaging system using 10X total magnification would be 0.6 microns.
+            <br>
+            The z pixel size is the z-step size in microns used to acquire the image stack.
+        </div>
+        <div class="center actions">
+            <div class="ui block-center color2 positive button" style="width: 150px; height: 35px">OK</div>
+        </div>
+    </div>
+    <div style="margin-bottom: 10px; margin-top:3px" class="ui grid">
+        <div class="thirteen wide column">
+            <h2 class="ui huge header">
+                <div class="content">
+                    VesselExpress
+                    <div class="sub header">
+                        Rapid and fully automated blood vasculature analysis in 3D light sheet image volumes of
+                        different organs.
+                    </div>
+                </div>
+            </h2>
+        </div>
+        <div class="three wide column">
+            <div class="ui list">
+                <div class="item">
+                    <i class="github icon" style="color: #00796b"></i>
+                    <div class="content">
+                        <a href="https://github.com/RUB-Bioinf/VesselExpress" target="_blank" style="color: #00796b">
+                            View on GitHub
+                        </a>
+                    </div>
+                </div>
+                <div class="item">
+                    <i class="file outline icon" style="color: #00796b"></i>
+                    <div class="content">
+                        <a href="https://github.com/RUB-Bioinf/VesselExpress" target="_blank" style="color: #00796b">
+                            Documentation
+                        </a>
+                    </div>
+                </div>
+                <div class="item">
+                    <i class="file image outline icon" style="color: #00796b"></i>
+                    <div class="content">
+                        <a href="" target="_blank" style="color: #00796b">
+                            Example data
+                        </a>
+                    </div>
+                </div>
+                <div class="item">
+                    <i class="address book outline icon" style="color: #00796b"></i>
+                    <div class="content">
+                        <a href="https://github.com/RUB-Bioinf/VesselExpress" target="_blank" style="color: #00796b">
+                            Contact
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sixteen wide column">
+            <div class="ui raised segment">
+                Try VesselExpress by uploading single-channel grayscale images (TIF, JPEG, PNG) < 4 GB per image.
+                <br> You may want to change the parameters in the sidebar. Hover over the labels for description.
+                <br> After running the pipeline you can download the results.
+                </p>
+            </div>
+        </div>
+        <div class="eight wide column">
+            {{ dropzone.create(action=url_for('home.home_page')) }}
+            <form style="padding: 0; margin: 0;" method="POST">
+                <div class="ui two columns grid">
+                    <div class="column">
+                        <button style="margin-right: 0;"
+                                class="ui block-center color1 button" type=submit
+                                name="clear_files" id="clear_files">
+                            Clear files
+                        </button>
+                    </div>
+                    <div class="column">
+                        <button class="ui block-center color2 button" id="start_pipeline"
+                                name="start_pipeline" onclick="start_pipeline();">
+                            Run Pipeline
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <div class="padlrbig border-1 container">
+                <div class="segment"
+                     style="overflow-y: auto; overflow-x: hidden; white-space: pre-wrap; word-wrap: break-word; height: 270px"
+                     id="renderfiles" name="renderfiles"><h3>Rendered Files</h3></div>
+            </div>
+            <div class="ui two column grid " style="margin-top: 0">
+                <div class="column">
+                    <form style="padding: 0; margin: 0;" method="POST">
+                        <button class="ui block-center color1 button" type=submit
+                                name="download_image" id="download_image">
+                            Download all results
+                        </button>
+                    </form>
+                </div>
+                <div class="column">
+                    <form style="padding: 0; margin: 0;" method="POST">
+                        <button class="ui block-center color2 button" type=submit
+                                name="download_statistics" id="download_statistics">
+                            Download statistics
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="eight wide column">
+            <div class="padlrbig container" id="content"
+                 style="background-color: #000000;color: #99ffcc;font-family: Courier;"><h3
+                    style="padding-top: 5px !important;">VesselExpress console:</h3>
+                <div class="segment"
+                     style="overflow: auto; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; height: 600px;"
+                     id="snakelog" name="snakelog">
+                </div>
+                <b id="prompt" class="prompt idle">&marker;</b>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+            integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+            crossorigin="anonymous"></script>
+    <script type=text/javascript>
+        $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
+        // Sockets
+        var log_socket = io.connect('http://127.0.0.1:5000/log', {transports: ['websocket']});  // Connect to socket
+        var snakelogele = document.getElementById('snakelog');  // Textarea
+        var blink = document.getElementById('prompt');  // Blinking marker
+        var last_log = '';  // To detect changes in the log
+        log_socket.emit('get_log');  // Get log on page load
+        setInterval(function () {  // Initiate server tick to scan for log
+            if (log_socket.connected == true) {
+                log_socket.emit('get_log');
+            }
+        }, 2000)
+        // Function when receiving 'newlog'
+        log_socket.on('newlog', function (msg) {
+            if (msg.data != last_log) {  // Only update if log changed
+                snakelogele.innerHTML = msg.data;  // Writes the log to msg.data
+                snakelogele.appendChild(blink);  // Appends blinking marker
+                snakelogele.scrollTop = snakelogele.scrollHeight;  // Scrolls down to the end
+                last_log = msg.data;  // Assign new last log
+            } else {
+                //pass
+            }
+        });
+        setInterval(function () {
+            blink.style.opacity = (blink.style.opacity == 0 ? 1 : 0);
+        }, 550);
+
+
+        var render_socket = io.connect('http://localhost:5000/renderfiles', {transports: ['websocket']});
+        var renderfilesele = document.getElementById('renderfiles');
+        var last_renderfiles;
+        render_socket.emit('get_files');
+        setInterval(function () {
+            if (render_socket.connected == true) {
+                render_socket.emit('get_files');
+            }
+        }, 3000)
+        render_socket.on('nonewfiles', function (msg) {  // Function when no glb files are present
+            while (renderfilesele.childNodes.length > 1) {  // Deletes all buttons previously present
+                renderfilesele.removeChild(renderfilesele.childNodes[1]);
+            }
+            if (renderfilesele.innerHTML != msg.data) {  // Only change on first call
+                renderfilesele.innerHTML += msg.data;
+            }
+        })
+        render_socket.on('newfiles', function (msg) {  // Function when glb files are present
+            if (JSON.stringify(last_renderfiles) === JSON.stringify(msg.data)) {
+                //pass
+            } else {  // Only create buttons when new .glb files are available
+                while (renderfilesele.childNodes.length > 1) {
+                    renderfilesele.removeChild(renderfilesele.childNodes[1]);
+                }
+                for (var i = 0; i < msg.data.length; i++) {  // Creating the buttons
+                    let elem = document.createElement('input');
+                    elem.type = 'button';
+                    elem.value = msg.data[i];
+                    elem.classList = 'ui rendergenerated button';
+                    elem.addEventListener("click", function () {
+                        render_data = [{
+                            "request": "get_render_preview",  // Pass this request identifier
+                            "file_name": elem.value           // With this value
+                        }]
+                        $.ajax({ // AJAX POST instructions
+                            type: "POST",
+                            url: {{ url_for('home.home_page')| tojson }},  // When triggered execute this
+                            data: JSON.stringify(render_data),
+                            contentType: "application/json",
+                            dataType: 'json'
+                        })
+                        window.open('http://localhost:5000/render', '_blank');  // Opening new tab
+                    })
+                    renderfilesele.appendChild(elem);  // Appending button
+                }
+                last_renderfiles = msg.data;  // To track whether new .glb files are present
+            }
+        });
+
+
+        // AJAX
+        $("#start_pipeline").click(function (event) {
+            // Deactivate standard POST submit
+            event.preventDefault();
+            // Data that is sent to backend
+            var start_data = [{
+                "request": "start_pipeline"
+            }]
+            $.ajax({ // AJAX POST instructions
+                type: "POST",
+                url: {{ url_for('home.home_page')| tojson }},
+                data: JSON.stringify(start_data),
+                contentType: "application/json",
+                dataType: 'json'
+            })
+        });
+
+        //Browser check
+        // Internet Explorer 6-11
+        var isIE = false || !!document.documentMode;
+        if (isIE === true) {
+            $('.ui.tiny.modal').modal('show');
+        }
+    </script>
+{% endblock content %}

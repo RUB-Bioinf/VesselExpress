@@ -1,0 +1,65 @@
+{
+  "imgFolder": "data",
+  "segmentation": "frangi",
+  "3D": 1,
+  "render": 1,
+  "franginet": {
+    "model": "models/guided/model.ckpt",
+    "mode": "guided",
+    "normalization": false,
+    "average": true,
+    "mode_img": "OneCubeBatch",
+    "gpus": "0",
+    "batch_size": "1"
+  },
+  "frangi": {
+    "sigma_min": 2.0,
+    "sigma_max": 5.0,
+    "sigma_steps": 3,
+    "alpha": 0.5,
+    "beta": 500.0,
+    "gamma": 500.0
+  },
+  "threshold": {
+    "value": 0,
+    "ball_radius": 3,
+    "artifact_size": 5,
+    "block_size": 137,
+    "denoise": 1
+  },
+  "graphAnalysis": {
+    "pixel_dimensions": "1.0,1.0,1.0",
+    "pruning_scale": 1.5,
+    "length_limit": 3,
+    "branching_threshold": 0.25,
+    "all_stats": 0,
+    "experimental_flag": 0
+  },
+  "rendering": {
+    "save_raw": 1,
+    "save_glb": 1,
+    "render_device": "GPU",
+    "render_distance": 500000,
+    "image_resolution_x": 1920,
+    "image_resolution_y": 1080,
+    "image_compression": 0.0
+  },
+  "rendering_binary": {
+    "mesh_r": 0.528,
+    "mesh_g": 0.002,
+    "mesh_b": 0.0013,
+    "mesh_roughness": 0.65,
+    "mesh_metallic": 0.0,
+    "mesh_sheen": 0.0,
+    "mesh_specular": 0.0
+  },
+  "rendering_skeleton": {
+    "mesh_r": 0.01,
+    "mesh_g": 0.06,
+    "mesh_b": 0.528,
+    "mesh_roughness": 0.0,
+    "mesh_metallic": 0.792,
+    "mesh_sheen": 0.15,
+    "mesh_specular": 0.233
+  }
+}

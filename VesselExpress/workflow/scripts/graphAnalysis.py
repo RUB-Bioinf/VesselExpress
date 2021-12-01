@@ -95,8 +95,12 @@ if __name__ == '__main__':
     parser.add_argument('-prints', type=bool, default=False, help='set to True to print runtime')
     args = parser.parse_args()
 
+    pixel_dims = [float(item) for item in args.pixel_dimensions.split(',')]
+    if pixel_dims[0] == 0:
+        pixel_dims = pixel_dims[1:]
+
     parameters = {
-        "pixel_dimensions": [float(item) for item in args.pixel_dimensions.split(',')],
+        "pixel_dimensions": pixel_dims,
         "pruning_scale": args.pruning_scale,
         "length_limit": args.length_limit,
         "branching_threshold": args.branching_threshold,

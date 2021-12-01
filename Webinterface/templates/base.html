@@ -1,0 +1,40 @@
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!--Custom css and js -->
+    <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='css/style.css') }}>
+    <script src={{ url_for('static', filename="js/main.js") }}></script>
+    <!-- semantic UI -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.js"></script>
+    <!-- Initiating Websockets copied from https://flask-socketio.readthedocs.io/en/latest/getting_started.html -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+            integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+            crossorigin="anonymous"></script>
+    <!-- Page title + favicon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <title>VesselExpress{% block title %}{% endblock title %}</title>
+</head>
+<body style="overflow: hidden !important;">
+<!-- Include html to realise flash messages -->
+{% include 'messages.html' %}
+<!-- Define sidebar and include its contents -->
+<div class="ui bottom attached segment">
+    <div id="sidebar" class="ui left visible vertical very wide sidebar menu" style="overflow: hidden !important;">
+        {% include 'sidebar.html' %}
+    </div>
+
+    <div id="main_pusher1" class="pusher">
+        <div id="pushed_container" class="ui basic segment container">
+            {% block content %}
+
+            {% endblock content %}
+        </div>
+    </div>
+</div>
+</body>
+</html>
