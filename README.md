@@ -1,8 +1,10 @@
 
 <p style="text-align:center; margin-bottom: 0px"><img src="VesselExpress/imgs/logo.svg" alt="Logo" style="width: 15%;"></p>
 <h1 style="margin:0px; padding-top: 0px">VesselExpress</h1>
-<h3 style="margin-top: 0px">Rapid and fully automated bloodvasculature analysis in 3D light sheet image volumes of different organs.</h3>
+<h3 style="margin-top: 0px">Rapid and fully automated blood vasculature analysis in 3D light sheet image volumes of different organs.</h3>
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5733151.svg)](https://doi.org/10.5281/zenodo.5733151)
+&nbsp;
 [![GitHub Stars](https://img.shields.io/github/stars/RUB-Bioinf/VesselExpress.svg?style=social&label=Star)](https://github.com/RUB-Bioinf/VesselExpress) 
 &nbsp;
 [![GitHub Downloads](https://img.shields.io/github/downloads/RUB-Bioinf/VesselExpress/total?style=social)](https://github.com/RUB-Bioinf/VesselExpress/releases) 
@@ -56,7 +58,7 @@ You can use this YouTube Video for visualized instructions on how to download, s
 
 ## Docker Version
 
-| Browser-Baesd User Inface | Command-Line only |
+| Browser-Based User Interface | Command-Line only |
 | --- | --- |
 | [![Docker Build](https://img.shields.io/docker/automated/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)       | [![Docker Build](https://img.shields.io/docker/automated/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)       |
 | [![Docker Image Size](https://img.shields.io/docker/image-size/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress) | [![Docker Image Size](https://img.shields.io/docker/image-size/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli) |
@@ -64,36 +66,48 @@ You can use this YouTube Video for visualized instructions on how to download, s
 | [![Docker Stars](https://img.shields.io/docker/stars/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)           | [![Docker Stars](https://img.shields.io/docker/stars/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)           |
 | [![Docker Version](https://img.shields.io/docker/v/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)             | [![Docker Version](https://img.shields.io/docker/v/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)             |
 
+If you want to use the **browser version**, follow these steps:
 1. Install Docker for your operating system from [here](https://docs.docker.com/get-docker/).
 2. Start Docker.
 3. Get the Docker image
-   1. from DockerHub \
-      via ```docker pull philippasp/vesselexpress_cli```
-      for the command-line version \
-      or via `docker pull philippasp/vesselexpress` for the web version.
-   2. or build the Docker image \
-      by calling `docker build -t vesselexpress_cli .` from the VesselExpress directory for the command-line version\
-      or by calling `docker build -f ./Webinterface/Dockerfile -t vesselexpress .` for the Browser-Baesd User Inface version.
-4. Run the command-line version via `docker run -v path-to-data-and-config:/home/user/VesselExpress/data philippasp/vesselexpress_cli`
-   if you've pulled the image from DockerHub or via `docker run -v path-to-data-and-config:/home/user/VesselExpress/data vesselexpress_cli`
-   if you've manually built the image as described above. 
-   The first part of the command specifies the absolute path on your host 
-   containing image files to process and the configuration file. An example configuration file and 3D image can be found in
-   the [data](VesselExpress/data) folder.
-5. Run the web version via `docker run -p 5000:5000 philippasp/vesselexpress` if you've pulled the image from DockerHub or 
-   via `docker run -p 5000:5000 vesselexpress` if you've manually built the image as described above. Naviagte to 
-   `localhost:5000` in your browser to open the web interface. 
-   On macOS Monterey you need to uncheck "AirPlay Receiver" in the "Sharing" system preference to use the web
+   1. from DockerHub via `docker pull philippasp/vesselexpress`
+   2. or build the Docker image by calling `docker build -f ./Webinterface/Dockerfile -t vesselexpress .`
+4. Run VesselExpress via 
+   1. `docker run -p 5000:5000 philippasp/vesselexpress` if you've pulled the image from DockerHub 
+   2. or via `docker run -p 5000:5000 vesselexpress` if you've manually built the image as described above. \
+   Naviagte to `localhost:5000` in your browser (e.g. Firefox or Google Chrome) to open the web interface. On macOS Monterey you need to uncheck "AirPlay Receiver" in the "Sharing" system preference to use the web 
    interface on port 5000.
+
+If you want to use the **command-line interface**, follow these steps:
+
+1. Install Docker for your operating system from [here](https://docs.docker.com/get-docker/).
+2. Start Docker.
+3. Get the Docker image
+   1. from DockerHub via ```docker pull philippasp/vesselexpress_cli```
+   2. by calling ```docker build -t vesselexpress_cli .``` from the [VesselExpress](VesselExpress) directory.
+4. Run VesselExpress
+   1. via `docker run -v path-to-data-and-config:/home/user/VesselExpress/data philippasp/vesselexpress_cli`
+      if you've pulled the image from DockerHub 
+   2. or via `docker run -v path-to-data-and-config:/home/user/VesselExpress/data vesselexpress_cli`
+      if you've manually built the image as described above. \
+      The first part of the command specifies the absolute path on your host 
+      containing image files to process and the configuration file. An example configuration file and 3D image can be found in
+      the [data](VesselExpress/data) folder.
 
 ## Local Version (without Docker)
 We recommend using the Docker version. The local version is intended for development.
 So far we have tested this on Ubuntu and macOS. If you're using Windows, please use the Docker version.
 
-For the command-line version follow these instructions:
-1. Install Blender from [here](https://www.blender.org/download/) (optional for rendering). \
-   We used Blender 2.83.4 on Linux and Blender 2.83.5 on macOS.
+For the **browser version** follow these instructions:
+1. Install [Blender](https://www.blender.org/download/) (optional for rendering). \
+ We used Blender 2.83.4 on Linux and Blender 2.83.5 on macOS.
    You might need to adjust the path to Blender on your system in the [Snakefile](VesselExpress/workflow/Snakefile).
+2. Download all packages via `pip install -r /Webinterface/requirements.txt`.
+3. Type `python /Webinterface/server/app.py` to run the web application.
+4. In your browser navigate to `localhost:5000` to open the webpage.
+
+For the **command-line version** follow these instructions:
+1. Install Blender from [here](https://www.blender.org/download/) (see descriptions above). 
 2. Install Anaconda following the [installation instructions](https://docs.anaconda.com/anaconda/install/index.html).
 3. Install Snakemake following the [installation instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
 4. In a terminal navigate to the project's root folder and type
@@ -103,17 +117,11 @@ Different parameters can be set by using the command line option '--config' or b
 [config.json](VesselExpress/data/config.json) file. A full description of command line arguments for Snakemake can be found
 [here](https://snakemake.readthedocs.io/en/v4.5.1/executable.html).
 
-For the web version follow these instructions:
-1. Install [Blender](https://www.blender.org/download/) (see description above).
-2. Type `pip install -r /Webinterface/requirements.txt`.
-3. Type `python /Webinterface/server/app.py` to run the web application.
-4. In your browser navigate to `localhost:5000` to open the webpage.
-
 ## Wiki
 
-There is a lot of usefull information in our [wiki](https://github.com/RUB-Bioinf/VesselExpress/wiki).
+There is a lot of useful information in our [wiki](https://github.com/RUB-Bioinf/VesselExpress/wiki).
 
-Two important pages in this are:
+Two important pages are:
  - Our [FAQ](https://github.com/RUB-Bioinf/VesselExpress/wiki/FAQ)
  - Our detailed overview over VesselExpress' [parameters](https://github.com/RUB-Bioinf/VesselExpress/wiki/Parameters-for-VesselExpress) for a customized execution.
 
@@ -127,9 +135,10 @@ http://www.bioinf.rub.de/
 
 https://www.uni-due.de/experimental-immunology
 
-## Example Data (coming soon)
+## Example Data
 
-Download our example data from [here](https://github.com/RUB-Bioinf/VesselExpress/wiki/Example-Data).
+Download our example data from [Zenodo](https://zenodo.org/record/5733151#.YajQ1S9Xb5k) containing 3D light sheet
+microscopic images of the mouse brain.
 
 ## Feedback & Bug Reports
 
