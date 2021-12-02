@@ -50,11 +50,11 @@ corresponding Python script. Existing modules can be exchanged with custom scrip
 ## Tutorial Video (coming soon)
 You can use this YouTube Video for visualized instructions on how to download, setup and run VesselExpress on example data:
 
-[![Tutorial Video](https://img.youtube.com/vi/ScMzIvxBSi4/0.jpg)](https://www.youtube.com/watch?v=a8GWVKJNh68)
+[![Tutorial Video](https://img.youtube.com/vi/a8GWVKJNh68/0.jpg)](https://www.youtube.com/watch?v=a8GWVKJNh68)
 
-[![Video Views](https://img.shields.io/youtube/views/ScMzIvxBSi4?style=social)](https://www.youtube.com/watch?v=a8GWVKJNh68)
+[![Video Views](https://img.shields.io/youtube/views/a8GWVKJNh68?style=social)](https://www.youtube.com/watch?v=a8GWVKJNh68)
 &nbsp;
-[![Video Likes](https://img.shields.io/youtube/likes/ScMzIvxBSi4?style=social)](https://www.youtube.com/watch?v=a8GWVKJNh68)
+[![Video Likes](https://img.shields.io/youtube/likes/a8GWVKJNh68?style=social)](https://www.youtube.com/watch?v=a8GWVKJNh68)
 
 ## Docker Version
 
