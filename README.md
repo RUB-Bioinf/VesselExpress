@@ -45,14 +45,17 @@ web browser using the web interface.
 **Notes:** It is also possible to execute each step individually with the
 corresponding Python script. Existing modules can be exchanged with custom scripts in the [Snakefile](VesselExpress/workflow/Snakefile).
 
-## Tutorial Video (coming soon)
-You can use this YouTube Video for visualized instructions on how to download, setup and run VesselExpress on example data:
+## Tutorial Video
+You can use this YouTube Video for visualized instructions on how to download, setup and run VesselExpress on example data.
+By clicking on the image, you will be redirected to an external webseite to view the video.
+Learn more about the video [here](https://github.com/RUB-Bioinf/VesselExpress/wiki/YouTube-Tutorial-Video).
 
 [![Tutorial Video](https://img.youtube.com/vi/a8GWVKJNh68/0.jpg)](https://www.youtube.com/watch?v=a8GWVKJNh68)
 
 [![Video Views](https://img.shields.io/youtube/views/a8GWVKJNh68?style=social)](https://www.youtube.com/watch?v=a8GWVKJNh68)
 &nbsp;
 [![Video Likes](https://img.shields.io/youtube/likes/a8GWVKJNh68?style=social)](https://www.youtube.com/watch?v=a8GWVKJNh68)
+
 
 ## Docker Version
 
