@@ -3,8 +3,6 @@
 <h1 style="margin:0px; padding-top: 0px">VesselExpress</h1>
 <h3 style="margin-top: 0px">Rapid and fully automated blood vasculature analysis in 3D light sheet image volumes of different organs.</h3>
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5733151.svg)](https://doi.org/10.5281/zenodo.5733151)
-&nbsp;
 [![GitHub Stars](https://img.shields.io/github/stars/RUB-Bioinf/VesselExpress.svg?style=social&label=Star)](https://github.com/RUB-Bioinf/VesselExpress) 
 &nbsp;
 [![GitHub Downloads](https://img.shields.io/github/downloads/RUB-Bioinf/VesselExpress/total?style=social)](https://github.com/RUB-Bioinf/VesselExpress/releases) 
@@ -137,8 +135,9 @@ https://www.uni-due.de/experimental-immunology
 
 ## Example Data
 
-Download our example data from [Zenodo](https://zenodo.org/record/5733151#.YajQ1S9Xb5k) containing 3D light sheet
-microscopic images of the mouse brain.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5733151.svg)](https://doi.org/10.5281/zenodo.5733151)
+
+Download our example data from [Zenodo](https://zenodo.org/record/5733151#.YajQ1S9Xb5k) containing 3D light sheet microscopic images of the mouse brain.
 
 ## Feedback & Bug Reports
 
