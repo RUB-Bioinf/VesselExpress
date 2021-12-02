@@ -68,25 +68,37 @@ corresponding Python script. Existing modules can be exchanged with custom scrip
    2. or build the Docker image \
       by calling `docker build -t vesselexpress_cli .` from the VesselExpress directory for the command-line version\
       or by calling `docker build -f ./Webinterface/Dockerfile -t vesselexpress .` for the web version.
-4. Run the command-line version via `docker run -v path-to-data-and-config:/vesselexpress/data`. The first part of the command specifies the path on your host 
-   containing image files to process and the configuration file. An example configuration file and image can be found in
-   the data folder.
-5. Run the web version via `docker run -p 5000:5000 vesselexpress`. Naviagte to `localhost:5000` in your browser to open the web interface.
+4. Run the command-line version via `docker run -v path-to-data-and-config:/home/user/VesselExpress/data philippasp/vesselexpress_cli`
+   if you've pulled the image from DockerHub or via `docker run -v path-to-data-and-config:/home/user/VesselExpress/data vesselexpress_cli`
+   if you've manually built the image as described above. 
+   The first part of the command specifies the absolute path on your host 
+   containing image files to process and the configuration file. An example configuration file and 3D image can be found in
+   the [data](VesselExpress/data) folder.
+5. Run the web version via `docker run -p 5000:5000 philippasp/vesselexpress` if you've pulled the image from DockerHub or 
+   via `docker run -p 5000:5000 vesselexpress` if you've manually built the image as described above. Naviagte to 
+   `localhost:5000` in your browser to open the web interface. 
+   On macOS Monterey you need to uncheck "AirPlay Receiver" in the "Sharing" system preference to use the web
+   interface on port 5000.
 
 ## Local Version (without Docker)
+We recommend using the Docker version. The local version is intended for development.
+So far we have tested this on Ubuntu and macOS. If you're using Windows, please use the Docker version.
+
 For the command-line version follow these instructions:
-1. Install Anaconda following the [installation instructions](https://docs.anaconda.com/anaconda/install/index.html).
-2. Install Snakemake following the [installation instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
-3. Install Blender from [here](https://www.blender.org/download/) (optional).
+1. Install Blender from [here](https://www.blender.org/download/) (optional for rendering). \
+   We used Blender 2.83.4 on Linux and Blender 2.83.5 on macOS.
+   You might need to adjust the path to Blender on your system in the [Snakefile](VesselExpress/workflow/Snakefile).
+2. Install Anaconda following the [installation instructions](https://docs.anaconda.com/anaconda/install/index.html).
+3. Install Snakemake following the [installation instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
 4. In a terminal navigate to the project's root folder and type
-`snakemake --use-conda --cores all --conda-frontend conda`
+`snakemake --use-conda --cores all --conda-frontend conda`.
 
 Different parameters can be set by using the command line option '--config' or by changing the parameters in the
 [config.json](VesselExpress/data/config.json) file. A full description of command line arguments for Snakemake can be found
 [here](https://snakemake.readthedocs.io/en/v4.5.1/executable.html).
 
 For the web version follow these instructions:
-1. Install Blender from [here](https://www.blender.org/download/) (optional).
+1. Install [Blender](https://www.blender.org/download/) (see description above).
 2. Type `pip install -r /Webinterface/requirements.txt`.
 3. Type `python /Webinterface/server/app.py` to run the web application.
 4. In your browser navigate to `localhost:5000` to open the webpage.
@@ -101,8 +113,8 @@ http://www.bioinf.rub.de/
 
 https://www.uni-due.de/experimental-immunology
 
-## Tutorial Video
-You can use this YouTube Video for vizualized instructions on how to download, setup and run VesselExpress on example data:
+## Tutorial Video (coming soon)
+You can use this YouTube Video for visualized instructions on how to download, setup and run VesselExpress on example data:
 
 [![Tutorial Video](https://img.youtube.com/vi/ScMzIvxBSi4/0.jpg)](https://www.youtube.com/watch?v=ScMzIvxBSi4)
 
@@ -111,7 +123,7 @@ You can use this YouTube Video for vizualized instructions on how to download, s
 [![Video Likes](https://img.shields.io/youtube/likes/ScMzIvxBSi4?style=social)](https://www.youtube.com/watch?v=ScMzIvxBSi4)
 
 
-## Example Data
+## Example Data (coming soon)
 
 Download our example data from [here]().
 
@@ -125,8 +137,9 @@ Should you encounter an error, bug or need help, please feel free to reach out t
 Thank you for your help. Your feedback is much appreciated.
 
 ## References
-Weilin Fu (2019) Frangi-Net on High-Resolution Fundus (HRF) image database https://doi.org/10.24433/CO.5016803.v2 \
-Pesavento, M & Vemuri, P. 3D Image Skeletonization Tools.  (2019). https://github.com/pranathivemuri/skeletonization/commit/b7bd1ce06e557905a32307677c77c1b94305ba5c
+1. The Vascular Modeling Toolkit. http://www.vmtk.org
+2. Fu, W. Frangi-Net on High-Resolution Fundus (HRF) image database. (2019). https://doi.org/10.24433/CO.5016803.v2 
+3. Pesavento, M & Vemuri, P. 3D Image Skeletonization Tools.  (2019). https://github.com/pranathivemuri/skeletonization/commit/b7bd1ce06e557905a32307677c77c1b94305ba5c
 ****
 
 **Keywords**: stroke; Neuronal Vessel Morphology; High Throughput Light Sheet Microscopy; 3D Skeletonization

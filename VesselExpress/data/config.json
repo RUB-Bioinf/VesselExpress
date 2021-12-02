@@ -2,7 +2,7 @@
   "imgFolder": "data",
   "segmentation": "frangi",
   "3D": 1,
-  "render": 1,
+  "render": 0,
   "franginet": {
     "model": "models/guided/model.ckpt",
     "mode": "guided",
