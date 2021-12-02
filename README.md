@@ -10,15 +10,10 @@
 [![Follow us on Twitter](https://img.shields.io/twitter/follow/NilsFoer?style=social&logo=twitter)](https://twitter.com/intent/follow?screen_name=NilsFoer)
 &nbsp;
 [![Follow us on Twitter](https://img.shields.io/twitter/follow/saskra1?style=social&logo=twitter)](https://twitter.com/intent/follow?screen_name=saskra1)
-&nbsp;
 
 [![Contributors](https://img.shields.io/github/contributors/RUB-Bioinf/VesselExpress?style=flat)](https://github.com/RUB-Bioinf/VesselExpress/graphs/contributors)
 &nbsp;
 [![License](https://img.shields.io/github/license/RUB-Bioinf/VesselExpress?color=green&style=flat)](https://github.com/RUB-Bioinf/VesselExpress/LICENSE)
-&nbsp;
-[![Language](https://img.shields.io/github/languages/top/RUB-Bioinf/VesselExpress?style=flat)](https://github.com/RUB-Bioinf/VesselExpress)
-&nbsp;
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/RUB-Bioinf/VesselExpress.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/RUB-Bioinf/VesselExpress/context:python)
 &nbsp;
 ![Size](https://img.shields.io/github/repo-size/RUB-Bioinf/VesselExpress?style=flat)
 &nbsp;
@@ -32,6 +27,7 @@
 &nbsp;
 [![Release Date](https://img.shields.io/github/release-date/RUB-Bioinf/VesselExpress?style=flat)](https://github.com/RUB-Bioinf/VesselExpress/releases)
 
+***
 
 *VesselExpress* is an open-source software designed for rapid, fully automated and scalable analysis of vascular datasets 
 in high-throughput sequences. It processes raw microscopic images (2D or 3D) of blood vessels in  parallel  and outputs 
@@ -40,23 +36,33 @@ optional rendering. These steps are automated in a pipeline with the workflow ma
 (see workflow [DAG](VesselExpress/imgs/dag.pdf)). The whole pipeline can be run via Docker or locally from the command line or 
 web browser using the web interface. 
 
+[![Language](https://img.shields.io/github/languages/top/RUB-Bioinf/VesselExpress?style=flat)](https://github.com/RUB-Bioinf/VesselExpress)
+&nbsp;
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/RUB-Bioinf/VesselExpress.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/RUB-Bioinf/VesselExpress/context:python)
+
 ![VesselExpress](VesselExpress/imgs/VesselExpress.png)
 
 **Notes:** It is also possible to execute each step individually with the
 corresponding Python script. Existing modules can be exchanged with custom scripts in the [Snakefile](VesselExpress/workflow/Snakefile).
 
-***
+## Tutorial Video (coming soon)
+You can use this YouTube Video for visualized instructions on how to download, setup and run VesselExpress on example data:
+
+[![Tutorial Video](https://img.youtube.com/vi/ScMzIvxBSi4/0.jpg)](https://www.youtube.com/watch?v=ScMzIvxBSi4)
+
+[![Video Views](https://img.shields.io/youtube/views/ScMzIvxBSi4?style=social)](https://www.youtube.com/watch?v=ScMzIvxBSi4)
+&nbsp;
+[![Video Likes](https://img.shields.io/youtube/likes/ScMzIvxBSi4?style=social)](https://www.youtube.com/watch?v=ScMzIvxBSi4)
 
 ## Docker Version
-[![Docker Build](https://img.shields.io/docker/automated/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)
-&nbsp;
-[![Docker Image Size](https://img.shields.io/docker/image-size/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)
-&nbsp;
-[![Docker Downloads](https://img.shields.io/docker/pulls/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)
-&nbsp;
-[![Docker Stars](https://img.shields.io/docker/stars/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)
-&nbsp;
-[![Docker Version](https://img.shields.io/docker/v/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)
+
+| Browser-Baesd User Inface | Command-Line only |
+| --- | --- |
+| [![Docker Build](https://img.shields.io/docker/automated/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)       | [![Docker Build](https://img.shields.io/docker/automated/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)       |
+| [![Docker Image Size](https://img.shields.io/docker/image-size/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress) | [![Docker Image Size](https://img.shields.io/docker/image-size/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli) |
+| [![Docker Downloads](https://img.shields.io/docker/pulls/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)       | [![Docker Downloads](https://img.shields.io/docker/pulls/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)       |
+| [![Docker Stars](https://img.shields.io/docker/stars/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)           | [![Docker Stars](https://img.shields.io/docker/stars/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)           |
+| [![Docker Version](https://img.shields.io/docker/v/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)             | [![Docker Version](https://img.shields.io/docker/v/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)             |
 
 1. Install Docker for your operating system from [here](https://docs.docker.com/get-docker/).
 2. Start Docker.
@@ -67,7 +73,7 @@ corresponding Python script. Existing modules can be exchanged with custom scrip
       or via `docker pull philippasp/vesselexpress` for the web version.
    2. or build the Docker image \
       by calling `docker build -t vesselexpress_cli .` from the VesselExpress directory for the command-line version\
-      or by calling `docker build -f ./Webinterface/Dockerfile -t vesselexpress .` for the web version.
+      or by calling `docker build -f ./Webinterface/Dockerfile -t vesselexpress .` for the Browser-Baesd User Inface version.
 4. Run the command-line version via `docker run -v path-to-data-and-config:/home/user/VesselExpress/data philippasp/vesselexpress_cli`
    if you've pulled the image from DockerHub or via `docker run -v path-to-data-and-config:/home/user/VesselExpress/data vesselexpress_cli`
    if you've manually built the image as described above. 
@@ -103,6 +109,14 @@ For the web version follow these instructions:
 3. Type `python /Webinterface/server/app.py` to run the web application.
 4. In your browser navigate to `localhost:5000` to open the webpage.
 
+## Wiki
+
+There is a lot of usefull information in our [wiki](https://github.com/RUB-Bioinf/VesselExpress/wiki).
+
+Two important pages in this are:
+ - Our [FAQ](https://github.com/RUB-Bioinf/VesselExpress/wiki/FAQ)
+ - Our detailed overview over VesselExpress' [parameters](https://github.com/RUB-Bioinf/VesselExpress/wiki/Parameters-for-VesselExpress) for a customized execution.
+
 ## Correspondence
 
 [**Prof. Dr. Axel Mosig**](mailto:axel.mosig@rub.de): Bioinformatics, Center for Protein Diagnostics (ProDi), Ruhr-University Bochum, Bochum, Germany
@@ -113,25 +127,15 @@ http://www.bioinf.rub.de/
 
 https://www.uni-due.de/experimental-immunology
 
-## Tutorial Video (coming soon)
-You can use this YouTube Video for visualized instructions on how to download, setup and run VesselExpress on example data:
-
-[![Tutorial Video](https://img.youtube.com/vi/ScMzIvxBSi4/0.jpg)](https://www.youtube.com/watch?v=ScMzIvxBSi4)
-
-[![Video Views](https://img.shields.io/youtube/views/ScMzIvxBSi4?style=social)](https://www.youtube.com/watch?v=ScMzIvxBSi4)
-&nbsp;
-[![Video Likes](https://img.shields.io/youtube/likes/ScMzIvxBSi4?style=social)](https://www.youtube.com/watch?v=ScMzIvxBSi4)
-
-
 ## Example Data (coming soon)
 
-Download our example data from [here]().
-
+Download our example data from [here](https://github.com/RUB-Bioinf/VesselExpress/wiki/Example-Data).
 
 ## Feedback & Bug Reports
 
 We strive to always improve and make this pipeline accessible to the public.
 We hope to make it as easy to use as possible.
+For your convinience we have set up a [FAQ here](https://github.com/RUB-Bioinf/VesselExpress/wiki/FAQ).
 
 Should you encounter an error, bug or need help, please feel free to reach out to us via the [Issues](https://github.com/RUB-Bioinf/VesselExpress/issues) page.
 Thank you for your help. Your feedback is much appreciated.
