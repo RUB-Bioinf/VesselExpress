@@ -56,7 +56,6 @@ Learn more about the video [here](https://github.com/RUB-Bioinf/VesselExpress/wi
 &nbsp;
 [![Video Likes](https://img.shields.io/youtube/likes/a8GWVKJNh68?style=social)](https://www.youtube.com/watch?v=a8GWVKJNh68)
 
-
 ## Docker Version
 
 | Browser-Based User Interface | Command-Line only |
@@ -118,6 +117,7 @@ Different parameters can be set by using the command line option '--config' or b
 [config.json](VesselExpress/data/config.json) file. A full description of command line arguments for Snakemake can be found
 [here](https://snakemake.readthedocs.io/en/v4.5.1/executable.html).
 
+You can learn more about how to set up and run VesselExpress [here](https://github.com/RUB-Bioinf/VesselExpress/wiki/Running-the-Pipeline).
 ## Wiki
 
 There is a lot of useful information in our [wiki](https://github.com/RUB-Bioinf/VesselExpress/wiki).
