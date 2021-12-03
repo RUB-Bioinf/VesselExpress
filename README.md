@@ -74,9 +74,8 @@ If you want to use the **browser version**, follow these instructions:
    2. or build the Docker image by calling `docker build -f ./Webinterface/Dockerfile -t vesselexpress .`
 4. Run VesselExpress via 
    1. `docker run -p 5000:5000 philippasp/vesselexpress` if you've pulled the image from DockerHub 
-   2. or via `docker run -p 5000:5000 vesselexpress` if you've manually built the image as described above. \
-   Naviagte to `localhost:5000` in your browser (e.g. Firefox or Google Chrome) to open the web interface. On macOS Monterey you need to uncheck "AirPlay Receiver" in the "Sharing" system preference to use the web 
-   interface on port 5000.
+   2. or via `docker run -p 5000:5000 vesselexpress` if you've manually built the image as described above.
+5. Navigate to `localhost:5000` in your browser (e.g. Firefox or Google Chrome) to open the web interface. On macOS Monterey you need to uncheck "AirPlay Receiver" in the "Sharing" system preference to use the web interface on port 5000.
 
 If you want to use the **command-line interface**, follow these instructions:
 
