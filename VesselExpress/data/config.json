@@ -57,9 +57,9 @@
     "mesh_r": 0.01,
     "mesh_g": 0.06,
     "mesh_b": 0.528,
-    "mesh_roughness": 0.0,
-    "mesh_metallic": 0.792,
-    "mesh_sheen": 0.15,
-    "mesh_specular": 0.233
+    "mesh_roughness": 0.408,
+    "mesh_metallic": 0.267,
+    "mesh_sheen": 0.0,
+    "mesh_specular": 0.308
   }
 }

@@ -67,7 +67,7 @@ Learn more about the video [here](https://github.com/RUB-Bioinf/VesselExpress/wi
 | [![Docker Stars](https://img.shields.io/docker/stars/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)           | [![Docker Stars](https://img.shields.io/docker/stars/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)           |
 | [![Docker Version](https://img.shields.io/docker/v/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)             | [![Docker Version](https://img.shields.io/docker/v/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)             |
 
-If you want to use the **browser version**, follow these steps:
+If you want to use the **browser version**, follow these instructions:
 1. Install Docker for your operating system from [here](https://docs.docker.com/get-docker/).
 2. Start Docker.
 3. Get the Docker image
@@ -79,7 +79,7 @@ If you want to use the **browser version**, follow these steps:
    Naviagte to `localhost:5000` in your browser (e.g. Firefox or Google Chrome) to open the web interface. On macOS Monterey you need to uncheck "AirPlay Receiver" in the "Sharing" system preference to use the web 
    interface on port 5000.
 
-If you want to use the **command-line interface**, follow these steps:
+If you want to use the **command-line interface**, follow these instructions:
 
 1. Install Docker for your operating system from [here](https://docs.docker.com/get-docker/).
 2. Start Docker.
@@ -97,7 +97,7 @@ If you want to use the **command-line interface**, follow these steps:
 
 ## Local Version (without Docker)
 We recommend using the Docker version. The local version is intended for development.
-So far we have tested this on Ubuntu and macOS. If you're using Windows, please use the Docker version.
+So far we have tested this on Ubuntu and macOS (excluding Frangi-Net). If you're using Windows, please use the Docker version.
 
 For the **browser version** follow these instructions:
 1. Install [Blender](https://www.blender.org/download/) (optional for rendering). \
