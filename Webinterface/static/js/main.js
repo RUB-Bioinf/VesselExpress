@@ -1,8 +1,5 @@
 $(document).ready(function () {
-    $('.selection.dropdown').dropdown();
-
-    $('.ui.dropdown').dropdown();
-
+    // Executed on page load. Define standard behaviour of objects in here.
     $('.message .close').on('click', function () {
         $(this).closest('.message').transition('fade');
     });
@@ -34,36 +31,55 @@ $(document).ready(function () {
         document.getElementById('dim_x').value + ' x ' +
         document.getElementById('dim_y').value + ' x ' +
         document.getElementById('dim_z').value + ' µm');
-
-    // Flashes
-    $('#successtoast')
-        .toast({
-            title: 'Success',
-            class: 'green',
-            showProgress: 'top',
-            progressUp: true,
-            pauseOnHover: true,
-            displayTime: 3000
-        });
-    $('#errortoast')
-        .toast({
-            title: 'Error',
-            class: 'red',
-            showProgress: 'top',
-            progressUp: true,
-            pauseOnHover: true,
-            displayTime: 3000
-        });
-    $('#warningtoast')
-        .toast({
-            title: 'Warning',
-            class: 'yellow',
-            showProgress: 'top',
-            progressUp: true,
-            pauseOnHover: true,
-            displayTime: 3000
-        });
 })
+
+// flash message handler
+function flash_handler(flash_collection) {
+    /* flash_collection is a list with n dictionaries that each  have 'message' and 'type' keys.
+    Each dictionary in the list produces one flash message.
+    */
+    for (var i = 0; i < flash_collection.length; i++) {
+        if (flash_collection[i].type == 'success') {
+            $('body').toast({
+                showIcon: 'check circle outline',
+                message: flash_collection[i].message,
+                showProgress: 'top',
+                classProgress: 'green',
+                progressUp: true,
+                pauseOnHover: true,
+                displayTime: 3000
+            })
+        } else if (flash_collection[i].type == 'error') {
+            $('body').toast({
+                showIcon: 'times circle outline',
+                message: flash_collection[i].message,
+                showProgress: 'top',
+                classProgress: 'red',
+                progressUp: true,
+                pauseOnHover: true,
+                displayTime: 3000
+            })
+        } else if (flash_collection[i].type == 'warning') {
+            $('body').toast({
+                showIcon: 'question circle outline',
+                message: flash_collection[i].message,
+                showProgress: 'top',
+                classProgress: 'yellow',
+                progressUp: true,
+                pauseOnHover: true,
+                displayTime: 3000
+            })
+        } else if (flash_collection[i].type == 'finish') {
+            $('body').toast({
+                showIcon: 'check circle outline',
+                message: flash_collection[i].message,
+                showProgress: 'top',
+                classProgress: 'green',
+                displayTime: 0
+            })
+        }
+    }
+}
 
 
 

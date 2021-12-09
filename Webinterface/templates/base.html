@@ -17,18 +17,16 @@
             crossorigin="anonymous"></script>
     <!-- Page title + favicon -->
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-    <title>VesselExpress{% block title %}{% endblock title %}</title>
+    <title>VesselExpress - Version <1.1.0>{% block title %}{% endblock title %}</title>
 </head>
-<body style="overflow: hidden !important;">
-<!-- Include html to realise flash messages -->
-{% include 'messages.html' %}
+<body>
 <!-- Define sidebar and include its contents -->
 <div class="ui bottom attached segment">
     <div id="sidebar" class="ui left visible vertical very wide sidebar menu" style="overflow: hidden !important;">
         {% include 'sidebar.html' %}
     </div>
 
-    <div id="main_pusher1" class="pusher">
+    <div id="main_pusher1" class="pusher" style="margin-top: -10px">
         <div id="pushed_container" class="ui basic segment container">
             {% block content %}
 

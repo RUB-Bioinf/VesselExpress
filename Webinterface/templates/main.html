@@ -27,7 +27,7 @@
 
     <div class="ui tiny modal" id="pixelinfo">
         <div class="header">Pixel size calculation</div>
-        <div class="content">
+        <div class="content" id="pixelinfoo">
             The x and y pixel size can be calculated by dividing the respective x or y pixel size of the CCD/sCMOS
             camera in microns by the total magnification of the imaging system used for acquiring the images.
             <br>
@@ -40,6 +40,8 @@
             <div class="ui block-center color2 positive button" style="width: 150px; height: 35px">OK</div>
         </div>
     </div>
+
+
     <div style="margin-bottom: 10px; margin-top:3px" class="ui grid">
         <div class="thirteen wide column">
             <h2 class="ui huge header">
@@ -65,7 +67,8 @@
                 <div class="item">
                     <i class="file outline icon" style="color: #00796b"></i>
                     <div class="content">
-                        <a href="https://github.com/RUB-Bioinf/VesselExpress" target="_blank" style="color: #00796b">
+                        <a href="https://github.com/RUB-Bioinf/VesselExpress/wiki" target="_blank"
+                           style="color: #00796b">
                             Documentation
                         </a>
                     </div>
@@ -90,9 +93,30 @@
         </div>
         <div class="sixteen wide column">
             <div class="ui raised segment">
-                Try VesselExpress by uploading single-channel grayscale images (TIF, JPEG, PNG) < 4 GB per image.
-                <br> You may want to change the parameters in the sidebar. Hover over the labels for description.
-                <br> After running the pipeline you can download the results.
+                <div class="ui two columns grid">
+                    <div class="ten wide column">
+                        Try VesselExpress by uploading single-channel grayscale images (TIF, JPEG, PNG) < 4 GB per
+                        image.
+                        <br> You may want to change the parameters in the sidebar. Hover over the labels for
+                        description.
+                        <br> After running the pipeline you can download the results.
+                    </div>
+                    <div class="six wide column">
+                        <div class="ui icon hidden message" id="progbar_message"
+                             style="background-color: white; margin-top: -7px; margin-bottom: -5px; box-shadow: none;">
+                            <i class="notched circle loading icon" style="margin-top: 0px"></i>
+                            <div class="content" style="margin-top: -5px">
+                                <div><b style="font-size: 18px">Preparing download</b></div>
+                                <div class="ui inverted progress" style="margin-bottom: -10px; margin-top: 6px;"
+                                     id="progbar_progress">
+                                    <div class="bar">
+                                        <div class="centered progress" style="color: white"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 </p>
             </div>
         </div>
@@ -109,7 +133,7 @@
                     </div>
                     <div class="column">
                         <button class="ui block-center color2 button" id="start_pipeline"
-                                name="start_pipeline" onclick="start_pipeline();">
+                                name="start_pipeline">
                             Run Pipeline
                         </button>
                     </div>
@@ -122,17 +146,19 @@
             </div>
             <div class="ui two column grid " style="margin-top: 0">
                 <div class="column">
-                    <form style="padding: 0; margin: 0;" method="POST">
-                        <button class="ui block-center color1 button" type=submit
+                    <form style="padding: 0; margin: 0;" method="POST" id="download_img_form">
+                        <input type="hidden" name="download_images" id="download_images">
+                        <button class="ui block-center color1 button" type=submit onsubmit="return false"
                                 name="download_image" id="download_image">
                             Download all results
                         </button>
                     </form>
                 </div>
                 <div class="column">
-                    <form style="padding: 0; margin: 0;" method="POST">
-                        <button class="ui block-center color2 button" type=submit
-                                name="download_statistics" id="download_statistics">
+                    <form style="padding: 0; margin: 0;" method="POST" id="download_stat_form">
+                        <input type="hidden" name="download_statistics" id="download_statistics">
+                        <button class="ui block-center color2 button" type=submit onsubmit="return false"
+                                name="download_statistic" id="download_statistic">
                             Download statistics
                         </button>
                     </form>
@@ -141,10 +167,23 @@
         </div>
         <div class="eight wide column">
             <div class="padlrbig container" id="content"
-                 style="background-color: #000000;color: #99ffcc;font-family: Courier;"><h3
-                    style="padding-top: 5px !important;">VesselExpress console:</h3>
+                 style="background-color: #000000;color: #99ffcc;font-family: Courier;">
+                <div class="ui grid">
+                    <div class="ten wide column">
+                        <h3 style="padding-top: 0px !important;">VesselExpress console:</h3>
+                    </div>
+                    <div class="six wide column">
+                        <form style="padding: 0; margin: 0;" method="POST" id="download_log_form">
+                            <input type="hidden" name="download_logs" id="download_logs">
+                            <button class="ui color2 button" style="height: 100%; line-height: 50%;"
+                                    id="download_log_btn" name="download_log_btn">
+                                Download logs
+                            </button>
+                        </form>
+                    </div>
+                </div>
                 <div class="segment"
-                     style="overflow: auto; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; height: 600px;"
+                     style="margin-top: 10px; overflow: auto; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; height: 600px;"
                      id="snakelog" name="snakelog">
                 </div>
                 <b id="prompt" class="prompt idle">&marker;</b>
@@ -232,29 +271,176 @@
             }
         });
 
+        var prog_socket = io.connect('http://127.0.0.1:5000/progbar', {transports: ['websocket']});
+        // Function when receiving 'newlog'
+        prog_socket.on('newprogress', function (msg) {
+            //flash_handler([{'message': 'Progress: ' + msg.data.current + '/' + msg.data.sum, 'type': 'success'}])
+            $('#progbar_progress').progress({
+                percent: (msg.data.current / msg.data.sum) * 100
+            })
+        });
+
+        $("#progbar_message").click(function () {
+            document.getElementById('progbar_message').classList.add('hidden')
+        })
+
 
         // AJAX
         $("#start_pipeline").click(function (event) {
-            // Deactivate standard POST submit
-            event.preventDefault();
+            event.preventDefault();  // Deactivate standard POST submit
             // Data that is sent to backend
-            var start_data = [{
-                "request": "start_pipeline"
-            }]
+            var ajax_data = [{
+                "request": "update_config",
+                "update_config": getParams()
+            }];
             $.ajax({ // AJAX POST instructions
                 type: "POST",
                 url: {{ url_for('home.home_page')| tojson }},
-                data: JSON.stringify(start_data),
+                data: JSON.stringify(ajax_data),
                 contentType: "application/json",
                 dataType: 'json'
+            }).done(function (flash_collection) {
+                flash_handler(flash_collection)
+                ajax_data = [{
+                    "request": "start_pipeline",
+                    "update_config": getParams()
+                }];
+                $.ajax({ // AJAX POST instructions
+                    type: "POST",
+                    url: {{ url_for('home.home_page')| tojson }},
+                    data: JSON.stringify(ajax_data),
+                    contentType: "application/json",
+                    dataType: 'json'
+                }).done(function (flash_collection) {
+                    flash_handler(flash_collection)
+                });
+            });
+        });
+
+        var proginterval
+        $("#download_image").click(function (event) {
+            event.preventDefault();  // Deactivate standard POST submit
+            proginterval = setInterval(function () {  // Initiate server tick to scan for log
+                if (prog_socket.connected == true) {
+                    prog_socket.emit('get_progress');
+                }
+            }, 500)
+            document.getElementById("progbar_message").classList.remove("hidden")
+            $.ajax({ // AJAX POST instructions
+                type: "POST",
+                url: {{ url_for('home.home_page')| tojson }},
+                async: true,
+                data: JSON.stringify([{
+                    "request": "download_images",
+                    "type": "first_run"
+                }]),
+                contentType: "application/json",
+                dataType: 'json',
+                success: (function (flash_collection) {
+                    if (flash_collection == 0) {
+                        prog_socket.emit('get_progress');
+                    }
+                })
+            }).done(function (flash_collection) {
+                if (flash_collection != 0) {
+                    flash_handler(flash_collection)
+                    clearInterval(proginterval);
+                } else if (flash_collection == 0) {
+                    clearInterval(proginterval)
+                    $.ajax({ // AJAX POST instructions
+                        type: "POST",
+                        url: {{ url_for('home.home_page')| tojson }},
+                        async: false,
+                        data: JSON.stringify([{
+                            "request": "download_images",
+                            "request": "download_images",
+                            "type": "second_run"
+                        }]),
+                        contentType: "application/json",
+                        dataType: 'json'
+                    }).done($("#download_img_form").submit())
+                }
             })
+        });
+
+        $("#download_statistic").click(function (event) {
+            event.preventDefault();  // Deactivate standard POST submit
+            // Data that is sent to backend
+            var ajax_data = [{
+                "request": "download_statistics",
+                "type": "first_run"
+            }];
+            $.ajax({ // AJAX POST instructions
+                type: "POST",
+                url: {{ url_for('home.home_page')| tojson }},
+                async: false,
+                data: JSON.stringify(ajax_data),
+                contentType: "application/json",
+                dataType: 'json',
+            }).done(function (flash_collection) {
+                if (flash_collection != 0) {
+                    flash_handler(flash_collection)
+                } else if (flash_collection == 0) {
+
+                    $.ajax({ // AJAX POST instructions
+                        type: "POST",
+                        url: {{ url_for('home.home_page')| tojson }},
+                        async: false,
+                        data: JSON.stringify(ajax_data),
+                        contentType: "application/json",
+                        dataType: 'json',
+                    }).done(function () {
+                        $("#download_stat_form").submit(); // Submit the form
+                    })
+                }
+            })
+        });
+
+        $("#download_log_btn").click(function (event) {
+            event.preventDefault();  // Deactivate standard POST submit
+            // Data that is sent to backend
+            var ajax_data = [{
+                "request": "download_logs"
+            }];
+            $.ajax({ // AJAX POST instructions
+                type: "POST",
+                url: {{ url_for('home.home_page')| tojson }},
+                async: false,
+                data: JSON.stringify(ajax_data),
+                contentType: "application/json",
+                dataType: 'json',
+            }).done(function (flash_collection) {
+                if (flash_collection != 0) {
+                    flash_handler(flash_collection)
+                } else if (flash_collection == 0) {
+                    $("#download_log_form").submit(); // Submit the form
+                }
+            })
+        });
+
+        $("#clear_files").click(function (event) {
+            event.preventDefault();  // Deactivate standard POST submit
+            // Data that is sent to backend
+            var ajax_data = [{
+                "request": "clear_files"
+            }];
+            $.ajax({ // AJAX POST instructions
+                type: "POST",
+                url: {{ url_for('home.home_page')| tojson }},
+                data: JSON.stringify(ajax_data),
+                contentType: "application/json",
+                dataType: 'json'
+            }).done(function (flash_collection) {
+                flash_handler(flash_collection)
+            });
         });
 
         //Browser check
         // Internet Explorer 6-11
         var isIE = false || !!document.documentMode;
         if (isIE === true) {
-            $('.ui.tiny.modal').modal('show');
+            $('#IEmodal').modal('show');
         }
+
     </script>
 {% endblock content %}

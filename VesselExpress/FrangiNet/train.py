@@ -12,8 +12,8 @@ from FrangiNet.guided_filter_layer import build_lr_can, deef_guided_filter_advan
 from FrangiNet.graph_computation_thread import GraphComputationThread
 from skimage import io
 import numpy as np
-import time
-from tensorflow.python.client import device_lib
+# import time
+# from tensorflow.python.client import device_lib
 
 compThread = GraphComputationThread()  # used for the session/training
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
@@ -104,8 +104,8 @@ def main_frangi_train(conf_file):
         epoch_loss = [10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 100000000000]
 
     while total_step <= data.step_overall:
-        if total_step % data.steps_per_epoch == 0:
-            time_train_start = time.time()
+        #if total_step % data.steps_per_epoch == 0:
+        #    time_train_start = time.time()
         total_step = total_step + 1
 
         # get the training data (image, label, mask, weight)
@@ -126,7 +126,7 @@ def main_frangi_train(conf_file):
         if total_step % data.steps_per_epoch == 0:
             logging.info('Training epoch %s finished, loss: %s', str(int(total_step / data.steps_per_epoch)),
                          str(loss_train))
-            time_train_end = time.time()
+            #time_train_end = time.time()
             '''f = open('FrangiNet/Time_Training.csv', 'a')
             f.write(str(int(total_step / data.steps_per_epoch)) + ";" + "{:.3f}".format(
                 time_train_end - time_train_start) + ";s\n")
@@ -143,7 +143,7 @@ def main_frangi_train(conf_file):
                                               data.image_big[1]), dtype=np.float32)
                 index = 0
 
-            time_valid_start = time.time()
+            #time_valid_start = time.time()
             for _ in range(0, data.steps_per_validation):
                 x_bv, y_bv, m_bv, w_bv = data.provide_valid()
                 feed_dict_bv = {data.x: x_bv, data.y: y_bv, data.m: m_bv, data.w: w_bv,
@@ -160,7 +160,7 @@ def main_frangi_train(conf_file):
                     index += 1
             logging.info('Validation epoch %s finished, loss: %s', str(int(total_step / data.steps_per_epoch)),
                          str(loss_valid))
-            time_valid_end = time.time()
+            #time_valid_end = time.time()
             '''f = open('FrangiNet/Time_Validation.csv', 'a')
             f.write(str(int(total_step / data.steps_per_epoch)) + ";" + "{:.3f}".format(
                 time_valid_end - time_valid_start) + ";s\n")
@@ -178,7 +178,7 @@ def main_frangi_train(conf_file):
         # save the model and an example of an image including its label and prediction
         # also create roc and precision-recall-curve of the validation set
         if total_step % data.step_save == 0:
-            time_save_start = time.time()
+            #time_save_start = time.time()
             model_path = data.path_save + 'model/%d/' % int(total_step / data.steps_per_epoch)
             if not os.path.exists(model_path):
                 os.makedirs(model_path)
@@ -206,7 +206,7 @@ def main_frangi_train(conf_file):
             metrics.create_metrics_from_csv(data.path_save)
 
             logging.info('Model epoch %s saved and metrics created', str(int(total_step / data.steps_per_epoch)))
-            time_save_end = time.time()
+            #time_save_end = time.time()
             '''f = open('FrangiNet/Time_Saving.csv', 'a')
             f.write(str(int(total_step / data.steps_per_epoch)) + ";" + "{:.3f}".format(time_save_end - time_save_start)
                     + ";s\n")

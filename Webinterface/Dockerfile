@@ -20,18 +20,17 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN apt-get update
 RUN apt-get upgrade
 
+# Setup blender
+RUN apt-get install blender -y
+RUN wget https://download.blender.org/release/Blender2.83/blender-2.83.4-linux64.tar.xz
+RUN tar xvf blender-2.83.4-linux64.tar.xz -C /usr/bin/
+
 # Copy project
 COPY ./ /home/user/VesselExpress_server/
 
 # Install website packages
-WORKDIR /home/user/VesselExpress_server/Webinterface/
-RUN pip install -r requirements.txt
-
-# Setup blender
 WORKDIR /home/user/VesselExpress_server/
-RUN apt-get install blender -y
-RUN wget https://download.blender.org/release/Blender2.83/blender-2.83.4-linux64.tar.xz
-RUN tar xvf blender-2.83.4-linux64.tar.xz -C /usr/bin/
+RUN pip install -r Webinterface/requirements.txt
 
 # Setup conda
 ENV PATH /opt/conda/bin:$PATH
@@ -39,12 +38,9 @@ RUN ln -sf /bin/bash /bin/sh
 RUN conda update conda
 
 # Setup envs for pipeline
-WORKDIR /home/user/VesselExpress_server/VesselExpress/workflow/
-RUN snakemake --use-conda --cores all --conda-frontend conda --conda-create-envs-only
+RUN snakemake --use-conda --cores all --conda-frontend conda --snakefile "./VesselExpress/workflow/Snakefile" --conda-create-envs-only
 
-WORKDIR /home/user/VesselExpress_server/VesselExpress/data/
-RUN rm test.tiff
+RUN rm VesselExpress/data/test.tiff
 
-WORKDIR /home/user/VesselExpress_server/
 EXPOSE 5000
 CMD ["python3.7", "Webinterface/server/app.py"]
