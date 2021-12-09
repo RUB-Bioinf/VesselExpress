@@ -1,6 +1,5 @@
 import time
 import numpy as np
-import os
 import argparse
 
 import sys

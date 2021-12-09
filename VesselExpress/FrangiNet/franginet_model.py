@@ -7,7 +7,7 @@ from FrangiNet.franginet_layer import conv2d, elementwise2d, nonlinear2d, elemen
 import numpy as np
 import scipy.ndimage as ndi
 from itertools import combinations_with_replacement
-from tensorflow.python.layers.convolutional import conv3d
+# from tensorflow.python.layers.convolutional import conv3d
 
 
 class FrangiNet:

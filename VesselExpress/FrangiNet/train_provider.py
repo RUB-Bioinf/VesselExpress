@@ -5,7 +5,7 @@ import json
 from random import shuffle
 from skimage import io
 from skimage.transform import resize
-import copy
+# import copy
 
 from FrangiNet.metrics import show_array_info
 

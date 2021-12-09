@@ -164,7 +164,7 @@ def render_object(model_file_path: str, out_dir: str,
     bpy.data.materials[mat_name].node_tree.nodes['Principled BSDF'].inputs[10].default_value = mesh_sheen
 
     # Applying the material to the imported object
-    link = links.new(principled.outputs['BSDF'], output.inputs['Surface'])
+    # link = links.new(principled.outputs['BSDF'], output.inputs['Surface'])
     active_object.active_material = bpy.data.materials[mat_name]
 
     # Setting the render clipping distance for all cameras
