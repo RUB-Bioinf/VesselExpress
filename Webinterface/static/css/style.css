@@ -27,6 +27,16 @@ body, html {
     color: white !important;
 }
 
+.ui.large.label {
+    background-color: #00796b !important;
+    color: white !important;
+}
+
+.ui.large.label:hover {
+    cursor: pointer;
+    background-color: #004c40 !important;
+    color: white !important;
+}
 
 .ui.toggle.checkbox input:focus:checked ~ .box:before,
 .ui.toggle.checkbox input:focus:checked ~ label:before {
@@ -124,6 +134,11 @@ input[type=number]::-webkit-inner-spin-button {
     color: white !important;
     margin-top: 2px !important;
     transform: scale(1.1);
+}
+
+.ui.inverted.progress .bar{
+    background-color: #00796b !important;
+    color: white !important;
 }
 
 

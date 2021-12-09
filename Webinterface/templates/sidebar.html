@@ -1,388 +1,388 @@
 <img style="margin-top: 25px; margin-bottom: 25px;" class="ui centered small image" src="static/images/logo.svg">
-<form method="POST" , id="snakemake_settings">
-    <div class="container mtop mleftright"
-         style="height: 680px; overflow-x: hidden; overflow-y: auto; word-wrap: break-word;">
-        <div class="segment padlr">
-            <h4 class="ui horizontal left aligned divider header">
-                General
-            </h4>
-            <div class="ui four columns grid">
-                <div class="column">
-                    <div class="ui form">
-                        <div class="field">
-                            <span style="font-size:16px;" data-variation="small"
-                                  data-tooltip="x pixel dimension in µm" data-position="bottom left">
-                                x size:
-                            </span>
-                            <input id="dim_x" name="dim_x" class="mtop"
-                                   style="height:45px; background-color: #F0F0F0; text-align: center !important"
-                                   oninput="updatex(this.value)">
-                        </div>
+<input type="hidden" name="version_link" id="version_link">
+<div class="ui large label" style="margin-top: -40px !important;" for="version_link"
+     onclick={window.open("https://github.com/RUB-Bioinf/VesselExpress/releases","_blank")}>Version: 1.1.0
+</div>
+<div class="container mtop mleftright"
+     style="height: 70%; overflow-x: hidden; overflow-y: auto; word-wrap: break-word;">
+    <div class="segment padlr">
+        <h4 class="ui horizontal left aligned divider header">
+            General
+        </h4>
+        <div class="ui four columns grid">
+            <div class="column">
+                <div class="ui form">
+                    <div class="field">
+                        <span style="font-size:16px;" data-variation="small"
+                              data-tooltip="x pixel dimension in µm" data-position="bottom left">
+                            x size:
+                        </span>
+                        <input id="dim_x" name="dim_x" class="mtop"
+                               style="height:45px; background-color: #F0F0F0; text-align: center !important"
+                               oninput="updatex(this.value)">
                     </div>
                 </div>
-                <div class="column">
-                    <div class="ui form">
-                        <div class="field">
-                            <span style="font-size:16px;" data-variation="small"
-                                  data-tooltip="y pixel dimension in µm" data-position="bottom left">
-                                y size:
-                            </span>
-                            <input id="dim_y" name="dim_y" class="mtop"
-                                   style="height:45px; background-color: #F0F0F0; text-align: center !important"
-                                   oninput="updatey(this.value)">
-                        </div>
+            </div>
+            <div class="column">
+                <div class="ui form">
+                    <div class="field">
+                        <span style="font-size:16px;" data-variation="small"
+                              data-tooltip="y pixel dimension in µm" data-position="bottom left">
+                            y size:
+                        </span>
+                        <input id="dim_y" name="dim_y" class="mtop"
+                               style="height:45px; background-color: #F0F0F0; text-align: center !important"
+                               oninput="updatey(this.value)">
                     </div>
                 </div>
-                <div class="column">
-                    <div class="ui form">
-                        <div class="field">
-                            <span style="font-size:16px;" data-variation="small" id="dim_z_span"
-                                  data-tooltip="z pixel dimension in µm" data-position="bottom left">
-                                z size:
-                            </span>
-                            <input id="dim_z" name="dim_z" class="mtop color1"
-                                   style="height:45px; background-color: #F0F0F0; text-align: center !important"
-                                   oninput="updatez(this.value)">
-                        </div>
+            </div>
+            <div class="column">
+                <div class="ui form">
+                    <div class="field">
+                        <span style="font-size:16px;" data-variation="small" id="dim_z_span"
+                              data-tooltip="z pixel dimension in µm" data-position="bottom left">
+                            z size:
+                        </span>
+                        <input id="dim_z" name="dim_z" class="mtop color1"
+                               style="height:45px; background-color: #F0F0F0; text-align: center !important"
+                               oninput="updatez(this.value)">
                     </div>
                 </div>
-                <div class="column">
-                    <div>
-                        <label style="font-size: 16px;"
-                               data-variation="fixed small"
-                               data-tooltip="Check for 3D image processing, uncheck for 2D image processing"
-                               data-position="bottom right">
-                            <span>
-                                3D
-                            </span>
-                        </label>
-                    </div>
-                    <div class="ui checkbox"
-                         style="margin-top: -17px !important; margin-left: 65px;">
-                        <input type="checkbox" name="3D" id="3D_checkbox" onchange="update3d(this)">
-                        <label></label>
-                    </div>
+            </div>
+            <div class="column">
+                <div>
+                    <label style="font-size: 16px;"
+                           data-variation="fixed small"
+                           data-tooltip="Check for 3D image processing, uncheck for 2D image processing"
+                           data-position="bottom right">
+                        <span>
+                            3D
+                        </span>
+                    </label>
+                </div>
+                <div class="ui checkbox"
+                     style="margin-top: -17px !important; margin-left: 65px;">
+                    <input type="checkbox" name="3D" id="3D_checkbox" onchange="update3d(this)">
+                    <label></label>
+                </div>
 
-                    <div style="margin-top: 10px">
-                        <label style="font-size: 16px;"
-                               data-variation="small"
-                               data-tooltip="Check to create 2D and 3D previews of the vasculature"
-                               data-position="bottom right">
-                            <span id="render_span">
-                                Preview
-                            </span>
-                        </label>
-                    </div>
-                    <div class="ui checkbox" style="margin-top: -17px; margin-left: 65px;">
-                        <input type="checkbox" name="render" id="render_checkbox" onchange="updatepreview(this)">
-                        <label></label>
-                    </div>
+                <div style="margin-top: 10px">
+                    <label style="font-size: 16px;"
+                           data-variation="small"
+                           data-tooltip="Check to create 2D and 3D previews of the vasculature"
+                           data-position="bottom right">
+                        <span id="render_span">
+                            Preview
+                        </span>
+                    </label>
+                </div>
+                <div class="ui checkbox" style="margin-top: -17px; margin-left: 65px;">
+                    <input type="checkbox" name="render" id="render_checkbox" onchange="updatepreview(this)">
+                    <label></label>
                 </div>
             </div>
         </div>
-        <div class="ui four columns grid padlr" style="margin-bottom: -30px!important;">
-            <div class="sixteen wide column">
-                <label id="pixel_dims" style="font-size: 16px;"></label>
-            </div>
+    </div>
+    <div class="ui four columns grid padlr" style="margin-bottom: -30px!important;">
+        <div class="sixteen wide column">
+            <label id="pixel_dims" style="font-size: 16px;"></label>
         </div>
-        <div class="ui four columns grid padlr">
+    </div>
+    <div class="ui four columns grid padlr">
+        <div class="eight wide column">
+            <a href="" style="color: #00796b; font-size: 16px;" id="pixelsizetooltip">
+                More information
+            </a>
+        </div>
+    </div>
+
+    <div class="segment padlr" style="margin-top: 30px">
+        <h4 class="ui horizontal left aligned divider header" id="frangilabel">
+            Frangi Filter
+        </h4>
+        <div class="ui four columns grid">
             <div class="eight wide column">
-                <a href="" style="color: #00796b; font-size: 16px;" id="pixelsizetooltip">
-                    More information
-                </a>
+                <span style="font-size:16px;" data-variation="small"
+                      data-tooltip="Range of sigmas (expected min and max vessel diameter)"
+                      data-position="top left">
+                    &sigma; min-max:
+                </span>
+                <div class="ui bottom aligned labeled ticked dark red range slider" id="slider-range"></div>
+                <div class="ui input"></div>
+                <input name="sigma_min" id="range-slider-input-1" type="hidden">
+                <div class="ui input"></div>
+                <input name="sigma_max" id="range-slider-input-2" type="hidden">
             </div>
-        </div>
-
-        <div class="segment padlr" style="margin-top: 30px">
-            <h4 class="ui horizontal left aligned divider header" id="frangilabel">
-                Frangi Filter
-            </h4>
-            <div class="ui four columns grid">
-                <div class="eight wide column">
-                    <span style="font-size:16px;" data-variation="small"
-                          data-tooltip="Range of sigmas (expected min and max vessel diameter)"
-                          data-position="top left">
-                        &sigma; min-max:
-                    </span>
-                    <div class="ui bottom aligned labeled ticked dark red range slider" id="slider-range"></div>
-                    <div class="ui input"></div>
-                    <input name="sigma_min" id="range-slider-input-1" type="hidden">
-                    <div class="ui input"></div>
-                    <input name="sigma_max" id="range-slider-input-2" type="hidden">
-                </div>
-                <div class="four wide column">
-                    <div class="ui form">
-                        <div class="field">
-                            <span style="font-size:16px;" data-variation="small"
-                                  data-tooltip="Steps between sigmas" data-position="top right">
-                                &sigma; steps:
-                            </span>
-                            <input id="sigma_steps" name="sigma_steps" class="mtop"
-                                   style="height:45px; background-color: #F0F0F0"
-                                   type="number" step="1" value="3">
-                        </div>
+            <div class="four wide column">
+                <div class="ui form">
+                    <div class="field">
+                        <span style="font-size:16px;" data-variation="small"
+                              data-tooltip="Steps between sigmas" data-position="top right">
+                            &sigma; steps:
+                        </span>
+                        <input id="sigma_steps" name="sigma_steps" class="mtop"
+                               style="height:45px; background-color: #F0F0F0"
+                               type="number" step="1" value="3">
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="ui four columns grid padlr" style="margin-bottom: -20px!important;">
+    <div class="ui four columns grid padlr" style="margin-bottom: -20px!important;">
+        <div class="eight wide column">
+            <div>
+                <span style="font-size:16px;" data-variation="fixed small"
+                      data-tooltip="Adjusts the filter’s sensitivity to deviation from a plate-like structure"
+                      data-position="top left">
+                    &alpha;-value:
+                </span>
+                <div class="ui bottom aligned labeled ticked dark red slider" id="slider"></div>
+                <div class="ui input"></div>
+                <input name="alpha" id="slider-input-1" type="hidden">
+            </div>
+        </div>
+        <div class="four wide column">
+            <div class="ui form">
+                <div class="field">
+                    <span style="font-size:16px;" data-variation="fixed small"
+                          data-tooltip="Adjusts the filter’s sensitivity to deviation from a blob-like structure"
+                          data-position="top right">
+                        &beta;-value:
+                    </span>
+                    <input id="beta" name="beta" class="mtop"
+                           style="height:45px; background-color: #F0F0F0" type="number"
+                           step="0.1" value="500">
+                </div>
+            </div>
+        </div>
+        <div class="four wide column">
+            <div class="ui form">
+                <div class="field">
+                    <span style="font-size:16px;" data-variation="fixed small"
+                          data-tooltip="Adjusts the filter’s sensitivity to areas of high variance"
+                          data-position="top right">
+                        &gamma;-value:
+                    </span>
+                    <input id="gamma" name="gamma" class="mtop"
+                           style="height:45px; background-color: #F0F0F0" type="number"
+                           step="0.1" value="500">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui four columns grid padlr">
+        <div class="eight wide column">
+            <a href="https://link.springer.com/chapter/10.1007/BFb0056195" target="_blank"
+               style="color: #00796b; font-size: 16px">
+                More information
+            </a>
+        </div>
+    </div>
+
+    <div class="segment padlr" style="margin-top: 30px">
+        <h4 class="ui horizontal left aligned divider header">
+            Thresholding
+        </h4>
+        <div class="ui four columns grid">
+            <div class="column">
+                <div class="ui form">
+                    <div class="field">
+                        <span style="font-size:16px;" data-variation="fixed small"
+                              data-tooltip="Pixel radius of ball structuring element for morphological closing (object merging)"
+                              data-position="top left">
+                            Ball radius:
+                        </span>
+                        <input id="ball_radius" name="ball_radius" class="mtop"
+                               style="height:45px; background-color: #F0F0F0"
+                               type="number" step="1" value="3">
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="ui form">
+                    <div class="field">
+                        <span style="font-size:15.9px; white-space:nowrap;overflow:hidden;text-overflow:clip;"
+                              data-variation="small"
+                              data-tooltip="Pixel size of artifacts to be removed" data-position="top left">
+                            Artifact size:
+                        </span>
+                        <input id="artifact_size" name="artifact_size" class="mtop"
+                               style="height:45px; background-color: #F0F0F0"
+                               type="number" step="1" value="5">
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="ui form">
+                    <div class="field">
+                        <span style="font-size:16px;" data-variation="small" id="block_size_span"
+                              data-tooltip="Window size for local 2D thresholding" data-position="top right">
+                            Block size:
+                        </span>
+                        <input id="block_size" name="block_size" class="mtop"
+                               style="height:45px; background-color: #F0F0F0"
+                               type="number" step="1" value="137">
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div>
+                    <label style="font-size: 16px;"
+                           data-variation="small" data-tooltip="Check to remove noise from image"
+                           data-position="top right">
+                        <span id="denoise_span">
+                            Denoise
+                        </span>
+                    </label>
+                </div>
+                <div class="ui checkbox" style="margin-top: -17px; margin-left: 65px;">
+                    <input type="checkbox" name="denoise" id="denoise_checkbox">
+                    <label></label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="segment padlr" style="margin-top: 30px">
+        <h4 class="ui horizontal left aligned divider header">
+            Graph Analysis
+        </h4>
+        <div class="ui four columns grid">
+            <div class="four wide column">
+                <div class="ui form">
+                    <div class="field">
+                        <span style="font-size:16px;" data-variation="small"
+                              data-tooltip="Scaling factor to determine spurious branches" data-position="top left">
+                            Pruning:
+                        </span>
+                        <input id="pruning_scale" name="pruning_scale" class="mtop"
+                               style="height:45px; background-color: #F0F0F0" type="number"
+                               step="0.1" value="1.5">
+                    </div>
+                </div>
+            </div>
+            <div class="four wide column">
+                <div class="ui form">
+                    <div class="field">
+                        <span style="font-size:16px;" data-variation="small"
+                              data-tooltip="Minimum length of vessels in µm" data-position="top left">
+                            Length limit:
+                        </span>
+                        <input id="length_limit" name="length_limit" class="mtop"
+                               style="height:45px; background-color: #F0F0F0"
+                               type="number" step="1" value="3">
+                    </div>
+                </div>
+            </div>
             <div class="eight wide column">
                 <div>
                     <span style="font-size:16px;" data-variation="fixed small"
-                          data-tooltip="Adjusts the filter’s sensitivity to deviation from a plate-like structure"
-                          data-position="top left">
-                        &alpha;-value:
+                          data-tooltip="Percentage segment length to use for branching angle calculation"
+                          data-position="top right">
+                        Branching threshold:
                     </span>
-                    <div class="ui bottom aligned labeled ticked dark red slider" id="slider"></div>
+                    <div class="ui bottom aligned labeled ticked dark red slider" id="slider2"></div>
                     <div class="ui input"></div>
-                    <input name="alpha" id="slider-input-1" type="hidden">
-                </div>
-            </div>
-            <div class="four wide column">
-                <div class="ui form">
-                    <div class="field">
-                        <span style="font-size:16px;" data-variation="fixed small"
-                              data-tooltip="Adjusts the filter’s sensitivity to deviation from a blob-like structure"
-                              data-position="top right">
-                            &beta;-value:
-                        </span>
-                        <input id="beta" name="beta" class="mtop"
-                               style="height:45px; background-color: #F0F0F0" type="number"
-                               step="0.1" value="500">
-                    </div>
-                </div>
-            </div>
-            <div class="four wide column">
-                <div class="ui form">
-                    <div class="field">
-                        <span style="font-size:16px;" data-variation="fixed small"
-                              data-tooltip="Adjusts the filter’s sensitivity to areas of high variance"
-                              data-position="top right">
-                            &gamma;-value:
-                        </span>
-                        <input id="gamma" name="gamma" class="mtop"
-                               style="height:45px; background-color: #F0F0F0" type="number"
-                               step="0.1" value="500">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="ui four columns grid padlr">
-            <div class="eight wide column">
-                <a href="https://link.springer.com/chapter/10.1007/BFb0056195" target="_blank"
-                   style="color: #00796b; font-size: 16px">
-                    More information
-                </a>
-            </div>
-        </div>
-
-        <div class="segment padlr" style="margin-top: 30px">
-            <h4 class="ui horizontal left aligned divider header">
-                Thresholding
-            </h4>
-            <div class="ui four columns grid">
-                <div class="column">
-                    <div class="ui form">
-                        <div class="field">
-                            <span style="font-size:16px;" data-variation="fixed small"
-                                  data-tooltip="Pixel radius of ball structuring element for morphological closing (object merging)"
-                                  data-position="top left">
-                                Ball radius:
-                            </span>
-                            <input id="ball_radius" name="ball_radius" class="mtop"
-                                   style="height:45px; background-color: #F0F0F0"
-                                   type="number" step="1" value="3">
-                        </div>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="ui form">
-                        <div class="field">
-                            <span style="font-size:16px;" data-variation="small"
-                                  data-tooltip="Pixel size of artifacts to be removed" data-position="top left">
-                                Artifact size:
-                            </span>
-                            <input id="artifact_size" name="artifact_size" class="mtop"
-                                   style="height:45px; background-color: #F0F0F0"
-                                   type="number" step="1" value="5">
-                        </div>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="ui form">
-                        <div class="field">
-                            <span style="font-size:16px;" data-variation="small" id="block_size_span"
-                                  data-tooltip="Window size for local 2D thresholding" data-position="top right">
-                                Block size:
-                            </span>
-                            <input id="block_size" name="block_size" class="mtop"
-                                   style="height:45px; background-color: #F0F0F0"
-                                   type="number" step="1" value="137">
-                        </div>
-                    </div>
-                </div>
-                <div class="column">
-                    <div>
-                        <label style="font-size: 16px;"
-                               data-variation="small" data-tooltip="Check to remove noise from image"
-                               data-position="top right">
-                            <span id="denoise_span">
-                                Denoise
-                            </span>
-                        </label>
-                    </div>
-                    <div class="ui checkbox" style="margin-top: -17px; margin-left: 65px;">
-                        <input type="checkbox" name="denoise" id="denoise_checkbox">
-                        <label></label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="segment padlr" style="margin-top: 30px">
-            <h4 class="ui horizontal left aligned divider header">
-                Graph Analysis
-            </h4>
-            <div class="ui four columns grid">
-                <div class="four wide column">
-                    <div class="ui form">
-                        <div class="field">
-                            <span style="font-size:16px;" data-variation="small"
-                                  data-tooltip="Scaling factor to determine spurious branches" data-position="top left">
-                                Pruning:
-                            </span>
-                            <input id="pruning_scale" name="pruning_scale" class="mtop"
-                                   style="height:45px; background-color: #F0F0F0" type="number"
-                                   step="0.1" value="1.5">
-                        </div>
-                    </div>
-                </div>
-                <div class="four wide column">
-                    <div class="ui form">
-                        <div class="field">
-                            <span style="font-size:16px;" data-variation="small"
-                                  data-tooltip="Minimum length of vessels in µm" data-position="top left">
-                                Length limit:
-                            </span>
-                            <input id="length_limit" name="length_limit" class="mtop"
-                                   style="height:45px; background-color: #F0F0F0"
-                                   type="number" step="1" value="3">
-                        </div>
-                    </div>
-                </div>
-                <div class="eight wide column">
-                    <div>
-                        <span style="font-size:16px;" data-variation="fixed small"
-                              data-tooltip="Percentage segment length to use for branching angle calculation"
-                              data-position="top right">
-                            Branching threshold:
-                        </span>
-                        <div class="ui bottom aligned labeled ticked dark red slider" id="slider2"></div>
-                        <div class="ui input"></div>
-                        <input name="branching_threshold" id="slider-input-2" type="hidden">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="ui four columns grid padlr">
-            <div class="eight wide column">
-                <a href="https://www.sciencedirect.com/science/article/abs/pii/S0097849312000684" target="_blank"
-                   style="color: #00796b; font-size: 16px">
-                    More information
-                </a>
-            </div>
-        </div>
-
-        <div class="segment padlr" style="margin-top: 30px">
-            <h4 class="ui horizontal left aligned divider header" id="preview">
-                Rendering Preview
-            </h4>
-            <div class="ui four columns grid">
-                <div class="column">
-                    <div class="ui form">
-                        <div class="field">
-                            <span style="font-size:16px;" data-variation="small" id="image_resolution_x_span"
-                                  data-tooltip="x resolution of image with rendered vasculature"
-                                  data-position="top left">
-                                x resolution:
-                            </span>
-                            <input id="image_resolution_x" name="image_resolution_x" class="mtop"
-                                   style="height:45px; background-color: #F0F0F0"
-                                   type="number" step="1" value="1920">
-                        </div>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="ui form">
-                        <div class="field">
-                            <span style="font-size:16px;" data-variation="small" id="image_resolution_y_span"
-                                  data-tooltip="y resolution of image with rendered vasculature"
-                                  data-position="top left">
-                                y resolution:
-                            </span>
-                            <input id="image_resolution_y" name="image_resolution_y" class="mtop"
-                                   style="height:45px; background-color: #F0F0F0"
-                                   type="number" step="1" value="1080">
-                        </div>
-                    </div>
-                </div>
-                <div class="column">
-                    <div>
-                        <label style="font-size: 16px;"
-                               data-variation="small" data-tooltip="Check to use GPU for rendering"
-                               data-position="top left">
-                            <span id="gpu_span">
-                                GPU
-                            </span>
-                        </label>
-                    </div>
-                    <div class="ui checkbox" style="margin-top: -17px; margin-left: 40px;">
-                        <input type="checkbox" name="render_device" id="gpu_checkbox">
-                        <label></label>
-                    </div>
+                    <input name="branching_threshold" id="slider-input-2" type="hidden">
                 </div>
             </div>
         </div>
     </div>
-    <div class="container mtop mleftright" style="height: 660px; overflow:hidden;">
-        <div class="ui two columns grid padlr" style="margin-top: 10px;">
+
+    <div class="ui four columns grid padlr">
+        <div class="eight wide column">
+            <a href="https://www.sciencedirect.com/science/article/abs/pii/S0097849312000684" target="_blank"
+               style="color: #00796b; font-size: 16px">
+                More information
+            </a>
+        </div>
+    </div>
+
+    <div class="segment padlr" style="margin-top: 30px">
+        <h4 class="ui horizontal left aligned divider header" id="preview">
+            Rendering Preview
+        </h4>
+        <div class="ui four columns grid">
             <div class="column">
-                <button class="ui color1 button" style="width:100%" type=submit name="json_reset" data-variation="small"
-                        data-tooltip="Reset to default settings" data-position="right center">
-                    Reset configurations
-                </button>
+                <div class="ui form">
+                    <div class="field">
+                        <span style="font-size:16px;" data-variation="small" id="image_resolution_x_span"
+                              data-tooltip="x resolution of image with rendered vasculature"
+                              data-position="top left">
+                            x resolution:
+                        </span>
+                        <input id="image_resolution_x" name="image_resolution_x" class="mtop"
+                               style="height:45px; background-color: #F0F0F0"
+                               type="number" step="1" value="1920">
+                    </div>
+                </div>
             </div>
             <div class="column">
-                <button class="ui color2 button" style="width:100%" type=submit name="json_update"
-                        data-variation="small"
-                        data-tooltip="Apply current settings" data-position="left center">
-                    Apply configurations
-                </button>
+                <div class="ui form">
+                    <div class="field">
+                        <span style="font-size:16px;" data-variation="small" id="image_resolution_y_span"
+                              data-tooltip="y resolution of image with rendered vasculature"
+                              data-position="top left">
+                            y resolution:
+                        </span>
+                        <input id="image_resolution_y" name="image_resolution_y" class="mtop"
+                               style="height:45px; background-color: #F0F0F0"
+                               type="number" step="1" value="1080">
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div>
+                    <label style="font-size: 16px;"
+                           data-variation="small" data-tooltip="Check to use GPU for rendering"
+                           data-position="top left">
+                        <span id="gpu_span">
+                            GPU
+                        </span>
+                    </label>
+                </div>
+                <div class="ui checkbox" style="margin-top: -17px; margin-left: 40px;">
+                    <input type="checkbox" name="render_device" id="gpu_checkbox">
+                    <label></label>
+                </div>
             </div>
         </div>
     </div>
-</form>
+</div>
+<div class="container mtop mleftright" style="height: 660px; overflow:hidden;">
+    <div class="ui two columns grid padlr" style="margin-top: 10px;">
+        <div class="column">
+            <button class="ui color1 button" style="width:100%" name="reset_config" id="reset_config"
+                    data-variation="small" data-tooltip="Reset to default settings" data-position="right center">
+                Reset configurations
+            </button>
+        </div>
+        <div class="column">
+            <button class="ui color2 button" style="width:100%" name="update_config" id="update_config"
+                    data-variation="small"
+                    data-tooltip="Apply current settings" data-position="left center">
+                Apply configurations
+            </button>
+        </div>
+    </div>
+</div>
 <script>
     var config = JSON.parse('{{ config | tojson | safe}}');
-
     // Checkboxes
     document.getElementById("3D_checkbox").value = config['3D']
     if (document.getElementById("3D_checkbox").value == 1) {
         document.getElementById("3D_checkbox").checked = true;
     } else {
-        document.getElementById("3D_checkbox").checked = false
+        document.getElementById("3D_checkbox").checked = false;
     }
-
     document.getElementById("render_checkbox").value = config['render']
     if (document.getElementById("render_checkbox").value == 1) {
         document.getElementById("render_checkbox").checked = true;
     } else {
         document.getElementById("render_checkbox").checked = false;
     }
-
     if (config['rendering']['render_device'] == 'GPU') {
         document.getElementById("gpu_checkbox").value = 1;
     } else {
@@ -393,7 +393,6 @@
     } else {
         document.getElementById("gpu_checkbox").checked = false;
     }
-
     document.getElementById("denoise_checkbox").value = config['threshold']['denoise']
     if (document.getElementById("denoise_checkbox").value == 1) {
         document.getElementById("denoise_checkbox").checked = true;
@@ -414,9 +413,6 @@
             document.getElementById("range-slider-input-2").value = $('#slider-range').slider('get thumbValue', 'second');
         }
     });
-    document.getElementById("range-slider-input-1").value = config['frangi']['sigma_min'];
-    document.getElementById("range-slider-input-2").value = config['frangi']['sigma_max'];
-
     $('#slider').slider({
         min: 0,
         max: 1,
@@ -427,8 +423,6 @@
             document.getElementById("slider-input-1").value = value;
         }
     });
-    document.getElementById("slider-input-1").value = config['frangi']['alpha'];
-
     $('#slider2').slider({
         min: 0,
         max: 1,
@@ -441,9 +435,10 @@
     });
 
     // Update settings
-    document.getElementById("slider-input-2").value = config['graphAnalysis']['branching_threshold'];
-
+    document.getElementById("range-slider-input-1").value = config['frangi']['sigma_min'];
+    document.getElementById("range-slider-input-2").value = config['frangi']['sigma_max'];
     document.getElementById("sigma_steps").value = config['frangi']['sigma_steps']
+    document.getElementById("slider-input-1").value = config['frangi']['alpha'];
     document.getElementById("beta").value = config['frangi']['beta']
     document.getElementById("gamma").value = config['frangi']['gamma']
 
@@ -451,11 +446,12 @@
     document.getElementById("artifact_size").value = config['threshold']['artifact_size']
     document.getElementById("block_size").value = config['threshold']['block_size']
 
-    document.getElementById("dim_x").value = config['graphAnalysis']['dim_x']
-    document.getElementById("dim_z").value = config['graphAnalysis']['dim_z']
+    document.getElementById("dim_x").value = config['graphAnalysis']['dim_x']  // Prepared like this in python
     document.getElementById("dim_y").value = config['graphAnalysis']['dim_y']
+    document.getElementById("dim_z").value = config['graphAnalysis']['dim_z']
     document.getElementById("pruning_scale").value = config['graphAnalysis']['pruning_scale']
     document.getElementById("length_limit").value = config['graphAnalysis']['length_limit']
+    document.getElementById("slider-input-2").value = config['graphAnalysis']['branching_threshold'];
 
     document.getElementById("image_resolution_x").value = config['rendering']['image_resolution_x']
     document.getElementById("image_resolution_y").value = config['rendering']['image_resolution_y']
@@ -536,4 +532,93 @@
             document.getElementById("preview").style.color = '#ababab';
         }
     }
+
+    function getParams() {
+        return {
+            "dim_x": document.getElementById("dim_x").value,
+            "dim_y": document.getElementById("dim_y").value,
+            "dim_z": document.getElementById("dim_z").value,
+            "3D": document.getElementById("3D_checkbox").value,
+            "render": document.getElementById("render_checkbox").value,
+            "sigma_min": document.getElementById("range-slider-input-1").value,
+            "sigma_max": document.getElementById("range-slider-input-2").value,
+            "sigma_steps": document.getElementById("sigma_steps").value,
+            "alpha": document.getElementById("slider-input-1").value,
+            "beta": document.getElementById("beta").value,
+            "gamma": document.getElementById("gamma").value,
+            "ball_radius": document.getElementById("ball_radius").value,
+            "artifact_size": document.getElementById("artifact_size").value,
+            "block_size": document.getElementById("block_size").value,
+            "denoise": document.getElementById("denoise_checkbox").value,
+            "pruning_scale": document.getElementById("pruning_scale").value,
+            "length_limit": document.getElementById("length_limit").value,
+            "branching_threshold": document.getElementById("slider-input-2").value,
+            "image_resolution_x": document.getElementById("image_resolution_x").value,
+            "image_resolution_y": document.getElementById("image_resolution_y").value,
+            "render_device": document.getElementById("gpu_checkbox").value
+        };
+    }
+
+    function resetParams() {
+        document.getElementById("dim_x").value = '1.0';
+        document.getElementById("dim_y").value = '1.0';
+        document.getElementById("dim_z").value = '1.0';
+        document.getElementById("3D_checkbox").checked = true;
+        document.getElementById("render_checkbox").checked = false;
+        document.getElementById("range-slider-input-1").value = 2.0;
+        document.getElementById("range-slider-input-2").value = 5.0;
+        document.getElementById("sigma_steps").value = 3;
+        document.getElementById("slider-input-1").value = 0.5;
+        document.getElementById("beta").value = 500.0;
+        document.getElementById("gamma").value = 500.0;
+        document.getElementById("ball_radius").value = 3;
+        document.getElementById("artifact_size").value = 5;
+        document.getElementById("block_size").value = 137;
+        document.getElementById("denoise_checkbox").checked = true;
+        document.getElementById("pruning_scale").value = 1.5;
+        document.getElementById("length_limit").value = 3;
+        document.getElementById("slider-input-2").value = 0.25;
+        document.getElementById("image_resolution_x").value = 1920;
+        document.getElementById("image_resolution_y").value = 1080;
+        document.getElementById("gpu_checkbox").checked = true;
+        update3d(document.getElementById("3D_checkbox"));
+        updatepreview(document.getElementById("render_checkbox"));
+    }
+
+    // AJAX
+    $("#update_config").click(function (event) {
+        event.preventDefault();  // Deactivate standard POST submit
+        // Data that is sent to backend
+        var ajax_data = [{
+            "request": "update_config",
+            "update_config": getParams()
+        }];
+        $.ajax({ // AJAX POST instructions
+            type: "POST",
+            url: {{ url_for('home.home_page')| tojson }},
+            data: JSON.stringify(ajax_data),
+            contentType: "application/json",
+            dataType: 'json',
+        }).done(function (flash_collection) {
+            flash_handler(flash_collection)
+        });
+    });
+
+    $("#reset_config").click(function (event) {
+        event.preventDefault();  // Deactivate standard POST submit
+        // Data that is sent to backend
+        resetParams()
+        var ajax_data = [{
+            "request": "reset_config",
+        }];
+        $.ajax({ // AJAX POST instructions
+            type: "POST",
+            url: {{ url_for('home.home_page')| tojson }},
+            data: JSON.stringify(ajax_data),
+            contentType: "application/json",
+            dataType: 'json'
+        }).done(function (flash_collection) {
+            flash_handler(flash_collection)
+        });
+    });
 </script>
