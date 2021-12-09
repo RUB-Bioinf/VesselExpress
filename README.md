@@ -56,7 +56,6 @@ Learn more about the video [here](https://github.com/RUB-Bioinf/VesselExpress/wi
 &nbsp;
 [![Video Likes](https://img.shields.io/youtube/likes/a8GWVKJNh68?style=social)](https://www.youtube.com/watch?v=a8GWVKJNh68)
 
-
 ## Docker Version
 
 | Browser-Based User Interface | Command-Line only |
@@ -67,7 +66,7 @@ Learn more about the video [here](https://github.com/RUB-Bioinf/VesselExpress/wi
 | [![Docker Stars](https://img.shields.io/docker/stars/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)           | [![Docker Stars](https://img.shields.io/docker/stars/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)           |
 | [![Docker Version](https://img.shields.io/docker/v/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)             | [![Docker Version](https://img.shields.io/docker/v/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)             |
 
-If you want to use the **browser version**, follow these steps:
+If you want to use the **browser version**, follow these instructions:
 1. Install Docker for your operating system from [here](https://docs.docker.com/get-docker/).
 2. Start Docker.
 3. Get the Docker image
@@ -75,11 +74,10 @@ If you want to use the **browser version**, follow these steps:
    2. or build the Docker image by calling `docker build -f ./Webinterface/Dockerfile -t vesselexpress .`
 4. Run VesselExpress via 
    1. `docker run -p 5000:5000 philippasp/vesselexpress` if you've pulled the image from DockerHub 
-   2. or via `docker run -p 5000:5000 vesselexpress` if you've manually built the image as described above. \
-   Naviagte to `localhost:5000` in your browser (e.g. Firefox or Google Chrome) to open the web interface. On macOS Monterey you need to uncheck "AirPlay Receiver" in the "Sharing" system preference to use the web 
-   interface on port 5000.
+   2. or via `docker run -p 5000:5000 vesselexpress` if you've manually built the image as described above.
+5. Navigate to `localhost:5000` in your browser (e.g. Firefox or Google Chrome) to open the web interface. On macOS Monterey you need to uncheck "AirPlay Receiver" in the "Sharing" system preference to use the web interface on port 5000.
 
-If you want to use the **command-line interface**, follow these steps:
+If you want to use the **command-line interface**, follow these instructions:
 
 1. Install Docker for your operating system from [here](https://docs.docker.com/get-docker/).
 2. Start Docker.
@@ -97,7 +95,7 @@ If you want to use the **command-line interface**, follow these steps:
 
 ## Local Version (without Docker)
 We recommend using the Docker version. The local version is intended for development.
-So far we have tested this on Ubuntu and macOS. If you're using Windows, please use the Docker version.
+So far we have tested this on Ubuntu and macOS (excluding Frangi-Net). If you're using Windows, please use the Docker version.
 
 For the **browser version** follow these instructions:
 1. Install [Blender](https://www.blender.org/download/) (optional for rendering). \
@@ -118,6 +116,7 @@ Different parameters can be set by using the command line option '--config' or b
 [config.json](VesselExpress/data/config.json) file. A full description of command line arguments for Snakemake can be found
 [here](https://snakemake.readthedocs.io/en/v4.5.1/executable.html).
 
+You can learn more about how to set up and run VesselExpress [here](https://github.com/RUB-Bioinf/VesselExpress/wiki/Running-the-Pipeline).
 ## Wiki
 
 There is a lot of useful information in our [wiki](https://github.com/RUB-Bioinf/VesselExpress/wiki).
