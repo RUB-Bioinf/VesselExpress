@@ -91,7 +91,9 @@ If you want to use the **command-line interface**, follow these instructions:
       if you've manually built the image as described above. \
       The first part of the command specifies the absolute path on your host 
       containing image files to process and the configuration file. An example configuration file and 3D image can be found in
-      the [data](VesselExpress/data) folder.
+      the [data](VesselExpress/data) folder. By default VesselExpress uses all cores for computation. We recommend 
+      decreasing the number of cores when working on an office PC to avoid out of memory errors. You can specify the 
+      number of cores via the flag -e. To run VesselExpress with 4 cores use ```docker run -v path-to-data-and-config:/home/user/VesselExpress/data -e 'CORES=4' vesselexpress_cli```
 
 ## Local Version (without Docker)
 We recommend using the Docker version. The local version is intended for development.
@@ -101,8 +103,8 @@ For the **browser version** follow these instructions:
 1. Install [Blender](https://www.blender.org/download/) (optional for rendering). \
  We used Blender 2.83.4 on Linux and Blender 2.83.5 on macOS.
    You might need to adjust the path to Blender on your system in the [Snakefile](VesselExpress/workflow/Snakefile).
-2. Download all packages via `pip install -r /Webinterface/requirements.txt`.
-3. Type `python /Webinterface/server/app.py` to run the web application.
+2. Download all packages via `pip install -r Webinterface/requirements.txt`.
+3. Type `python Webinterface/server/app.py` to run the web application.
 4. In your browser navigate to `localhost:5000` to open the webpage.
 
 For the **command-line version** follow these instructions:

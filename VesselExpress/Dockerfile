@@ -1,4 +1,7 @@
 FROM python:3.7
+
+ENV CORES=all
+
 RUN python3.7 -m pip install snakemake==6.7.0
 
 RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
@@ -27,4 +30,4 @@ RUN conda update conda
 
 RUN snakemake --use-conda --cores all --conda-frontend conda --snakefile "./workflow/Snakefile" --conda-create-envs-only
 
-CMD snakemake --use-conda --cores all --conda-frontend conda --snakefile "./workflow/Snakefile"
+CMD snakemake --use-conda --cores $CORES --conda-frontend conda --snakefile "./workflow/Snakefile"

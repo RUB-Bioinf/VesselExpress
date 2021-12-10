@@ -50,6 +50,8 @@ SCRIPT_PATH = snakemake.workflow.srcdir('scripts')
 FRANGINET_PATH = os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'FrangiNet')
 IMGS, EXTS = get_files_and_extensions(path=PATH)
 OS = platform.system()
+SIGMA_SMALL = str(config['frangi_small']['sigma_min'])
+SIGMA_LARGE = str(config['frangi_large']['sigma_min'])
 
 if OS == 'Linux':
     ENV_PATH = 'envs/Linux/'
@@ -85,8 +87,8 @@ rule makeImgDir:
 # dual frangi: apply 2 frangi filters with specific sigma and combine the results
 if config["segmentation"] == "dual_frangi":
     rule segmentation_frangi_small:
-        input: expand(PATH + "/{img}/{img}.{ext}", img=IMGS, ext=EXTS)
-        output: expand(PATH + "/{img}/Frangi_{img}_{sigma}.{ext}", img=IMGS, ext=EXTS, sigma=config["frangi_small"]["sigma_min"])
+        input: PATH + "/{img}/{img}.{ext}"
+        output: PATH + "/{img}/Frangi_{img}_" + SIGMA_SMALL + ".{ext}"
         wildcard_constraints:
             ext="(tiff)"
         conda: ENV_PATH + "vmtk.yml"
@@ -96,8 +98,8 @@ if config["segmentation"] == "dual_frangi":
                 -alpha {config[frangi_small][alpha]} -beta {config[frangi_small][beta]} -gamma {config[frangi_small][gamma]}"
 
     rule segmentation_frangi_large:
-        input: expand(PATH + "/{img}/{img}.{ext}", img=IMGS, ext=EXTS)
-        output: expand(PATH + "/{img}/Frangi_{img}_{sigma}.{ext}", img=IMGS, ext=EXTS, sigma=config["frangi_large"]["sigma_min"])
+        input: PATH + "/{img}/{img}.{ext}"
+        output: PATH + "/{img}/Frangi_{img}_" + SIGMA_LARGE + ".{ext}"
         wildcard_constraints:
             ext="(tiff)"
         conda: ENV_PATH + "vmtk.yml"
@@ -107,9 +109,9 @@ if config["segmentation"] == "dual_frangi":
                 -alpha {config[frangi_large][alpha]} -beta {config[frangi_large][beta]} -gamma {config[frangi_large][gamma]}"
 
     rule merge_segmentations:
-        input: raw=expand(PATH + "/{img}/{img}.{ext}", img=IMGS, ext=EXTS),
-            frangi_small=expand(PATH + "/{img}/Frangi_{img}_{sigma}.{ext}", img=IMGS, ext=EXTS, sigma=config["frangi_small"]["sigma_min"]),
-            frangi_large=expand(PATH + "/{img}/Frangi_{img}_{sigma}.{ext}", img=IMGS, ext=EXTS, sigma=config["frangi_large"]["sigma_min"])
+        input: raw=PATH + "/{img}/{img}.{ext}",
+            frangi_small=PATH + "/{img}/Frangi_{img}_" + SIGMA_SMALL + ".{ext}",
+            frangi_large=PATH + "/{img}/Frangi_{img}_" + SIGMA_LARGE + ".{ext}"
         output: PATH + "/{img}/Binary_{img}.{ext}"
         wildcard_constraints:
             ext="tiff"
