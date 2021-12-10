@@ -1,6 +1,6 @@
 {
   "imgFolder": "data",
-  "segmentation": "frangi",
+  "segmentation": "dual_frangi",
   "3D": 1,
   "render": 0,
   "franginet": {
@@ -16,6 +16,22 @@
     "sigma_min": 2.0,
     "sigma_max": 5.0,
     "sigma_steps": 3,
+    "alpha": 0.5,
+    "beta": 500.0,
+    "gamma": 500.0
+  },
+  "frangi_small": {
+    "sigma_min": 1.0,
+    "sigma_max": 1.0,
+    "sigma_steps": 1,
+    "alpha": 0.5,
+    "beta": 500.0,
+    "gamma": 500.0
+  },
+  "frangi_large": {
+    "sigma_min": 4.0,
+    "sigma_max": 4.0,
+    "sigma_steps": 1,
     "alpha": 0.5,
     "beta": 500.0,
     "gamma": 500.0

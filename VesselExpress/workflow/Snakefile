@@ -63,6 +63,7 @@ if os.path.exists(BLENDER_PATH):
 else:
     BLENDER = False
 
+# specify which of the rules for individual frangi should be applied
 if config["3D"] == 1:
     if config["segmentation"] == "frangi":
         ruleorder: segmentation_frangi > segmentation_frangi2D > segmentation_franginet > segmentation_franginet_gpu
@@ -81,61 +82,97 @@ rule makeImgDir:
     output: PATH + "/{img}/{img}.{ext}"
     shell: "mv \"{input}\" \"{output}\""
 
-rule segmentation_frangi2D:
-    input: PATH + "/{img}/{img}.{ext}"
-    output: PATH + "/{img}/Frangi_{img}.{ext}"
-    conda: ENV_PATH + "Pipeline.yml"
-    shell: "python " + SCRIPT_PATH + "/frangi2D.py -i \"{input}\" \
-            -sigma_min {config[frangi][sigma_min]} -sigma_max {config[frangi][sigma_max]} \
-            -sigma_steps {config[frangi][sigma_steps]} -alpha {config[frangi][alpha]} -beta {config[frangi][beta]} \
-            -gamma {config[frangi][gamma]} -denoise {config[threshold][denoise]}"
+# dual frangi: apply 2 frangi filters with specific sigma and combine the results
+if config["segmentation"] == "dual_frangi":
+    rule segmentation_frangi_small:
+        input: expand(PATH + "/{img}/{img}.{ext}", img=IMGS, ext=EXTS)
+        output: expand(PATH + "/{img}/Frangi_{img}_{sigma}.{ext}", img=IMGS, ext=EXTS, sigma=config["frangi_small"]["sigma_min"])
+        wildcard_constraints:
+            ext="(tiff)"
+        conda: ENV_PATH + "vmtk.yml"
+        # benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
+        shell: "python " + SCRIPT_PATH + "/frangi3D.py -i \"{input}\" -o {output} -sigma_min {config[frangi_small][sigma_min]} \
+                -sigma_max {config[frangi_small][sigma_max]} -sigma_steps {config[frangi_small][sigma_steps]} \
+                -alpha {config[frangi_small][alpha]} -beta {config[frangi_small][beta]} -gamma {config[frangi_small][gamma]}"
 
-rule segmentation_frangi:
-    input: PATH + "/{img}/{img}.{ext}"
-    output: PATH + "/{img}/Frangi_{img}.{ext}"
-    wildcard_constraints:
-        ext="(tiff)"
-    conda: ENV_PATH + "vmtk.yml"
-    # benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
-    shell: "python " + SCRIPT_PATH + "/frangi3D.py -i \"{input}\" -sigma_min {config[frangi][sigma_min]} \
-            -sigma_max {config[frangi][sigma_max]} -sigma_steps {config[frangi][sigma_steps]} \
-            -alpha {config[frangi][alpha]} -beta {config[frangi][beta]} -gamma {config[frangi][gamma]}"
+    rule segmentation_frangi_large:
+        input: expand(PATH + "/{img}/{img}.{ext}", img=IMGS, ext=EXTS)
+        output: expand(PATH + "/{img}/Frangi_{img}_{sigma}.{ext}", img=IMGS, ext=EXTS, sigma=config["frangi_large"]["sigma_min"])
+        wildcard_constraints:
+            ext="(tiff)"
+        conda: ENV_PATH + "vmtk.yml"
+        # benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
+        shell: "python " + SCRIPT_PATH + "/frangi3D.py -i \"{input}\" -o {output} -sigma_min {config[frangi_large][sigma_min]} \
+                -sigma_max {config[frangi_large][sigma_max]} -sigma_steps {config[frangi_large][sigma_steps]} \
+                -alpha {config[frangi_large][alpha]} -beta {config[frangi_large][beta]} -gamma {config[frangi_large][gamma]}"
 
-rule segmentation_franginet:
-    input: PATH + "/{img}/{img}.{ext}"
-    output: PATH + "/{img}/Frangi_{img}.{ext}"
-    wildcard_constraints:
-        ext="(tiff)"
-    conda: "envs/Linux/frangi-cpu.yml"
-    #benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
-    shell: "python " + SCRIPT_PATH + "/franginet.py -i {input} -o {output} -model " + FRANGINET_PATH + "{config[franginet][model]} \
-            -mode {config[franginet][mode]} -normalization {config[franginet][normalization]} \
-            -average {config[franginet][average]} -mode_img {config[franginet][mode_img]} \
-            -gpus {config[franginet][gpus]} -batch_size {config[franginet][batch_size]}"
+    rule merge_segmentations:
+        input: raw=expand(PATH + "/{img}/{img}.{ext}", img=IMGS, ext=EXTS),
+            frangi_small=expand(PATH + "/{img}/Frangi_{img}_{sigma}.{ext}", img=IMGS, ext=EXTS, sigma=config["frangi_small"]["sigma_min"]),
+            frangi_large=expand(PATH + "/{img}/Frangi_{img}_{sigma}.{ext}", img=IMGS, ext=EXTS, sigma=config["frangi_large"]["sigma_min"])
+        output: PATH + "/{img}/Binary_{img}.{ext}"
+        wildcard_constraints:
+            ext="tiff"
+        conda: ENV_PATH + "Pipeline.yml"
+        # benchmark: PATH + "/{img}/benchmarks/{img}.threshold.benchmark.txt"
+        shell: "python " + SCRIPT_PATH + "/merge_seg.py -raw \"{input[0]}\" -frangi_small \"{input[1]}\" -frangi_large \"{input[2]}\" "
+# individual frangi
+else:
+    rule segmentation_frangi2D:
+        input: PATH + "/{img}/{img}.{ext}"
+        output: PATH + "/{img}/Frangi_{img}.{ext}"
+        conda: ENV_PATH + "Pipeline.yml"
+        shell: "python " + SCRIPT_PATH + "/frangi2D.py -i \"{input}\" \
+                -sigma_min {config[frangi][sigma_min]} -sigma_max {config[frangi][sigma_max]} \
+                -sigma_steps {config[frangi][sigma_steps]} -alpha {config[frangi][alpha]} -beta {config[frangi][beta]} \
+                -gamma {config[frangi][gamma]} -denoise {config[threshold][denoise]}"
 
-rule segmentation_franginet_gpu:
-    input: PATH + "/{img}/{img}.{ext}"
-    output: PATH + "/{img}/Frangi_{img}.{ext}"
-    wildcard_constraints:
-        ext="(tiff)"
-    conda: "envs/Linux/frangi-gpu.yml"
-    #benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
-    shell: "python " + SCRIPT_PATH + "/franginet.py -i {input} -o {output} -model" + FRANGINET_PATH + "{config[franginet][model]} \
-            -mode {config[franginet][mode]} -normalization {config[franginet][normalization]} \
-            -average {config[franginet][average]} -mode_img {config[franginet][mode_img]} \
-            -gpus {config[franginet][gpus]} -batch_size {config[franginet][batch_size]}"
+    rule segmentation_frangi:
+        input: PATH + "/{img}/{img}.{ext}"
+        output: PATH + "/{img}/Frangi_{img}.{ext}"
+        wildcard_constraints:
+            ext="(tiff)"
+        conda: ENV_PATH + "vmtk.yml"
+        # benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
+        shell: "python " + SCRIPT_PATH + "/frangi3D.py -i \"{input}\" -o {output} -sigma_min {config[frangi][sigma_min]} \
+                -sigma_max {config[frangi][sigma_max]} -sigma_steps {config[frangi][sigma_steps]} \
+                -alpha {config[frangi][alpha]} -beta {config[frangi][beta]} -gamma {config[frangi][gamma]}"
 
-rule thresholding:
-    input: PATH + "/{img}/Frangi_{img}.{ext}"
-    output: PATH + "/{img}/Binary_{img}.{ext}"
-    wildcard_constraints:
-        ext="(tiff|png|jpg)"
-    conda: ENV_PATH + "Thresholding.yml"
-    # benchmark: PATH + "/{img}/benchmarks/{img}.threshold.benchmark.txt"
-    shell: "python " + SCRIPT_PATH + "/thresholding.py -i \"{input}\" -value {config[threshold][value]} \
-            -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
-            -ball_radius {config[threshold][ball_radius]} -artifact_size {config[threshold][artifact_size]} \
-            -block_size {config[threshold][block_size]}"
+    rule segmentation_franginet:
+        input: PATH + "/{img}/{img}.{ext}"
+        output: PATH + "/{img}/Frangi_{img}.{ext}"
+        wildcard_constraints:
+            ext="(tiff)"
+        conda: "envs/Linux/frangi-cpu.yml"
+        #benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
+        shell: "python " + SCRIPT_PATH + "/franginet.py -i {input} -o {output} -model " + FRANGINET_PATH + "{config[franginet][model]} \
+                -mode {config[franginet][mode]} -normalization {config[franginet][normalization]} \
+                -average {config[franginet][average]} -mode_img {config[franginet][mode_img]} \
+                -gpus {config[franginet][gpus]} -batch_size {config[franginet][batch_size]}"
+
+    rule segmentation_franginet_gpu:
+        input: PATH + "/{img}/{img}.{ext}"
+        output: PATH + "/{img}/Frangi_{img}.{ext}"
+        wildcard_constraints:
+            ext="(tiff)"
+        conda: "envs/Linux/frangi-gpu.yml"
+        #benchmark: PATH + "/{img}/benchmarks/{img}.frangi.benchmark.txt"
+        shell: "python " + SCRIPT_PATH + "/franginet.py -i {input} -o {output} -model" + FRANGINET_PATH + "{config[franginet][model]} \
+                -mode {config[franginet][mode]} -normalization {config[franginet][normalization]} \
+                -average {config[franginet][average]} -mode_img {config[franginet][mode_img]} \
+                -gpus {config[franginet][gpus]} -batch_size {config[franginet][batch_size]}"
+
+    rule thresholding:
+        input: PATH + "/{img}/Frangi_{img}.{ext}"
+        output: PATH + "/{img}/Binary_{img}.{ext}"
+        wildcard_constraints:
+            ext="(tiff|png|jpg)"
+        conda: ENV_PATH + "Thresholding.yml"
+        # benchmark: PATH + "/{img}/benchmarks/{img}.threshold.benchmark.txt"
+        shell: "python " + SCRIPT_PATH + "/thresholding.py -i \"{input}\" -value {config[threshold][value]} \
+                -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
+                -ball_radius {config[threshold][ball_radius]} -artifact_size {config[threshold][artifact_size]} \
+                -block_size {config[threshold][block_size]}"
 
 rule renderBinary:
     input: PATH + "/{img}/Binary_{img}.stl"
