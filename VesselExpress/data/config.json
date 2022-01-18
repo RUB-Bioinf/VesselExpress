@@ -1,8 +1,40 @@
 {
   "imgFolder": "data",
-  "segmentation": "dual_frangi",
+  "segmentation": "segmentation3D",
   "3D": 1,
-  "render": 0,
+  "render": 1,
+  "segmentation3D": {
+    "smoothing": 1,
+    "core_threshold": 3.0,
+    "core_vessel_1": 1,
+    "dim_1": 3,
+    "sigma_1": 1.0,
+    "cutoff_method_1": "threshold_li",
+    "core_vessel_2": 1,
+    "dim_2": 3,
+    "sigma_2": 2.0,
+    "cutoff_method_2": "threshold_li",
+    "post_closing": 5,
+    "post_thinning": 0,
+    "post_cleaning": 100
+  },
+  "segmentation2D": {
+    "denoise": 0,
+    "frangi": {
+      "sigma_min": 0.01,
+      "sigma_max": 1,
+      "sigma_steps": 0.01,
+      "alpha": 0.5,
+      "beta": 0.5,
+      "gamma": 100
+    },
+    "threshold": {
+      "ball_radius": 1,
+      "artifact_size": 5,
+      "block_size": 17,
+      "value": 0
+    }
+  },
   "franginet": {
     "model": "models/guided/model.ckpt",
     "mode": "guided",
@@ -11,37 +43,6 @@
     "mode_img": "OneCubeBatch",
     "gpus": "0",
     "batch_size": "1"
-  },
-  "frangi": {
-    "sigma_min": 2.0,
-    "sigma_max": 5.0,
-    "sigma_steps": 3,
-    "alpha": 0.5,
-    "beta": 500.0,
-    "gamma": 500.0
-  },
-  "frangi_small": {
-    "sigma_min": 1.0,
-    "sigma_max": 1.0,
-    "sigma_steps": 1,
-    "alpha": 0.5,
-    "beta": 500.0,
-    "gamma": 500.0
-  },
-  "frangi_large": {
-    "sigma_min": 4.0,
-    "sigma_max": 4.0,
-    "sigma_steps": 1,
-    "alpha": 0.5,
-    "beta": 500.0,
-    "gamma": 500.0
-  },
-  "threshold": {
-    "value": 0,
-    "ball_radius": 3,
-    "artifact_size": 5,
-    "block_size": 137,
-    "denoise": 1
   },
   "graphAnalysis": {
     "pixel_dimensions": "1.0,1.0,1.0",
