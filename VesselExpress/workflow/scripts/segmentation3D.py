@@ -132,10 +132,21 @@ if __name__ == '__main__':
     programStart = time.time()
 
     parser = argparse.ArgumentParser(description='segmentation of 3D images of type .tif')
+
+    def none_or_int(value):
+        if value == 'None':
+            return None
+        return int(value)
+
+    def none_or_float(value):
+        if value == 'None':
+            return None
+        return float(value)
+
     parser.add_argument('-input', type=str, help='input of raw tif image')
     parser.add_argument('-prints', type=bool, default=False, help='set to True to print runtime')
     parser.add_argument('-smoothing', type=int, default=1, help='set to 1 for smoothing, 0 for no smoothing')
-    parser.add_argument('-core_threshold', type=float, default=3.0)
+    parser.add_argument('-core_threshold', type=none_or_float, default=3.0)
     parser.add_argument('-core_vessel_1', type=int, default=1, help='set to 1 for first vesselness filter, '
                                                                     '0 for no vesselness filter')
     parser.add_argument('-dim_1', type=int, default=3)
@@ -146,12 +157,12 @@ if __name__ == '__main__':
     parser.add_argument('-dim_2', type=int, default=3)
     parser.add_argument('-sigma_2', type=float, default=2.0)
     parser.add_argument('-cutoff_method_2', type=str, default='threshold_li')
-    parser.add_argument('-post_closing', type=int, default=5)
+    parser.add_argument('-post_closing', type=none_or_int, default=5)
     parser.add_argument('-post_thinning', type=int, default=0, help='set to 1 for post-processing, '
                                                                     '0 for no post-processing')
     parser.add_argument('-min_thickness', type=int, default=None)
     parser.add_argument('-thin', type=int, default=None)
-    parser.add_argument('-post_cleaning', type=int, default=100)
+    parser.add_argument('-post_cleaning', type=none_or_int, default=100)
     args = parser.parse_args()
 
     config = {

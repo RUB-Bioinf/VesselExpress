@@ -2,7 +2,7 @@
   "imgFolder": "data",
   "segmentation": "segmentation3D",
   "3D": 1,
-  "render": 1,
+  "render": 0,
   "segmentation3D": {
     "smoothing": 1,
     "core_threshold": 3.0,
