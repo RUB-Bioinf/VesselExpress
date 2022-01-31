@@ -44,6 +44,7 @@ def get_graphAnalysis_command(os, script_path):
 def get_segmentation3D_command(script_path):
     command_str = \
         "python " + script_path + "/segmentation3D.py -input \"{input}\" \
+        -small_RAM_mode {config[segmentation3D][small_RAM_mode]} \
         -smoothing {config[segmentation3D][smoothing]} -core_threshold {config[segmentation3D][core_threshold]} \
         -core_vessel_1 {config[segmentation3D][core_vessel_1]} -core_vessel_2 {config[segmentation3D][core_vessel_2]} \
         -post_closing {config[segmentation3D][post_closing]} -post_thinning {config[segmentation3D][post_thinning]} \

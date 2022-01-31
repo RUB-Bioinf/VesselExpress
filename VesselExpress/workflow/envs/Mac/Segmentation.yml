@@ -3,32 +3,22 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - bzip2=1.0.8=h0d85af4_4
   - ca-certificates=2021.10.8=h033912b_0
-  - expat=2.1.0=3
-  - hdf5=1.8.18=3
-  - jpeg=9d=hbcb3906_0
   - libcxx=12.0.1=habf9029_1
   - libffi=3.4.2=h0d85af4_5
-  - libgfortran=3.0.1=0
-  - libpng=1.6.37=h7cec526_2
-  - libtiff=4.0.10=ha78913b_1005
   - libzlib=1.2.11=h9173be1_1013
-  - lz4-c=1.9.3=he49afe7_1
   - ncurses=6.2=h2e338ed_4
   - openssl=3.0.0=h0d85af4_2
   - pip=21.3.1=pyhd8ed1ab_0
-  - python=3.9.9=h38b4d05_0_cpython
-  - python_abi=3.9=2_cp39
+  - python=3.7.12=hf3644f1_100_cpython
+  - python_abi=3.7=2_cp37m
   - readline=8.1=h05e3726_0
-  - setuptools=60.5.0=py39h6e9494a_0
+  - setuptools=60.5.0=py37hf985489_0
   - sqlite=3.37.0=h23a322b_0
   - tk=8.6.11=h5dbffcc_1
-  - tzdata=2021e=he74cb21_0
   - wheel=0.37.1=pyhd8ed1ab_0
   - xz=5.2.5=haf1e3a3_1
   - zlib=1.2.11=h9173be1_1013
-  - zstd=1.4.9=h582d3a0_0
   - pip:
     - aicsimageio==4.5.2
     - aicssegmentation==0.4.2
@@ -36,35 +26,34 @@ dependencies:
     - argon2-cffi==21.3.0
     - argon2-cffi-bindings==21.2.0
     - asciitree==0.3.3
-    - asttokens==2.0.5
     - attrs==21.4.0
     - backcall==0.2.0
-    - black==21.12b0
     - bleach==4.1.0
     - cffi==1.15.0
-    - click==8.0.3
     - cloudpickle==2.0.0
     - colorcet==3.0.0
     - cycler==0.11.0
     - dask==2022.1.0
+    - dask-image==2021.12.0
     - debugpy==1.5.1
     - decorator==5.1.1
     - defusedxml==0.7.1
-    - dnspython==2.1.0
+    - dnspython==2.2.0
     - elementpath==2.4.0
     - email-validator==1.1.3
     - entrypoints==0.3
-    - executing==0.8.2
     - fasteners==0.17.2
     - fonttools==4.28.5
     - fsspec==2022.1.0
     - idna==3.3
     - imagecodecs==2021.11.20
     - imageio==2.13.5
+    - importlib-metadata==4.10.1
+    - importlib-resources==5.4.0
     - ipydatawidgets==4.2.0
     - ipykernel==6.7.0
     - ipympl==0.8.6
-    - ipython==8.0.0
+    - ipython==7.31.0
     - ipython-genutils==0.2.0
     - ipywidgets==7.6.5
     - itk==5.2.1.post1
@@ -92,7 +81,6 @@ dependencies:
     - matplotlib==3.5.1
     - matplotlib-inline==0.1.3
     - mistune==0.8.4
-    - mypy-extensions==0.4.3
     - nbclient==0.5.10
     - nbconvert==6.4.0
     - nbformat==5.1.3
@@ -100,7 +88,7 @@ dependencies:
     - networkx==2.6.3
     - notebook==6.4.7
     - numcodecs==0.9.1
-    - numpy==1.22.1
+    - numpy==1.21.5
     - ome-types==0.2.10
     - packaging==21.3
     - pandas==1.3.5
@@ -108,16 +96,14 @@ dependencies:
     - param==1.12.0
     - parso==0.8.3
     - partd==1.2.0
-    - pathspec==0.9.0
     - pexpect==4.8.0
     - pickleshare==0.7.5
     - pillow==9.0.0
+    - pims==0.5
     - pint==0.18
-    - platformdirs==2.4.1
     - prometheus-client==0.12.0
     - prompt-toolkit==3.0.24
     - ptyprocess==0.7.0
-    - pure-eval==0.2.1
     - pycparser==2.21
     - pyct==0.4.8
     - pydantic==1.9.0
@@ -135,11 +121,10 @@ dependencies:
     - scipy==1.7.3
     - send2trash==1.8.0
     - six==1.16.0
-    - stack-data==0.1.4
+    - slicerator==1.0.0
     - terminado==0.12.1
     - testpath==0.5.0
     - tifffile==2021.11.2
-    - tomli==1.2.3
     - toolz==0.11.2
     - tornado==6.1
     - traitlets==5.1.1
@@ -152,4 +137,5 @@ dependencies:
     - xarray==0.20.2
     - xmlschema==1.9.2
     - zarr==2.10.3
+    - zipp==3.7.0
     - zstandard==0.16.0
