@@ -3,6 +3,7 @@
   "segmentation": "segmentation3D",
   "3D": 1,
   "render": 0,
+  "marching_cubes": 0,
   "segmentation3D": {
     "small_RAM_mode": 0,
     "smoothing": 1,
@@ -79,5 +80,22 @@
     "mesh_metallic": 0.267,
     "mesh_sheen": 0.0,
     "mesh_specular": 0.308
+  },
+  "marching_cubes_binary":{
+    "cube_size": 1,
+    "dilation": 0,
+    "iterations": 1,
+    "scaling_x": 1.0,
+    "scaling_y": 1.0,
+    "scaling_z": 1.0
+  },
+  "marching_cubes_skeleton":{
+    "cube_size": 1,
+    "dilation": 1,
+    "iterations": 1,
+    "scaling_x": 1.0,
+    "scaling_y": 1.0,
+    "scaling_z": 1.0
   }
+
 }
