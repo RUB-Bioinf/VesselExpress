@@ -42,6 +42,7 @@
   {
     "save_raw": 1,
     "save_glb": 1,
+    "background_transparent": 1,
     "render_device": "GPU",
     "render_distance": 500000,
     "image_resolution_x": 1920,

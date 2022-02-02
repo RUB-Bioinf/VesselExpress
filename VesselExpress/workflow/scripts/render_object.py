@@ -27,6 +27,7 @@ def render_object(model_file_path: str, out_dir: str,
                   camera_euler_angle_x: float = 422.0, camera_euler_angle_y: float = 0.0,
                   camera_euler_angle_z: float = 149.0,
                   # Background Color Params
+                  background_transparent: bool = False,
                   background_r: float = 0.638, background_g: float = 0.638, background_b: float = 0.638,
                   background_a: float = 1.0, background_intensity: float = 1.0,
                   # Mesh Color Params
@@ -117,6 +118,7 @@ def render_object(model_file_path: str, out_dir: str,
     scene.camera = camera
     bpy.ops.scene.new(type='LINK_COPY')
     context.scene.name = model_file_path
+    bpy.context.scene.render.film_transparent = bool(background_transparent)
 
     print('Loading the model file.')
     bpy.ops.import_mesh.stl(filepath=model_file_path, axis_forward='-Z', axis_up='Y', filter_glob="*.obj;*.mtl")
@@ -260,6 +262,7 @@ if __name__ == '__main__':
         parser.add_argument('-camera_angle_z', type=float, default=149.0, help='Original camera z-euler-angle.')
 
         # Background Color
+        parser.add_argument('-background_transparent', type=int, default=0, help='If true, the background will be rendered transparently. Should be used in combination with a file format that support alpha transparency and CYCLES renderer.')
         parser.add_argument('-background_r', type=float, default=0.638,
                             help='Background color: Red. Expected values: 0.0-1.0')
         parser.add_argument('-background_g', type=float, default=0.638,
@@ -326,6 +329,7 @@ if __name__ == '__main__':
                       camera_euler_angle_x=args.camera_angle_x,
                       camera_euler_angle_y=args.camera_angle_y,
                       camera_euler_angle_z=args.camera_angle_z,
+                      background_transparent=args.background_transparent,
                       background_r=args.background_r,
                       background_g=args.background_g,
                       background_b=args.background_b,
