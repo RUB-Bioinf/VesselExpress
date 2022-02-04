@@ -8,9 +8,17 @@ from PIL import Image, ImageSequence
 import numpy as np
 from stl import mesh
 from tqdm import tqdm
-from VesselExpress.workflow.dependencies import triangulation_table as tri_table
 from scipy import ndimage
 from multiprocessing import Pool
+
+import sys
+import os
+
+# import modules
+package = os.path.abspath(os.path.join(os.path.dirname(__file__), '../', 'dependencies/'))
+sys.path.append(package)
+
+import triangulation_table as tri_table
 
 
 def apply_factor(coordinates: object, factor_x: float = 1.0, factor_y: float = 1.0, factor_z: float = 1.0) -> list:
@@ -136,7 +144,7 @@ def get_triangles_definition(index):
     :param index: Triangulation-Table index
     :return: numpy-array of individual triangles
     """
-    tri_vert = tri_table[index]
+    tri_vert = tri_table.triangulation_table[index]
     i = 0
     n = tri_vert[0]
     triangles = np.empty((0, 3))
@@ -472,7 +480,7 @@ def main():
     arguments = parse_arguments()
     if arguments['debug']: start = time.time()
 
-    pixel_dims = [float(item) for item in args.pixel_dimensions.split(',')]
+    pixel_dims = [float(item) for item in arguments['pixel_dimensions'].split(',')]
     tif_to_stl(
         image_path=arguments['input'],
         cube_size=arguments['cube_size'],

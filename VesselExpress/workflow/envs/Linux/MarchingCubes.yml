@@ -70,4 +70,3 @@ dependencies:
     - numpy==1.20.0
     - pycollada==0.7.2
     - pymcubes==0.1.2
-prefix: /home/alsch/anaconda3/envs/VE-MarchingCubes

@@ -1,0 +1,32 @@
+name: MarchingCubes
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - bzip2=1.0.8=h0d85af4_4
+  - ca-certificates=2021.10.8=h033912b_0
+  - libffi=3.4.2=h0d85af4_5
+  - libzlib=1.2.11=h9173be1_1013
+  - ncurses=6.3=he49afe7_0
+  - openssl=3.0.0=h0d85af4_2
+  - pip=22.0.3=pyhd8ed1ab_0
+  - python=3.9.10=hea1dfa3_2_cpython
+  - python_abi=3.9=2_cp39
+  - readline=8.1=h05e3726_0
+  - setuptools=60.7.1=py39h6e9494a_0
+  - sqlite=3.37.0=h23a322b_0
+  - tk=8.6.11=h5dbffcc_1
+  - tzdata=2021e=he74cb21_0
+  - wheel=0.37.1=pyhd8ed1ab_0
+  - xz=5.2.5=haf1e3a3_1
+  - zlib=1.2.11=h9173be1_1013
+  - pip:
+    - numpy==1.22.2
+    - numpy-stl==2.16.3
+    - pillow==9.0.1
+    - python-utils==3.1.0
+    - scipy==1.7.3
+    - six==1.16.0
+    - stl==0.0.3
+    - tqdm==4.62.3
+prefix: /Users/philippaspangenberg/opt/anaconda3/envs/MarchingCubes
