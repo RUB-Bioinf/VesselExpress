@@ -1,5 +1,5 @@
 import csv
-# from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from ast import literal_eval as make_tuple
 from collections import defaultdict
@@ -220,7 +220,7 @@ def getSegmentsDictFromFile(segmentsFile, fullSegDict, filamentNo):
 
 def read_img(filepath):
     extension = os.path.splitext(filepath)[1]
-    if extension == '.tiff':
+    if extension == '.tiff' or extension == '.tif':
         img = tifffile.imread(filepath)
     else:
         img = imageio.imread(filepath)
@@ -229,7 +229,7 @@ def read_img(filepath):
 
 def write_img(img, filepath):
     extension = os.path.splitext(filepath)[1]
-    if extension == '.tiff':
+    if extension == '.tiff' or extension == '.tif':
         tifffile.imsave(filepath, img)
     else:
         imageio.imwrite(filepath, img)

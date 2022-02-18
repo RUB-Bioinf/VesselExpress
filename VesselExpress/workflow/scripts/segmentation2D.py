@@ -4,9 +4,9 @@ from skimage.restoration import denoise_tv_chambolle
 import os
 import argparse
 import numpy as np
-from skimage import color
+from skimage import color, restoration
 import sys
-from skimage.filters import threshold_li, threshold_local
+from skimage.filters import threshold_li, threshold_local, threshold_otsu
 from skimage.morphology import binary_closing, ball, disk, remove_small_objects
 
 # import modules
@@ -27,6 +27,8 @@ if __name__ == '__main__':
     parser.add_argument('-beta', type=float, default=0.5, help='Frangi beta parameter')
     parser.add_argument('-gamma', type=float, default=15, help='Frangi gamma parameter')
     parser.add_argument('-denoise', type=int, default=1, help='set to 1 for prior denoising of image')
+    parser.add_argument('-back_sub', type=int, default=0,
+                        help='set to 1 for rolling ball background subtraction')
     parser.add_argument('-value', type=float, default=0,
                         help='set a value for thresholding, 0 for Li thresholding')
     parser.add_argument('-ball_radius', type=int, default=3,
@@ -42,11 +44,16 @@ if __name__ == '__main__':
     input_file = os.path.abspath(args.i).replace('\\', '/')
     output_dir = os.path.dirname(input_file)
 
-    if os.path.splitext(args.i) != 'tiff':
+    if os.path.splitext(args.i)[1] != '.tiff':
         img = color.rgb2gray(img)
 
+    if args.back_sub == 1:
+        background = restoration.rolling_ball(img, radius=50)
+        img = img - background
+
     if args.denoise == 1:
-        img = denoise_tv_chambolle(img, weight=0.9)
+        img = denoise_tv_chambolle(img, weight=0.1)
+
     filtered = frangi(image=img, black_ridges=False, sigmas=np.arange(args.sigma_min, args.sigma_max, args.sigma_steps),
                       alpha=args.alpha, beta=args.beta, gamma=args.gamma)
     filtered = np.round(filtered / (filtered.max() / 65535))

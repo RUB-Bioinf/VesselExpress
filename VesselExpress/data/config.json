@@ -21,7 +21,8 @@
     "post_cleaning": 100
   },
   "segmentation2D": {
-    "denoise": 0,
+    "denoise": 1,
+    "back_sub": 1,
     "frangi": {
       "sigma_min": 0.01,
       "sigma_max": 1,

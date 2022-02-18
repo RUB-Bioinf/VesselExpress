@@ -2,7 +2,6 @@ import os
 import platform
 import snakemake
 
-#configfile: os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'data/config.json')
 
 def get_config_file(path):
     for fname in os.listdir(path):
@@ -133,13 +132,13 @@ rule segmentation_2D:
         ext="(tiff|png|jpg)"
     conda: ENV_PATH + "Pipeline.yml"
     shell: "python " + SCRIPT_PATH + "/segmentation2D.py -i \"{input}\" \
-            -savepath {config[segmentation2D][frangi][sigma_min]} -sigma_max {config[segmentation2D][frangi][sigma_max]} \
+            -sigma_min {config[segmentation2D][frangi][sigma_min]} -sigma_max {config[segmentation2D][frangi][sigma_max]} \
             -sigma_steps {config[segmentation2D][frangi][sigma_steps]} -alpha {config[segmentation2D][frangi][alpha]} \
             -beta {config[segmentation2D][frangi][beta]} -gamma {config[segmentation2D][frangi][gamma]} \
             -denoise {config[segmentation2D][denoise]} -value {config[segmentation2D][threshold][value]} \
             -ball_radius {config[segmentation2D][threshold][ball_radius]} \
             -artifact_size {config[segmentation2D][threshold][artifact_size]} \
-            -block_size {config[segmentation2D][threshold][block_size]}"
+            -block_size {config[segmentation2D][threshold][block_size]} -back_sub {config[segmentation2D][back_sub]}"
 
 rule segmentation_franginet:
     input: PATH + "/{img}/{img}.{ext}"
@@ -181,7 +180,7 @@ rule renderBinary:
             -mesh_metallic {config[rendering_binary][mesh_metallic]} \
             -mesh_sheen {config[rendering_binary][mesh_sheen]} -mesh_specular {config[rendering_binary][mesh_specular]}"
 
-rule skeletonize_scikit:
+rule skeletonize:
     input: PATH + "/{img}/Binary_{img}.{ext}"
     output: PATH + "/{img}/Skeleton_{img}.{ext}"
     wildcard_constraints:
@@ -249,45 +248,3 @@ rule createSkeletonObjMC:
                 --scaling_y {config[marching_cubes_skeleton][scaling_y]} \
                 --scaling_z {config[marching_cubes_skeleton][scaling_z]} \
                 --pixel_dimensions {config[graphAnalysis][pixel_dimensions]}"
-
-# if config['3D'] == 1 and config['marching_cubes'] == 0:
-#     rule createBinaryObj:
-#         input: PATH + "/{img}/Binary_{img}.tiff"
-#         output: PATH + "/{img}/Binary_{img}.stl"
-#         conda: ENV_PATH + "Pipeline.yml"
-#         shell: "python -W ignore " + SCRIPT_PATH + "/create_stl.py -i \"{input}\" -o \"{output}\" \
-#                 -pixel_dimensions {config[graphAnalysis][pixel_dimensions]}"
-#
-#     rule createSkeletonObj:
-#         input: PATH + "/{img}/Skeleton_{img}.tiff"
-#         output: PATH + "/{img}/Skeleton_{img}.stl"
-#         conda: ENV_PATH + "Pipeline.yml"
-#         shell: "python -W ignore " + SCRIPT_PATH + "/create_stl.py -i \"{input}\" -o \"{output}\" \
-#                 -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} -dilation True"
-#
-# if config['3D'] == 1 and config['marching_cubes'] == 1:
-#     rule createBinaryObjMC:
-#         input: PATH + "/{img}/Binary_{img}.tiff"
-#         output: PATH + "/{img}/Binary_{img}.stl"
-#         conda: ENV_PATH + "MarchingCubes.yml"
-#         shell: "python -W ignore " + SCRIPT_PATH + "/marching_cubes.py -i \"{input}\" -o \"{output}\" \
-#                 -cube_size {config[marching_cubes_binary][cube_size]} \
-#                 -dilation {config[marching_cubes_binary][dilation]} \
-#                 -iterations {config[marching_cubes_binary][iterations]} \
-#                 -scaling_x {config[marching_cubes_binary][scaling_x]} \
-#                 -scaling_y {config[marching_cubes_binary][scaling_y]} \
-#                 -scaling_z {config[marching_cubes_binary][scaling_z]} \
-#                 -pixel_dimensions {config[graphAnalysis][pixel_dimensions]}"
-#
-#     rule createSkeletonObjMC:
-#         input: PATH + "/{img}/Skeleton_{img}.tiff"
-#         output: PATH + "/{img}/Skeleton_{img}.stl"
-#         conda: ENV_PATH + "MarchingCubes.yml"
-#         shell: "python -W ignore " + SCRIPT_PATH + "/marching_cubes.py -i \"{input}\" -o \"{output}\" \
-#                 -cube_size {config[marching_cubes][cube_size]} \
-#                 -dilation {config[marching_cubes_skeleton][dilation]} \
-#                 -iterations {config[marching_cubes_skeleton][iterations]} \
-#                 -scaling_x {config[marching_cubes_skeleton][scaling_x]} \
-#                 -scaling_y {config[marching_cubes_skeleton][scaling_y]} \
-#                 -scaling_z {config[marching_cubes_skeleton][scaling_z]} \
-#                 -pixel_dimensions {config[graphAnalysis][pixel_dimensions]}"

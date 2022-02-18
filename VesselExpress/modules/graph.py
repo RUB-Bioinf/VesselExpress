@@ -2,8 +2,9 @@ import networkx as nx
 from collections import defaultdict
 import time
 import filament as fil
-from scipy import ndimage as ndi
+from scipy.ndimage import distance_transform_edt
 import csv
+import dask.array as da
 
 import measurements as ms
 
@@ -93,7 +94,15 @@ class Graph:
 
         # calculate distance transform matrix
         self.initTime = time.time()
-        self.distTransf = ndi.distance_transform_edt(segmentation, sampling=self.pixelDims)
+        self.distTransf = distance_transform_edt(segmentation, sampling=self.pixelDims)
+        #im_dask = segmentation.rechunk(chunks='auto')
+        # note: this is only for large data, when debugging, please use:
+        # im_dask = segmentation.rechunk(chunks=(128, 128, 128))
+        # this is because for small data, 'auto' will just keep the whole data as one chunk
+        # then it is meaningless for debugging or testing
+        # here "depth=15" should be fine for most case, unless we have very thick vessels
+        # "depth" controlls how much overlap between each neighboring chunks
+        #self.distTransf = da.map_overlap(distance_transform_edt, im_dask, dtype="float", depth=15)
         self.radiusMatrix = self.distTransf * skeleton
         self.runTimeDict['distTransformation'] = round(time.time() - self.initTime, 3)
 
