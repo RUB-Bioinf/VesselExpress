@@ -39,6 +39,23 @@ def processImage(skelImg, binImg, statsDir, parameterDict):
                         expFlag=parameterDict.get("experimental_flag"), infoFile=finfo)
     stats.setStats()
 
+    # save graph as image
+    graph_arr = stats.skeleton
+    utils.write_img((graph_arr * 255).astype('uint8'), dir + '/Graph_' + file_name + '.'
+                    + input_file.split('.')[1])
+
+    # save image with branch points
+    brPts = []
+    for i in stats.branchPointsDict.values():
+        if i.keys():
+            for k in i.keys():
+                brPts.append(k)
+    brPt_img = np.zeros(graph_arr.shape)
+    for ind in brPts:
+        brPt_img[ind[0], ind[1], ind[2]] = 255
+    utils.write_img(brPt_img.astype('uint8'), dir + '/BrPts_' + file_name + '.'
+                    + input_file.split('.')[1])
+
     # Export statistics to csv files
     os.makedirs(statsDir, exist_ok=True)
 

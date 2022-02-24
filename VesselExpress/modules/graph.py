@@ -1,6 +1,9 @@
 import networkx as nx
 from collections import defaultdict
 import time
+
+import numpy as np
+
 import filament as fil
 from scipy.ndimage import distance_transform_edt
 import csv
@@ -57,6 +60,7 @@ class Graph:
     """
     def __init__(self, segmentation, skeleton, networkxGraph, pixelDimensions, pruningScale, lengthLimit,
                  branchingThreshold, expFlag, infoFile):
+        self.skeleton = skeleton
         self.networkxGraph = networkxGraph
         self.pixelDims = pixelDimensions
         self.prunScale = pruningScale
@@ -73,6 +77,7 @@ class Graph:
         self.compTime = 0
         self.postProcessTime = 0
         self.endPtsTopVsBottom = 0
+        self.nodesFinal = set()
         self.runTimeDict = {
             'distTransformation': 0,
             'pruning': 0,
@@ -103,7 +108,7 @@ class Graph:
         # here "depth=15" should be fine for most case, unless we have very thick vessels
         # "depth" controlls how much overlap between each neighboring chunks
         #self.distTransf = da.map_overlap(distance_transform_edt, im_dask, dtype="float", depth=15)
-        self.radiusMatrix = self.distTransf * skeleton
+        self.radiusMatrix = self.distTransf * self.skeleton
         self.runTimeDict['distTransformation'] = round(time.time() - self.initTime, 3)
 
         # pruning: delete branches with length below the distance to its closest border
@@ -138,6 +143,12 @@ class Graph:
                                         self.branchingThresh, self.expFlag)
                 filament.dfs_iterative()
                 self.segmentsDict[ithDisjointGraph] = filament.segmentsDict
+
+                # save nodes of filament after processing
+                nodes = list(self.segmentsDict[ithDisjointGraph].values())
+                nodes = set([item for sublist in nodes for item in sublist])
+                self.nodesFinal.update(nodes)
+
                 # filament may have no segments left after postprocessing
                 if len(self.segmentsDict[ithDisjointGraph]) != 0:
                     self.countSegmentsDict[ithDisjointGraph] = len(self.segmentsDict[ithDisjointGraph])
@@ -167,11 +178,24 @@ class Graph:
                     self.infoDict['filaments'] -= 1
         self.runTimeDict['statCalculation'] = round(time.time() - startTime, 3)
 
+        # remove nodes which were removed in postprocessing of filaments in the overall graph
+        nodes_graph = set(self.networkxGraph.nodes)
+        nodes_to_remove = nodes_graph - self.nodesFinal
+        for node in nodes_to_remove:
+            self.networkxGraph.remove_node(node)
+        self.skeleton = self._get_final_skeleton()
+
         if self.expFlag == 1:
             self.endPtsTopVsBottom = self.top_endPts_vs_bottom_endPts()
 
         if self.infoFile:
             self._writeInfoFile()
+
+    def _get_final_skeleton(self):
+        skel = np.zeros(self.skeleton.shape)
+        for ind in list(self.networkxGraph.nodes):
+            skel[ind[0], ind[1], ind[2]] = 1
+        return skel
 
     def _writeInfoFile(self):
         with open(self.infoFile, 'w', newline='') as csvfile:
