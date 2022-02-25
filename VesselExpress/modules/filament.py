@@ -52,12 +52,13 @@ class Filament:
         --------
         straightness = curveDisplacement / curveLength
         """
-    def __init__(self, graph, start, skelRadii, pixelDimensions, lengthLimit, branchingThreshold, expFlag):
+    def __init__(self, graph, start, skelRadii, pixelDimensions, lengthLimit, diaScale, branchingThreshold, expFlag):
         self.graph = graph
         self.start = start
         self.skelRadii = skelRadii
         self.pixelDims = pixelDimensions
         self.lengthLim = lengthLimit
+        self.diaScale = diaScale
         self.branchingThr = branchingThreshold
         self.expFlag = expFlag
         self.endPtsList = []
@@ -260,7 +261,7 @@ class Filament:
         keysToRemoveList = []
         brPtCandidates = set()
         for segKey in self.segmentStats:
-            if self.segmentStats[segKey]['length'] <= self.lengthLim:
+            if self.segmentStats[segKey]['length'] <= self.lengthLim or self.segmentStats[segKey]['length'] < self.diaScale * self.segmentStats[segKey]['diameter']:
                 keysToRemoveList.append(segKey)
         self.postprocBranches = len(keysToRemoveList)
         # delete those segments from dictionaries
@@ -306,6 +307,7 @@ class Filament:
                         self._setSegStats(combSegments)
             # branch point becomes end point
             elif len(self.graph[brPt]) == 1:
+                del self.brPtsDict[brPt]
                 self.endPtsList.append(brPt)
             # all branches of a branch point were removed => delete branch point from dict
             elif len(self.graph[brPt]) == 0:

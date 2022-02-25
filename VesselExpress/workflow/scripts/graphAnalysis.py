@@ -35,7 +35,7 @@ def processImage(skelImg, binImg, statsDir, parameterDict):
     # Statistical Analysis
     stats = graph.Graph(binImage, skeleton, networkxGraph, parameterDict.get("pixel_dimensions"),
                         pruningScale=parameterDict.get("pruning_scale"), lengthLimit=parameterDict.get("length_limit"),
-                        branchingThreshold=parameterDict.get("branching_threshold"),
+                        diaScale=parameterDict.get("dia_scale"), branchingThreshold=parameterDict.get("branching_threshold"),
                         expFlag=parameterDict.get("experimental_flag"), infoFile=finfo)
     stats.setStats()
 
@@ -54,6 +54,17 @@ def processImage(skelImg, binImg, statsDir, parameterDict):
     for ind in brPts:
         brPt_img[ind[0], ind[1], ind[2]] = 255
     utils.write_img(brPt_img.astype('uint8'), dir + '/BrPts_' + file_name + '.'
+                    + input_file.split('.')[1])
+
+    # save image with terminal points
+    endPts = []
+    for i in stats.endPointsDict.values():
+        for l in i:
+            endPts.append(l)
+    endPt_img = np.zeros(graph_arr.shape)
+    for ind in endPts:
+        endPt_img[ind[0], ind[1], ind[2]] = 255
+    utils.write_img(endPt_img.astype('uint8'), dir + '/EndPts_' + file_name + '.'
                     + input_file.split('.')[1])
 
     # Export statistics to csv files
@@ -102,6 +113,8 @@ if __name__ == '__main__':
     parser.add_argument('-pruning_scale', type=float, default=1.5,
                         help='Pruning scale for insignificant branch removal')
     parser.add_argument('-length_limit', type=float, default=3, help='Limit of vessel lengths')
+    parser.add_argument('-dia_scale', type=float, default=2, help='Segments with lengths shorter than their diameter '
+                                                                  'multiplied by this scaling factor are removed')
     parser.add_argument('-branching_threshold', type=float, default=0.25,
                         help='segments length as vector estimate for branching angle calculation')
     parser.add_argument('-all_stats', type=int, default=0,
@@ -119,6 +132,7 @@ if __name__ == '__main__':
         "pixel_dimensions": pixel_dims,
         "pruning_scale": args.pruning_scale,
         "length_limit": args.length_limit,
+        "dia_scale": args.dia_scale,
         "branching_threshold": args.branching_threshold,
         "all_stats": args.all_stats,
         "experimental_flag": args.experimental_flag

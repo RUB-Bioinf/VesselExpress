@@ -58,13 +58,14 @@ class Graph:
         Graph.diameterDict - A dictionary with the nth disjoint graph as the key containing a dictionary
                                 with key as the segment index (start node, end node) and value = avg diameter of the segment
     """
-    def __init__(self, segmentation, skeleton, networkxGraph, pixelDimensions, pruningScale, lengthLimit,
+    def __init__(self, segmentation, skeleton, networkxGraph, pixelDimensions, pruningScale, lengthLimit, diaScale,
                  branchingThreshold, expFlag, infoFile):
         self.skeleton = skeleton
         self.networkxGraph = networkxGraph
         self.pixelDims = pixelDimensions
         self.prunScale = pruningScale
         self.lengthLim = lengthLimit
+        self.diaScale = diaScale
         self.branchingThresh = branchingThreshold
         self.infoFile = infoFile
         self.expFlag = expFlag
@@ -92,6 +93,7 @@ class Graph:
             'postProcBranches': 0,
             'postProcEndPts': 0
         }
+        self.nodeDegreeDict = dict(nx.degree(self.networkxGraph))
         # dictionaries containing all filament, segment and branch point statistics
         self.segStatsDict = defaultdict(dict)
         self.filStatsDict = defaultdict(dict)
@@ -140,7 +142,7 @@ class Graph:
                 start = endPoints[0]  # take random end point as beginning
                 adjacencyDict = nx.to_dict_of_lists(subGraphSkeleton)
                 filament = fil.Filament(adjacencyDict, start, self.radiusMatrix, self.pixelDims, self.lengthLim,
-                                        self.branchingThresh, self.expFlag)
+                                        self.diaScale, self.branchingThresh, self.expFlag)
                 filament.dfs_iterative()
                 self.segmentsDict[ithDisjointGraph] = filament.segmentsDict
 
@@ -223,8 +225,7 @@ class Graph:
             where ep = end point, bp = branch point, s = scaling factor, f = closest boundary point
         """
         startTime = time.time()
-        nodeDegreeDict = dict(nx.degree(self.networkxGraph))
-        endPtsList = [k for (k, v) in nodeDegreeDict.items() if v == 1]
+        endPtsList = [k for (k, v) in self.nodeDegreeDict.items() if v == 1]
         branchesToRemove = []
         for endPt in endPtsList:
             visited, stack = set(), [endPt]
