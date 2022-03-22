@@ -6,13 +6,13 @@
   "segmentation3D": {
     "small_RAM_mode": 0,
     "smoothing": 1,
-    "core_threshold": 3.5,
+    "core_threshold": 3.0,
     "core_vessel_1": 1,
-    "gamma_1": 70,
+    "gamma_1": 110,
     "sigma_1": 1.0,
     "cutoff_method_1": "threshold_li",
     "core_vessel_2": 0,
-    "post_closing": "None",
+    "post_closing": 3,
     "post_thinning": 0,
     "post_cleaning": 100
   },

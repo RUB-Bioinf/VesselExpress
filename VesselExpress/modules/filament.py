@@ -106,7 +106,8 @@ class Filament:
         self.compTime = time.time() - startTime
         # postprocessing
         postprocStart = time.time()
-        self._removeSegmentArtifacts()      # remove segments which are below a specified limit
+        #self._removeSegmentArtifacts()      # remove segments which are below a specified limit
+        self._removeSmallAndSegmentsBelowDiameterLengthRatio()
         self._removeBorderPtsFromEndPts()   # remove image border points from end points list
         self.postprocessTime = time.time() - postprocStart
 
@@ -261,7 +262,8 @@ class Filament:
         keysToRemoveList = []
         brPtCandidates = set()
         for segKey in self.segmentStats:
-            if self.segmentStats[segKey]['length'] <= self.lengthLim or self.segmentStats[segKey]['length'] < self.diaScale * self.segmentStats[segKey]['diameter']:
+            #if self.segmentStats[segKey]['length'] <= self.lengthLim or self.segmentStats[segKey]['length'] < self.diaScale * self.segmentStats[segKey]['diameter']:
+            if self.segmentStats[segKey]['length'] <= self.lengthLim:
                 keysToRemoveList.append(segKey)
         self.postprocBranches = len(keysToRemoveList)
         # delete those segments from dictionaries
@@ -312,5 +314,96 @@ class Filament:
             # all branches of a branch point were removed => delete branch point from dict
             elif len(self.graph[brPt]) == 0:
                 del self.brPtsDict[brPt]
+
+    def _removeSegments(self, keys):
+        brPtCandidates = set()
+        for key in keys:
+            self._deletePath(self.segmentsDict[key])
+            del self.segmentsDict[key]
+            del self.segmentStats[key]
+            if key[0] in self.endPtsList:
+                self.endPtsList.remove(key[0])
+            if key[1] in self.endPtsList:
+                self.endPtsList.remove(key[1])
+            # add branch points to possible deletable candidates
+            if key[0] in self.brPtsDict:
+                brPtCandidates.add(key[0])
+            if key[1] in self.brPtsDict:
+                brPtCandidates.add(key[1])
+        # check if branch points still remain branch points after postprocessing
+        for brPt in brPtCandidates:
+            # branch point becomes normal point connecting two segments together
+            if len(self.graph[brPt]) == 2:
+                del self.brPtsDict[brPt]
+                # find both segments connected by the branch pt
+                segments = [v for k, v in self.segmentsDict.items() if k[0] == brPt or k[1] == brPt]
+                # delete old segments from segment dictionaries (either one segment if circle otherwise 2 segments)
+                if len(segments) > 0:
+                    segKey1 = (segments[0][0], segments[0][-1])
+                    del self.segmentsDict[segKey1]
+                    del self.segmentStats[segKey1]
+                    if len(segments) != 1:  # if segment is not a circle delete second segment from dictionaries
+                        segKey2 = (segments[1][0], segments[1][-1])
+                        del self.segmentsDict[segKey2]
+                        del self.segmentStats[segKey2]
+                        # combine both segments to one segment and calculate its statistics
+                        if segments[0][-1] == brPt and segments[1][0] == brPt:
+                            combSegments = segments[0] + segments[1][1:]
+                        elif segments[0][0] == brPt and segments[1][-1] == brPt:
+                            combSegments = segments[1] + segments[0][1:]
+                        # in this case the predecessor of the brPt has been deleted
+                        elif segments[0][0] == brPt and segments[1][0] == brPt:
+                            combSegments = segments[0][::-1] + segments[1][1:]
+                        elif segments[0][-1] == brPt and segments[1][-1] == brPt:
+                            combSegments = segments[0][:-1] + segments[1][::-1]
+                        self._setSegStats(combSegments)
+            # branch point becomes end point
+            elif len(self.graph[brPt]) == 1:
+                del self.brPtsDict[brPt]
+                self.endPtsList.append(brPt)
+            # all branches of a branch point were removed => delete branch point from dict
+            elif len(self.graph[brPt]) == 0:
+                del self.brPtsDict[brPt]
+
+    def _removeSmallSegments(self):
+        """
+            Removes all branches with a length below a specified limit and removes their statistics from the
+            dictionaries. After branch removal branch points are reassigned (either they remain branch point, become
+            normal point or end point) and statistics of new segments are recalculated.
+        """
+        # find segments in lengthDict which are below the limit
+        keysToRemoveList = []
+        for segKey in self.segmentStats:
+            if self.segmentStats[segKey]['length'] <= self.lengthLim:
+                keysToRemoveList.append(segKey)
+        self.postprocBranches = len(keysToRemoveList)
+        self._removeSegments(keysToRemoveList)
+
+    def _removeSegmentsBelowDiameterLengthRatio(self):
+        """
+            Removes all branches with a length below a specified limit and removes their statistics from the
+            dictionaries. After branch removal branch points are reassigned (either they remain branch point, become
+            normal point or end point) and statistics of new segments are recalculated.
+        """
+        # find segments with endpoint(s) in lengthDict which are below length/diameter ratio
+        keysToRemoveList = []
+        for segKey in self.segmentStats:
+            if self.segmentStats[segKey]['length'] < self.diaScale * self.segmentStats[segKey]['diameter']\
+                    and (segKey[0] in self.endPtsList or segKey[1] in self.endPtsList):
+                keysToRemoveList.append(segKey)
+        self.postprocBranches = len(keysToRemoveList)
+        self._removeSegments(keysToRemoveList)
+
+
+    def _removeSmallAndSegmentsBelowDiameterLengthRatio(self):
+        # find segments with endpoint(s) in lengthDict which are below length/diameter ratio
+        keysToRemoveList = []
+        for segKey in self.segmentStats:
+            if (self.segmentStats[segKey]['length'] < self.diaScale * self.segmentStats[segKey]['diameter']\
+                    and (segKey[0] in self.endPtsList or segKey[1] in self.endPtsList)) \
+                    or (self.segmentStats[segKey]['length'] <= self.lengthLim):
+                keysToRemoveList.append(segKey)
+        self.postprocBranches = len(keysToRemoveList)
+        self._removeSegments(keysToRemoveList)
 
 

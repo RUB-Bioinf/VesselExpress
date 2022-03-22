@@ -24,9 +24,10 @@ from shutil import rmtree
 
 def vesselness_filter(
         im: np.ndarray,
-        dim: int = 3,
         sigma: Union[int, float] = 1,
-        cutoff_method: str = None
+        gamma: Union[int, float] = 5,
+        cutoff_method: str = "threshold_li",
+        dim: int = 3,
 ) -> np.ndarray:
     """
     function for running ITK 3D/2D vesselness filter
@@ -39,6 +40,8 @@ def vesselness_filter(
         either apply 3D vesselness filter or apply 2D vesselness slice by slice
     sigma: Union[float, int]
         the kernal size of the filter
+    gamma: Union[float, int]
+        the sensitivity of the filter to tubular shapes
     cutoff_method: str
         which method to use for determining the cutoff value, options include any
         threshold method in skimage, such as "threshold_li", "threshold_otsu",
@@ -52,14 +55,15 @@ def vesselness_filter(
     if dim == 3:
         im_itk = itk.image_view_from_array(im)
         hessian_itk = itk.hessian_recursive_gaussian_image_filter(im_itk, sigma=sigma, normalize_across_scale=True)
-        vess_tubulness = itk.hessian_to_objectness_measure_image_filter(hessian_itk, object_dimension=1)
+        vess_tubulness = itk.hessian_to_objectness_measure_image_filter(hessian_itk, object_dimension=1, gamma=gamma)
         vess = np.asarray(vess_tubulness)
     elif dim == 2:
         vess = np.zeros_like(im)
         for z in range(im.shape[0]):
             im_itk = itk.image_view_from_array(im[z, :, :])
             hessian_itk = itk.hessian_recursive_gaussian_image_filter(im_itk, sigma=sigma, normalize_across_scale=True)
-            vess_tubulness = itk.hessian_to_objectness_measure_image_filter(hessian_itk, object_dimension=1)
+            vess_tubulness = itk.hessian_to_objectness_measure_image_filter(hessian_itk, object_dimension=1,
+                                                                            gamma=gamma)
             vess_2d = np.asarray(vess_tubulness)
             vess[z, :, :] = vess_2d[:, :]
 
@@ -305,11 +309,11 @@ def segmentation(input, output, cfg):
             seg = np.zeros_like(im) > 0
 
         if cfg["core_vessel_1"] == 1:
-            out = vesselness_filter(im, cfg["dim_1"], cfg["sigma_1"], cfg["cutoff_method_1"])
+            out = vesselness_filter(im, cfg["sigma_1"], cfg["gamma_1"], cfg["cutoff_method_1"])
             seg = np.logical_or(seg, out)
 
         if cfg["core_vessel_2"] == 1:
-            out = vesselness_filter(im, cfg["dim_2"], cfg["sigma_2"], cfg["cutoff_method_2"])
+            out = vesselness_filter(im, cfg["sigma_2"], cfg["gamma_2"], cfg["cutoff_method_2"])
             seg = np.logical_or(seg, out)
 
         #######################
@@ -352,12 +356,12 @@ if __name__ == '__main__':
     parser.add_argument('-core_threshold', type=none_or_float, default=3.0)
     parser.add_argument('-core_vessel_1', type=int, default=1, help='set to 1 for first vesselness filter, '
                                                                     '0 for no vesselness filter')
-    parser.add_argument('-dim_1', type=int, default=3)
+    parser.add_argument('-gamma_1', type=int, default=5)
     parser.add_argument('-sigma_1', type=float, default=1.0)
     parser.add_argument('-cutoff_method_1', type=str, default='threshold_li')
     parser.add_argument('-core_vessel_2', type=int, default=1, help='set to 1 for second vesselness filter, '
                                                                     '0 for no vesselness filter')
-    parser.add_argument('-dim_2', type=int, default=3)
+    parser.add_argument('-gamma_2', type=int, default=5)
     parser.add_argument('-sigma_2', type=float, default=2.0)
     parser.add_argument('-cutoff_method_2', type=str, default='threshold_li')
     parser.add_argument('-post_closing', type=none_or_int, default=5)
@@ -373,11 +377,11 @@ if __name__ == '__main__':
         "smoothing": args.smoothing,
         "core_threshold": args.core_threshold,
         "core_vessel_1": args.core_vessel_1,
-        "dim_1": args.dim_1,
+        "gamma_1": args.gamma_1,
         "sigma_1": args.sigma_1,
         "cutoff_method_1": args.cutoff_method_1,
         "core_vessel_2": args.core_vessel_2,
-        "dim_2": args.dim_2,
+        "gamma_2": args.gamma_2,
         "sigma_2": args.sigma_2,
         "cutoff_method_2": args.cutoff_method_2,
         "post_closing": args.post_closing,

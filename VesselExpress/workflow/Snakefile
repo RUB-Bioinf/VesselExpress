@@ -49,10 +49,10 @@ def get_segmentation3D_command(script_path):
         -post_closing {config[segmentation3D][post_closing]} -post_thinning {config[segmentation3D][post_thinning]} \
         -post_cleaning {config[segmentation3D][post_cleaning]}"
     if config["segmentation3D"]["core_vessel_1"] == 1:
-        command_str = command_str + " -dim_1 {config[segmentation3D][dim_1]} -sigma_1 {config[segmentation3D][sigma_1]} \
+        command_str = command_str + " -gamma_1 {config[segmentation3D][gamma_1]} -sigma_1 {config[segmentation3D][sigma_1]} \
             -cutoff_method_1 {config[segmentation3D][cutoff_method_1]}"
     if config["segmentation3D"]["core_vessel_2"] == 1:
-        command_str = command_str + " -dim_2 {config[segmentation3D][dim_2]} -sigma_2 {config[segmentation3D][sigma_2]} \
+        command_str = command_str + " -gamma_2 {config[segmentation3D][gamma_2]} -sigma_2 {config[segmentation3D][sigma_2]} \
             -cutoff_method_2 {config[segmentation3D][cutoff_method_2]}"
     if config["segmentation3D"]["post_thinning"] == 1:
         command_str = command_str + " -min_thickness {config[segmentation3D][min_thickness]} \
