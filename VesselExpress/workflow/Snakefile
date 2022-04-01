@@ -72,7 +72,8 @@ def get_input(imgs, exts, blender_exists, path, input_list=[]):
     return input_list
 
 
-PATH = os.path.abspath(os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'data'))
+#PATH = os.path.abspath(os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'data'))
+PATH = config['imgFolder']
 SCRIPT_PATH = snakemake.workflow.srcdir('scripts')
 FRANGINET_PATH = os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'FrangiNet')
 IMGS, EXTS = get_files_and_extensions(path=PATH)

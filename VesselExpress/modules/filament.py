@@ -104,12 +104,26 @@ class Filament:
                     segment = self._getSegment(vertex)
                     self._setSegStats(segment)
         self.compTime = time.time() - startTime
+
         # postprocessing
         postprocStart = time.time()
         #self._removeSegmentArtifacts()      # remove segments which are below a specified limit
         self._removeSmallAndSegmentsBelowDiameterLengthRatio()
         self._removeBorderPtsFromEndPts()   # remove image border points from end points list
         self.postprocessTime = time.time() - postprocStart
+
+        # add number of terminal and branch points to segments dictionary
+        for seg in self.segmentStats:
+            self.segmentStats[seg]['terminal Points'] = 0
+            self.segmentStats[seg]['branching Points'] = 0
+            if seg[0] in self.endPtsList:
+                self.segmentStats[seg]['terminal Points'] += 1
+            if seg[0] in self.brPtsDict.keys():
+                self.segmentStats[seg]['branching Points'] += 1
+            if seg[1] in self.endPtsList:
+                self.segmentStats[seg]['terminal Points'] += 1
+            if seg[1] in self.brPtsDict.keys():
+                self.segmentStats[seg]['branching Points'] += 1
 
     def _getSegment(self, node):
         """

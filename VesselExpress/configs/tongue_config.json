@@ -8,15 +8,18 @@
     "smoothing": 1,
     "core_threshold": 4.0,
     "core_vessel_1": 1,
-    "gamma_1": 180,
+    "gamma_1": 170,
     "sigma_1": 1.0,
-    "cutoff_method_1": "threshold_li",
-    "core_vessel_2": 0,
+    "cutoff_method_1": "threshold_triangle",
+    "core_vessel_2": 1,
+    "gamma_2": 40,
+    "sigma_2": 1.0,
+    "cutoff_method_2": "threshold_li",
     "post_closing": 3,
     "post_thinning": 1,
     "min_thickness": 1,
     "thin": 1,
-    "post_cleaning": 100
+    "post_cleaning": 20
   },
   "graphAnalysis": {
     "pixel_dimensions": "2.0,1.015625,1.015625",

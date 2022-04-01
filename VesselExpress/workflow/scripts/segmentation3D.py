@@ -26,7 +26,7 @@ def vesselness_filter(
         im: np.ndarray,
         sigma: Union[int, float] = 1,
         gamma: Union[int, float] = 5,
-        cutoff_method: str = "threshold_li",
+        cutoff_method: str = None,
         dim: int = 3,
 ) -> np.ndarray:
     """
@@ -101,12 +101,12 @@ def threshold_by_variation(im: np.ndarray, scale: Union[int, float]) -> np.ndarr
 
 
 class vesselness_filter_dask:
-    def __init__(self, dim, sigma):
+    def __init__(self, sigma, gamma):
         self.sigma = sigma
-        self.dim = dim
+        self.gamma = gamma
 
     def compute_vesselness(self, im_smooth):
-        return vesselness_filter(im_smooth.astype(float), dim=self.dim, sigma=self.sigma)
+        return vesselness_filter(im_smooth.astype(float), sigma=self.sigma, gamma=self.gamma)
 
 
 class dask_threshold_calculator:
@@ -172,8 +172,8 @@ def segmentation(input, output, cfg):
         # run vesselness filter
         if cfg["core_vessel_1"] == 1:
             vess_func = vesselness_filter_dask(
-                dim=cfg["dim_1"],
-                sigma=cfg["sigma_1"]
+                sigma=cfg["sigma_1"],
+                gamma=cfg["gamma_1"]
             )
             vess_1 = da.map_overlap(
                 vess_func.compute_vesselness,
@@ -197,8 +197,8 @@ def segmentation(input, output, cfg):
         if cfg["core_vessel_2"] == 1:
             # run vesseless filter
             vess_func = vesselness_filter_dask(
-                dim=cfg["dim_2"],
-                sigma=cfg["sigma_2"]
+                sigma=cfg["sigma_2"],
+                gamma=cfg["gamma_2"]
             )
             vess_2 = da.map_overlap(
                 vess_func.compute_vesselness,
@@ -259,7 +259,7 @@ def segmentation(input, output, cfg):
         if cfg["post_thinning"] == 1:
             thin_path = tmp_path + os.sep + "thin_" + fn_base
             seg_input = da.from_zarr(latest_seg_path)
-            thin_func = partial(topology_preserving_thinning, cfg["post_thinning"])
+            thin_func = partial(topology_preserving_thinning, cfg["min_thickness"], cfg["thin"])
             seg_refined = da.map_overlap(
                 thin_func,
                 seg_input,
@@ -323,8 +323,7 @@ def segmentation(input, output, cfg):
             seg = binary_closing(seg, cube(cfg["post_closing"]))
 
         if cfg["post_thinning"] == 1:
-            seg = topology_preserving_thinning(seg, cfg["post_thinning"])
-
+            seg = topology_preserving_thinning(seg, min_thickness=cfg["min_thickness"], thin=cfg["thin"])
         if cfg["post_cleaning"] is not None:
             seg = remove_small_objects(seg, min_size=cfg["post_cleaning"])
 
