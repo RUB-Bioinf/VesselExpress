@@ -34,7 +34,8 @@ def get_graphAnalysis_command(os, script_path):
         -output_dir \"{output}\" -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
         -pruning_scale {config[graphAnalysis][pruning_scale]} -length_limit {config[graphAnalysis][length_limit]} \
         -dia_scale {config[graphAnalysis][diameter_scale]} -branching_threshold {config[graphAnalysis][branching_threshold]} \
-        -all_stats {config[graphAnalysis][all_stats]} -experimental_flag {config[graphAnalysis][experimental_flag]}"
+        -all_stats {config[graphAnalysis][all_stats]} -small_RAM_mode {config[small_RAM_mode]} \
+        -experimental_flag {config[graphAnalysis][experimental_flag]}"
     if os == 'Linux' or os == 'Darwin':
         command_str = command_str + "\nchmod ugo+rwx \"{output}\""
     return command_str
@@ -43,7 +44,7 @@ def get_graphAnalysis_command(os, script_path):
 def get_segmentation3D_command(script_path):
     command_str = \
         "python " + script_path + "/segmentation3D.py -input \"{input}\" \
-        -small_RAM_mode {config[segmentation3D][small_RAM_mode]} \
+        -small_RAM_mode {config[small_RAM_mode]} \
         -smoothing {config[segmentation3D][smoothing]} -core_threshold {config[segmentation3D][core_threshold]} \
         -core_vessel_1 {config[segmentation3D][core_vessel_1]} -core_vessel_2 {config[segmentation3D][core_vessel_2]} \
         -post_closing {config[segmentation3D][post_closing]} -post_thinning {config[segmentation3D][post_thinning]} \

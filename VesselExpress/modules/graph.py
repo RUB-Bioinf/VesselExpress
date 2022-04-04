@@ -12,6 +12,14 @@ import dask.array as da
 import measurements as ms
 
 
+class distance_transform_edt_dask:
+    def __init__(self, sampling):
+        self.sampling = sampling
+
+    def compute_distance_transform(self, im):
+        return distance_transform_edt(im.astype(float), sampling=self.sampling)
+
+
 class Graph:
     """
         Find statistics on a graph of a skeleton
@@ -59,7 +67,7 @@ class Graph:
                                 with key as the segment index (start node, end node) and value = avg diameter of the segment
     """
     def __init__(self, segmentation, skeleton, networkxGraph, pixelDimensions, pruningScale, lengthLimit, diaScale,
-                 branchingThreshold, expFlag, infoFile):
+                 branchingThreshold, expFlag, smallRAMmode, infoFile):
         self.skeleton = skeleton
         self.networkxGraph = networkxGraph
         self.pixelDims = pixelDimensions
@@ -69,6 +77,7 @@ class Graph:
         self.branchingThresh = branchingThreshold
         self.infoFile = infoFile
         self.expFlag = expFlag
+        self.smallRAMmode = smallRAMmode
         self.segmentsDict = defaultdict(dict)
         self.countSegmentsDict = {}
         self.branchPointsDict = {}
@@ -101,15 +110,26 @@ class Graph:
 
         # calculate distance transform matrix
         self.initTime = time.time()
-        self.distTransf = distance_transform_edt(segmentation, sampling=self.pixelDims)
-        #im_dask = segmentation.rechunk(chunks='auto')
-        # note: this is only for large data, when debugging, please use:
-        # im_dask = segmentation.rechunk(chunks=(128, 128, 128))
-        # this is because for small data, 'auto' will just keep the whole data as one chunk
-        # then it is meaningless for debugging or testing
-        # here "depth=15" should be fine for most case, unless we have very thick vessels
-        # "depth" controlls how much overlap between each neighboring chunks
-        #self.distTransf = da.map_overlap(distance_transform_edt, im_dask, dtype="float", depth=15)
+        if self.smallRAMmode == 0:
+            self.distTransf = distance_transform_edt(segmentation, sampling=self.pixelDims)
+        else:
+            # im_dask = da.from_array(segmentation, chunks='auto')
+            # note: this is only for large data, when debugging, please use:
+            im_dask = da.from_array(segmentation, chunks=(128, 128, 128))
+            # this is because for small data, 'auto' will just keep the whole data as one chunk
+            # then it is meaningless for debugging or testing
+            # here "depth=15" should be fine for most case, unless we have very thick vessels
+            # "depth" controlls how much overlap between each neighboring chunks
+            edt_func = distance_transform_edt_dask(
+                sampling=self.pixelDims
+            )
+            self.distTransf = da.map_overlap(
+                edt_func.compute_distance_transform,
+                im_dask,
+                dtype="float",
+                depth=15
+            )
+
         self.radiusMatrix = self.distTransf * self.skeleton
         self.runTimeDict['distTransformation'] = round(time.time() - self.initTime, 3)
 

@@ -1,7 +1,7 @@
 import time
 import numpy as np
 import argparse
-
+import networkx as nx
 import sys
 import os
 
@@ -36,13 +36,17 @@ def processImage(skelImg, binImg, statsDir, parameterDict):
     stats = graph.Graph(binImage, skeleton, networkxGraph, parameterDict.get("pixel_dimensions"),
                         pruningScale=parameterDict.get("pruning_scale"), lengthLimit=parameterDict.get("length_limit"),
                         diaScale=parameterDict.get("dia_scale"), branchingThreshold=parameterDict.get("branching_threshold"),
-                        expFlag=parameterDict.get("experimental_flag"), infoFile=finfo)
+                        expFlag=parameterDict.get("experimental_flag"), infoFile=finfo,
+                        smallRAMmode=parameterDict.get("small_RAM_mode"))
     stats.setStats()
 
-    # save graph as image
+    # save graph as image and graphML
     graph_arr = stats.skeleton
     utils.write_img((graph_arr * 255).astype('uint8'), dir + '/Graph_' + file_name + '.'
                     + input_file.split('.')[1])
+    g = stats.networkxGraph
+    print(g)
+    nx.write_graphml_lxml(g, dir + '/' + file_name + ".graphml")
 
     # save image with branch points
     brPts = []
@@ -121,6 +125,7 @@ if __name__ == '__main__':
                         help='if set to 1 create CSVs containing all statistics for each category')
     parser.add_argument('-experimental_flag', type=int, default=0,
                         help='set to 1 for experimental statistics')
+    parser.add_argument('-small_RAM_mode', type=int, default=0, help='set to 1 for small RAM mode')
     parser.add_argument('-prints', type=bool, default=False, help='set to True to print runtime')
     args = parser.parse_args()
 
@@ -135,7 +140,8 @@ if __name__ == '__main__':
         "dia_scale": args.dia_scale,
         "branching_threshold": args.branching_threshold,
         "all_stats": args.all_stats,
-        "experimental_flag": args.experimental_flag
+        "experimental_flag": args.experimental_flag,
+        "small_RAM_mode": args.small_RAM_mode
     }
 
     processImage(args.skel_img, args.bin_img, args.output_dir, parameters)

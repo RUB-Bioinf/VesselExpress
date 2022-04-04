@@ -1,11 +1,11 @@
 {
   "imgFolder": "data",
   "segmentation": "segmentation3D",
+  "small_RAM_mode": 0,
   "3D": 1,
   "render": 0,
   "marching_cubes": 0,
   "segmentation3D": {
-    "small_RAM_mode": 0,
     "smoothing": 1,
     "core_threshold": 3.0,
     "core_vessel_1": 1,
