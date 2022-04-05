@@ -34,10 +34,10 @@ def get_graphAnalysis_command(os, script_path):
         -output_dir \"{output}\" -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
         -pruning_scale {config[graphAnalysis][pruning_scale]} -length_limit {config[graphAnalysis][length_limit]} \
         -dia_scale {config[graphAnalysis][diameter_scale]} -branching_threshold {config[graphAnalysis][branching_threshold]} \
-        -all_stats {config[graphAnalysis][all_stats]} -small_RAM_mode {config[small_RAM_mode]} \
+        -extended_output {config[graphAnalysis][extended_output]} -small_RAM_mode {config[small_RAM_mode]} \
         -experimental_flag {config[graphAnalysis][experimental_flag]}"
-    if os == 'Linux' or os == 'Darwin':
-        command_str = command_str + "\nchmod ugo+rwx \"{output}\""
+    #if os == 'Linux' or os == 'Darwin':
+    #    command_str = command_str + "\nchmod ugo+rwx \"{output}\""
     return command_str
 
 
@@ -62,7 +62,10 @@ def get_segmentation3D_command(script_path):
 
 
 def get_input(imgs, exts, blender_exists, path, input_list=[]):
-    input_list.append(expand(path + "/{img}/{img}.{ext}_Statistics", zip, img=imgs, ext=exts))
+    # input_list.append(expand(path + "/{img}/{img}.{ext}_Statistics", zip, img=imgs, ext=exts))
+    input_list.append(expand(path + "/{img}.{ext}_Segment_Statistics.csv", zip, img=imgs, ext=exts))
+    input_list.append(expand(path + "/{img}.{ext}_Filament_Statistics.csv",zip,img=imgs,ext=exts))
+    input_list.append(expand(path + "/{img}.{ext}_BranchesPerBranchPt.csv",zip,img=imgs,ext=exts))
     if config['3D'] == 1 and config['render'] == 1 and blender_exists:
         input_list.append(expand(path + "/{img}/Binary_{img}-render.PNG", img=imgs))
         input_list.append(expand(path + "/{img}/Binary_{img}.blend",img=imgs))
@@ -73,8 +76,8 @@ def get_input(imgs, exts, blender_exists, path, input_list=[]):
     return input_list
 
 
-#PATH = os.path.abspath(os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'data'))
-PATH = config['imgFolder']
+PATH = os.path.abspath(os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'data'))
+#PATH = config['imgFolder']
 SCRIPT_PATH = snakemake.workflow.srcdir('scripts')
 FRANGINET_PATH = os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'FrangiNet')
 IMGS, EXTS = get_files_and_extensions(path=PATH)
@@ -209,7 +212,7 @@ rule renderSkeleton:
 
 rule graphAnalysis:
     input: skelImg = PATH + "/{img}/Skeleton_{img}.{ext}", binImg = PATH + "/{img}/Binary_{img}.{ext}"
-    output: directory(PATH + "/{img}/{img}.{ext}_Statistics/")
+    output: PATH + "/{img}.{ext}_Segment_Statistics.csv", PATH + "/{img}.{ext}_Filament_Statistics.csv", PATH + "/{img}.{ext}_BranchesPerBranchPt.csv"
     conda: ENV_PATH + "Pipeline.yml"
     #benchmark: PATH + "/{img}/benchmarks/{img}.graphAnalysis.benchmark.txt"
     shell: get_graphAnalysis_command(OS, SCRIPT_PATH)

@@ -67,7 +67,7 @@ class Graph:
                                 with key as the segment index (start node, end node) and value = avg diameter of the segment
     """
     def __init__(self, segmentation, skeleton, networkxGraph, pixelDimensions, pruningScale, lengthLimit, diaScale,
-                 branchingThreshold, expFlag, smallRAMmode, infoFile):
+                 branchingThreshold, expFlag, smallRAMmode, infoFile, graphCreation):
         self.skeleton = skeleton
         self.networkxGraph = networkxGraph
         self.pixelDims = pixelDimensions
@@ -76,6 +76,7 @@ class Graph:
         self.diaScale = diaScale
         self.branchingThresh = branchingThreshold
         self.infoFile = infoFile
+        self.graphCreation = graphCreation
         self.expFlag = expFlag
         self.smallRAMmode = smallRAMmode
         self.segmentsDict = defaultdict(dict)
@@ -113,9 +114,9 @@ class Graph:
         if self.smallRAMmode == 0:
             self.distTransf = distance_transform_edt(segmentation, sampling=self.pixelDims)
         else:
-            # im_dask = da.from_array(segmentation, chunks='auto')
+            im_dask = da.from_array(segmentation, chunks='auto')
             # note: this is only for large data, when debugging, please use:
-            im_dask = da.from_array(segmentation, chunks=(128, 128, 128))
+            # im_dask = da.from_array(segmentation, chunks=(128, 128, 128))
             # this is because for small data, 'auto' will just keep the whole data as one chunk
             # then it is meaningless for debugging or testing
             # here "depth=15" should be fine for most case, unless we have very thick vessels
@@ -127,7 +128,8 @@ class Graph:
                 edt_func.compute_distance_transform,
                 im_dask,
                 dtype="float",
-                depth=15
+                depth=15,
+                boundary='reflect'
             )
 
         self.radiusMatrix = self.distTransf * self.skeleton
@@ -200,12 +202,13 @@ class Graph:
                     self.infoDict['filaments'] -= 1
         self.runTimeDict['statCalculation'] = round(time.time() - startTime, 3)
 
-        # remove nodes which were removed in postprocessing of filaments in the overall graph
-        nodes_graph = set(self.networkxGraph.nodes)
-        nodes_to_remove = nodes_graph - self.nodesFinal
-        for node in nodes_to_remove:
-            self.networkxGraph.remove_node(node)
-        self.skeleton = self._get_final_skeleton()
+        if self.graphCreation == 1:
+            # remove nodes which were removed in postprocessing of filaments in the overall graph
+            nodes_graph = set(self.networkxGraph.nodes)
+            nodes_to_remove = nodes_graph - self.nodesFinal
+            for node in nodes_to_remove:
+                self.networkxGraph.remove_node(node)
+            self.skeleton = self._get_final_skeleton()
 
         if self.expFlag == 1:
             self.endPtsTopVsBottom = self.top_endPts_vs_bottom_endPts()

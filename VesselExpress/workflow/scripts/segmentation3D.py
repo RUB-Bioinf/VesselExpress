@@ -153,7 +153,7 @@ def segmentation(input, output, cfg):
         # run smoothing and save the results to another ZARR file
         # saving to ZARR file will only take disk space, not RAM
         im_dask = da.from_zarr(raw_path)
-        im_smooth = da.map_overlap(edge_preserving_smoothing_3d, im_dask, dtype="int64", depth=5)
+        im_smooth = da.map_overlap(edge_preserving_smoothing_3d, im_dask, dtype="int64", depth=5, boundary='reflect')
 
         smooth_path = tmp_path + os.sep + "smooth_" + fn_base
         im_smooth.to_zarr(smooth_path)
@@ -179,7 +179,8 @@ def segmentation(input, output, cfg):
                 vess_func.compute_vesselness,
                 im_smooth,
                 dtype="float",
-                depth=3
+                depth=3,
+                boundary='reflect'
             )
             vess_1_path = tmp_path + os.sep + "vess_1_" + fn_base
             vess_1.to_zarr(vess_1_path)
@@ -204,7 +205,8 @@ def segmentation(input, output, cfg):
                 vess_func.compute_vesselness,
                 im_smooth,
                 dtype="float",
-                depth=3
+                depth=3,
+                boundary='reflect'
             )
             vess_2_path = tmp_path + os.sep + "vess_2_" + fn_base
             vess_2.to_zarr(vess_2_path)
@@ -259,12 +261,14 @@ def segmentation(input, output, cfg):
         if cfg["post_thinning"] == 1:
             thin_path = tmp_path + os.sep + "thin_" + fn_base
             seg_input = da.from_zarr(latest_seg_path)
-            thin_func = partial(topology_preserving_thinning, cfg["min_thickness"], cfg["thin"])
+            #thin_func = partial(topology_preserving_thinning, cfg["min_thickness"], cfg["thin"])
+            thin_func = partial(topology_preserving_thinning)
             seg_refined = da.map_overlap(
                 thin_func,
                 seg_input,
                 dtype="bool",
-                depth=3
+                depth=3,
+                boundary='reflect'
             )
             seg_refined.to_zarr(thin_path, overwrite=True)
             latest_seg_path = thin_path
@@ -277,7 +281,8 @@ def segmentation(input, output, cfg):
                 clean_func,
                 seg_input,
                 dtype="bool",
-                depth=3
+                depth=3,
+                boundary='reflect'
             )
             seg_refined.to_zarr(clean_path, overwrite=True)
             latest_seg_path = clean_path

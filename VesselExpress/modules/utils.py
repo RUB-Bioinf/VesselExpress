@@ -9,6 +9,7 @@ import os
 
 
 def saveAllStatsAsCSV(dictionary, path, imgName):
+    print(path)
     # get all segment measurements as list from dictionary
     fil_id = 0
     key = 0

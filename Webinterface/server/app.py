@@ -98,3 +98,4 @@ def communicate_progbar():  # Communicates with Websocket '/progbar' when receiv
 ##### Start website #####
 if __name__ == '__main__':
     socketio.run(app=app, host='0.0.0.0')
+    #socketio.run(app=app, host='0.0.0.0', port=5100, debug=True)
