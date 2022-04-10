@@ -1,3 +1,0 @@
-name: Thresholding
-dependencies:
-  - scikit-image>=0.17.2

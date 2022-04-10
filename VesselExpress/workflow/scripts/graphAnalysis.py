@@ -14,7 +14,7 @@ import graph
 import utils
 
 
-def processImage(skelImg, binImg, statsDir, parameterDict):
+def processImage(skelImg, binImg, parameterDict):
     input_file = os.path.abspath(skelImg).replace('\\', '/')
     dir = os.path.dirname(input_file)
     file_name = os.path.basename(dir)
@@ -41,13 +41,12 @@ def processImage(skelImg, binImg, statsDir, parameterDict):
     stats.setStats()
 
     if parameterDict.get("extended_output") == 1:
-        # save graph as image
+        # save graph as image and graphml file
         graph_arr = stats.skeleton
         utils.write_img((graph_arr * 255).astype('uint8'), dir + '/Graph_' + file_name + '.'
                         + input_file.split('.')[1])
-        # g = nx.from_numpy_array(graph_arr)
-        # print(g)
-        # nx.write_graphml_lxml(g, dir + '/' + file_name + ".graphml")
+        g = stats.networkxGraph
+        nx.write_graphml_lxml(g, dir + '/' + file_name + ".graphml")
 
         # save image with branch points
         brPts = []
@@ -57,7 +56,7 @@ def processImage(skelImg, binImg, statsDir, parameterDict):
                     brPts.append(k)
         brPt_img = np.zeros(graph_arr.shape)
         for ind in brPts:
-            brPt_img[ind[0], ind[1], ind[2]] = 255
+            brPt_img[ind] = 255
         utils.write_img(brPt_img.astype('uint8'), dir + '/BrPts_' + file_name + '.'
                         + input_file.split('.')[1])
 
@@ -68,7 +67,7 @@ def processImage(skelImg, binImg, statsDir, parameterDict):
                 endPts.append(l)
         endPt_img = np.zeros(graph_arr.shape)
         for ind in endPts:
-            endPt_img[ind[0], ind[1], ind[2]] = 255
+            endPt_img[ind] = 255
         utils.write_img(endPt_img.astype('uint8'), dir + '/EndPts_' + file_name + '.'
                         + input_file.split('.')[1])
 
@@ -94,13 +93,13 @@ def processImage(skelImg, binImg, statsDir, parameterDict):
     # utils.saveBranchPtDictAsCSV(stats.branchPointsDict, os.path.join(statsDir, file_name + '_BranchPt_No._Branches.csv'),
     #                                  'BranchPt No. Branches', category='Branch')
 
-    print(dir + '.' + input_file.split('.')[1] + '_Segment_Statistics.csv')
-
     # create files containing all statisics in one csv per category (segment, filament, branches and endPtsRatio)
     utils.saveAllStatsAsCSV(stats.segStatsDict, dir + '.' + input_file.split('.')[1] + '_Segment_Statistics.csv', file_name)
     utils.saveAllFilStatsAsCSV(stats.filStatsDict, dir + '.' + input_file.split('.')[1] + '_Filament_Statistics.csv', file_name)
     utils.saveBranchesBrPtAsCSV(stats.branchesBrPtDict, dir + '.' + input_file.split('.')[1] + '_BranchesPerBranchPt.csv', file_name)
     if parameterDict.get("experimental_flag") == 1:
+        statsDir = os.path.join(dir, 'statistics')
+        os.makedirs(statsDir, exist_ok=True)
         utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_z_Angle.csv'),
                                    'Segment z Angle', 'zAngle', '°')
         utils.saveEndPtsRelativeAsCSV(stats.endPtsTopVsBottom, dir + '_EndPtsRatio.csv', file_name)
@@ -112,7 +111,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Computes graph analysis on skeleton image file of type .tif')
     parser.add_argument('-skel_img', type=str, help='input skeleton image file to process')
     parser.add_argument('-bin_img', type=str, help='input binary image file to process')
-    parser.add_argument('-output_dir', type=str, help='directory to store statistics')
     parser.add_argument('-pixel_dimensions', type=str, default="2.0,1.015625,1.015625",
                         help='Pixel dimensions in [z, y, x]')
     parser.add_argument('-pruning_scale', type=float, default=1.5,
@@ -145,7 +143,7 @@ if __name__ == '__main__':
         "small_RAM_mode": args.small_RAM_mode
     }
 
-    processImage(args.skel_img, args.bin_img, args.output_dir, parameters)
+    processImage(args.skel_img, args.bin_img, parameters)
 
     if args.prints:
         print("Graph extraction and statistical analysis completed in %0.3f seconds" % (time.time() - programStart))

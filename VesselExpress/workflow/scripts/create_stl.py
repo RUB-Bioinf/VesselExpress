@@ -1,5 +1,5 @@
 import tifffile
-from skimage.measure import marching_cubes_lewiner
+from skimage.measure import marching_cubes
 from skimage.morphology import binary_dilation
 from stl import mesh
 import numpy as np
@@ -7,7 +7,7 @@ import argparse
 
 
 def get_mesh(volume, pixelDims=(2., 1.015625, 1.015625)):
-    verts, faces, normals, values = marching_cubes_lewiner(volume, spacing=pixelDims)
+    verts, faces, normals, values = marching_cubes(volume, spacing=pixelDims)
 
     # Create mesh
     model_3d = mesh.Mesh(np.zeros(faces.shape[0], dtype=mesh.Mesh.dtype))

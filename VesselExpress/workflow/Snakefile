@@ -31,7 +31,7 @@ def get_files_and_extensions(path):
 def get_graphAnalysis_command(os, script_path):
     command_str = \
         "python " + script_path + "/graphAnalysis.py -skel_img \"{input.skelImg}\" -bin_img \"{input.binImg}\" \
-        -output_dir \"{output}\" -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
+        -pixel_dimensions {config[graphAnalysis][pixel_dimensions]} \
         -pruning_scale {config[graphAnalysis][pruning_scale]} -length_limit {config[graphAnalysis][length_limit]} \
         -dia_scale {config[graphAnalysis][diameter_scale]} -branching_threshold {config[graphAnalysis][branching_threshold]} \
         -extended_output {config[graphAnalysis][extended_output]} -small_RAM_mode {config[small_RAM_mode]} \
@@ -127,7 +127,7 @@ rule segmentation_3D:
     output: PATH + "/{img}/Binary_{img}.{ext}"
     wildcard_constraints:
         ext="(tiff)"
-    conda: ENV_PATH + "Segmentation.yml"
+    conda: ENV_PATH + "Pipeline.yml"
     shell: get_segmentation3D_command(SCRIPT_PATH)
 
 rule segmentation_2D:

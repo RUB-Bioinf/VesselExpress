@@ -9,6 +9,7 @@ import sys
 from skimage.filters import threshold_li, threshold_local, threshold_otsu
 from skimage.morphology import binary_closing, ball, disk, remove_small_objects
 import matplotlib.pyplot as plt
+from skimage.exposure import equalize_adapthist
 
 # import modules
 package = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'modules/'))
@@ -27,7 +28,7 @@ if __name__ == '__main__':
     parser.add_argument('-alpha', type=float, default=0.5, help='Frangi alpha parameter')
     parser.add_argument('-beta', type=float, default=0.5, help='Frangi beta parameter')
     parser.add_argument('-gamma', type=float, default=15, help='Frangi gamma parameter')
-    parser.add_argument('-denoise', type=int, default=1, help='set to 1 for prior denoising of image')
+    parser.add_argument('-denoise', type=int, default=0, help='set to 1 for prior denoising of image')
     parser.add_argument('-back_sub', type=int, default=0,
                         help='set to 1 for rolling ball background subtraction')
     parser.add_argument('-value', type=float, default=0,
@@ -46,8 +47,12 @@ if __name__ == '__main__':
     input_file = os.path.abspath(args.i).replace('\\', '/')
     output_dir = os.path.dirname(input_file)
 
-    if os.path.splitext(args.i)[1] != '.tiff':
-        img = color.rgb2gray(img)
+    # if os.path.splitext(args.i)[1] is not '.tiff' or os.path.splitext(args.i)[1] is not '.tif':
+    #     img = color.rgb2gray(img)
+    #     print(os.path.splitext(args.i)[1])
+    #     print(img.shape)
+
+    img = equalize_adapthist(img)
 
     if args.plot:
         plt.imshow(img)
@@ -55,7 +60,7 @@ if __name__ == '__main__':
         plt.show()
 
     if args.back_sub == 1:
-        background = restoration.rolling_ball(img, radius=50)
+        background = restoration.rolling_ball(img, radius=30)
         img = img - background
 
         if args.plot:
@@ -73,7 +78,7 @@ if __name__ == '__main__':
 
     filtered = frangi(image=img, black_ridges=False, sigmas=np.arange(args.sigma_min, args.sigma_max, args.sigma_steps),
                       alpha=args.alpha, beta=args.beta, gamma=args.gamma)
-    filtered = np.round(filtered / (filtered.max() / 65535))
+    #filtered = np.round(filtered/(filtered.max() / 65535))
 
     # Thresholding with specific value
     if args.value != 0:
@@ -81,10 +86,10 @@ if __name__ == '__main__':
     # Li thresholding
     else:
         if args.block_size == 0:
-            threshold = threshold_li(img)  # global thresholding
+            threshold = threshold_li(filtered)  # global thresholding
         else:
-            threshold = threshold_local(img, block_size=args.block_size)  # local thresholding
-    thrImage = img > threshold
+            threshold = threshold_local(filtered, block_size=args.block_size)  # local thresholding
+    thrImage = filtered > threshold
 
     # Binary closing
     binImage = binary_closing(thrImage, disk(args.ball_radius))
@@ -93,15 +98,22 @@ if __name__ == '__main__':
     binImage = remove_small_objects(binImage, args.artifact_size)
 
     if args.plot:
-        plt.imshow(filtered)
-        plt.title('Frangi filter')
+        fig, axes = plt.subplots(nrows=1, ncols=2, sharex='all', sharey='all')
+        axes[0].imshow(img)
+        axes[1].imshow(binImage)
+        fig.tight_layout()
         plt.show()
-        plt.imshow(thrImage)
-        plt.title('Thresholding')
-        plt.show()
-        plt.imshow(binImage)
-        plt.title('Binary closing and artifact removal')
-        plt.show()
+
+    # if args.plot:
+    #     plt.imshow(filtered)
+    #     plt.title('Frangi filter')
+    #     plt.show()
+    #     plt.imshow(thrImage)
+    #     plt.title('Thresholding')
+    #     plt.show()
+    #     plt.imshow(binImage)
+    #     plt.title('Binary closing and artifact removal')
+    #     plt.show()
 
     utils.write_img((binImage * 255).astype('uint8'), output_dir + '/Binary_' + os.path.basename(output_dir) + '.'
                     + input_file.split('.')[1])

@@ -219,7 +219,7 @@ class Graph:
     def _get_final_skeleton(self):
         skel = np.zeros(self.skeleton.shape)
         for ind in list(self.networkxGraph.nodes):
-            skel[ind[0], ind[1], ind[2]] = 1
+            skel[ind] = 1
         return skel
 
     def _writeInfoFile(self):
