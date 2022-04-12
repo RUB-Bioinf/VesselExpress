@@ -1,8 +1,45 @@
 {
   "imgFolder": "data",
-  "segmentation": "frangi",
+  "segmentation": "segmentation3D",
+  "small_RAM_mode": 0,
   "3D": 1,
   "render": 0,
+  "marching_cubes": 0,
+  "segmentation3D": {
+    "smoothing": 1,
+    "core_threshold": 3.0,
+    "core_vessel_1": 1,
+    "gamma_1": 5,
+    "sigma_1": 1.0,
+    "cutoff_method_1": "threshold_li",
+    "core_vessel_2": 1,
+    "gamma_2": 5,
+    "sigma_2": 2.0,
+    "cutoff_method_2": "threshold_li",
+    "post_closing": 5,
+    "post_thinning": 1,
+    "thin": 1,
+    "min_thickness": 1,
+    "post_cleaning": 100
+  },
+  "segmentation2D": {
+    "denoise": 1,
+    "back_sub": 1,
+    "frangi": {
+      "sigma_min": 0.01,
+      "sigma_max": 1,
+      "sigma_steps": 0.01,
+      "alpha": 0.5,
+      "beta": 0.5,
+      "gamma": 100
+    },
+    "threshold": {
+      "ball_radius": 1,
+      "artifact_size": 5,
+      "block_size": 17,
+      "value": 0
+    }
+  },
   "franginet": {
     "model": "models/guided/model.ckpt",
     "mode": "guided",
@@ -12,34 +49,16 @@
     "gpus": "0",
     "batch_size": "1"
   },
-  "frangi":
-  {
-    "sigma_min": 2.0,
-    "sigma_max": 5.0,
-    "sigma_steps": 3,
-    "alpha": 0.5,
-    "beta": 500.0,
-    "gamma": 500.0
-  },
-  "threshold":
-  {
-    "value": 0,
-    "ball_radius": 3,
-    "artifact_size": 5,
-    "block_size": 137,
-    "denoise": 1
-  },
-  "graphAnalysis":
-  {
+  "graphAnalysis": {
     "pixel_dimensions": "1.0,1.0,1.0",
     "pruning_scale": 1.5,
     "length_limit": 3,
+    "diameter_scale": 2,
     "branching_threshold": 0.25,
-    "all_stats": 0,
+    "extended_output": 1,
     "experimental_flag": 0
   },
-  "rendering":
-  {
+  "rendering": {
     "save_raw": 1,
     "save_glb": 1,
     "background_transparent": 1,
@@ -49,8 +68,7 @@
     "image_resolution_y": 1080,
     "image_compression": 0.0
   },
-  "rendering_binary":
-  {
+  "rendering_binary": {
     "mesh_r": 0.528,
     "mesh_g": 0.002,
     "mesh_b": 0.0013,
@@ -59,8 +77,7 @@
     "mesh_sheen": 0.0,
     "mesh_specular": 0.0
   },
-  "rendering_skeleton":
-  {
+  "rendering_skeleton": {
     "mesh_r": 0.01,
     "mesh_g": 0.06,
     "mesh_b": 0.528,
@@ -68,5 +85,18 @@
     "mesh_metallic": 0.267,
     "mesh_sheen": 0.0,
     "mesh_specular": 0.308
+  },
+  "marching_cubes_binary":{
+    "cube_size": 1,
+    "scaling_x": 1.0,
+    "scaling_y": 1.0,
+    "scaling_z": 1.0
+  },
+  "marching_cubes_skeleton":{
+    "cube_size": 1,
+    "iterations": 1,
+    "scaling_x": 1.0,
+    "scaling_y": 1.0,
+    "scaling_z": 1.0
   }
 }

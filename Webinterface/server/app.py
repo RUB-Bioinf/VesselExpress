@@ -20,11 +20,14 @@ from flask_socketio import (
 ALLOWED_EXTENSIONS = {'tiff', 'tif', 'jpeg', 'jpg', 'png'}  # For uploaded images #
 DOWNLOAD_LOGS = 'VesselExpress_logs.zip'  # Filename of the logs #
 DOWNLOAD_RESULTS = 'VesselExpress_results.zip'  # Filename of the zipped results #
-INTSET = {'denoise', 'ball_radius', 'artifact_size', 'block_size', '3D', 'render', 'sigma_steps',
-          'image_resolution_x', 'image_resolution_y'}  # Parameters with int values #
+INTSET = {'render', 'small_RAM_mode', 'smoothing', 'core_vessel_1', 'gamma_1', 'core_vessel_2', 
+          'gamma_2', 'cutoff_method_1', 'cutoff_method_2', 'post_thinning', 'post_closing', 'thin',
+          'min_thickness', 'post_cleaning', 'extended_output',
+          'image_resolution_x', 'image_resolution_y', 'render_device'}  # Parameters with int values #
 RENDER_FILE = None  # Will be used to serve a render image to render.html #
-SKIP_CATEGORIES = {'imgFolder', 'skeletonization', 'segmentation', 'rendering_binary',
-                   'rendering_skeleton'}  # Skip these during config update #
+SKIP_CATEGORIES = {'imgFolder', 'segmentation', '3D', 'marching_cubes', 'rendering_binary', 
+                   'rendering_skeleton', 'marching_cubes_binary', 'marching_cubes_skeleton',
+                   'segmentation2D', 'franginet'}  # Skip these during config update #
 UPLOAD_FOLDER = 'VesselExpress/data'  # Pipeline output folder #
 
 ##### Define app #####

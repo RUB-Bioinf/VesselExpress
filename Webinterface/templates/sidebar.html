@@ -44,7 +44,7 @@
                 </div>
             </div>
         </div>
-        <div class="ui four columns grid">
+        <div style="margin-top: -12px !important" class="ui four columns grid">
             <div class="column">
                 <div class="ui form">
                     <div class="field">
@@ -86,7 +86,7 @@
             </div>
         </div>
     </div>
-    <div class="ui four columns grid padlr" style="margin-bottom: -30px!important;">
+    <div class="ui four columns grid padlr" style="margin-bottom: -30px!important; margin-top: -10px;">
         <div class="sixteen wide column">
             <label id="pixel_dims" style="font-size: 16px;"></label>
         </div>
@@ -99,7 +99,7 @@
         </div>
     </div>
 
-    <div class="segment padlr" style="margin-top: 30px">
+    <div class="segment padlr" style="margin-top: 25px">
         <h4 class="ui horizontal left aligned divider header">
             Preprocessing
         </h4>
@@ -196,7 +196,7 @@
                         </span>
                         <select class="ui fluid dropdown mtop" id="cutoff_method_1" name="cutoff_method_1"
                                style="height:45px; background-color: #F0F0F0" style="margin-top: 5px">
-                            <option value="">Li</option>
+                            <option value="2">Li</option>
                             <option value="1">Triangle</option>
                             <option value="0">Otsu</option>
                         </select>
@@ -262,7 +262,7 @@
                         </span>
                         <select class="ui fluid dropdown mtop" id="cutoff_method_2" name="cutoff_method_2"
                                style="height:45px; background-color: #F0F0F0" style="margin-top: 5px">
-                            <option value="">Li</option>
+                            <option value="2">Li</option>
                             <option value="1">Triangle</option>
                             <option value="0">Otsu</option>
                         </select>
@@ -287,8 +287,8 @@
                         </span>
                     </label>
                 </div>
-                <div class="ui checkbox" style="margin-top: -17px; margin-left: 130px;">
-                    <input type="checkbox" name="post_thinning" id="post_thinning">
+                <div class="ui checkbox" style="margin-top: -17px; margin-left: 95px;">
+                    <input type="checkbox" name="post_thinning" id="post_thinning" onchange="updatepostthinning(this)">
                     <label></label>
                 </div>
             </div>
@@ -380,7 +380,7 @@
                         </span>
                         <input id="length_limit" name="length_limit" class="mtop"
                                style="height:45px; background-color: #F0F0F0"
-                               type="number" step="1" value="3">
+                               type="number" step="0.1" value="3">
                     </div>
                 </div>
             </div>
@@ -404,7 +404,7 @@
                 <div>
                     <span style="font-size:16px;" data-variation="fixed small"
                           data-tooltip="Percentage segment length to use for branching angle calculation"
-                          data-position="top right">
+                          data-position="top right" id="branch_thresh_span">
                         Branching threshold:
                     </span>
                     <div class="ui bottom aligned labeled ticked dark red slider" id="slider2"></div>
@@ -429,7 +429,7 @@
             </div>
         </div>
     </div>
-    <div class="ui four columns grid padlr">
+    <div style="margin-top: 10px" class="ui four columns grid padlr">
         <div class="eight wide column">
             <a href="https://www.sciencedirect.com/science/article/abs/pii/S0097849312000684" target="_blank"
                style="color: #00796b; font-size: 16px">
@@ -508,24 +508,251 @@
 </div>
 
 <script>
+    var config = JSON.parse('{{ config | tojson | safe}}');
+    // Checkboxes
+    document.getElementById("ram_checkbox").value = config["small_RAM_mode"]
+    if (document.getElementById("ram_checkbox").value == 1) {
+        document.getElementById("ram_checkbox").checked = true;
+    } else {
+        document.getElementById("ram_checkbox").checked = false;
+    }
+    document.getElementById("render_checkbox").value = config["render"]
+    if (document.getElementById("render_checkbox").value == 1) {
+        document.getElementById("render_checkbox").checked = true;
+    } else {
+        document.getElementById("render_checkbox").checked = false;
+    }
+    document.getElementById("vesselness_1").value = config["segmentation3D"]["core_vessel_1"]
+    if (document.getElementById("vesselness_1").value == 1) {
+        document.getElementById("vesselness_1").checked = true;
+    } else {
+        document.getElementById("vesselness_1").checked = false;
+    }
+    if (config["segmentation3D"]["cutoff_method_1"] == "threshold_li") {
+        document.getElementById("cutoff_method_1").value = "2";
+    } else if (config["segmentation3D"]["cutoff_method_1"] == "threshold_triangle") {
+        document.getElementById("cutoff_method_1").value = "1";
+    } else {
+        document.getElementById("cutoff_method_1").value = "0";
+    }
+    if (config["segmentation3D"]["cutoff_method_2"] == "threshold_li") {
+        document.getElementById("cutoff_method_2").value = "2";
+    } else if (config["segmentation3D"]["cutoff_method_2"] == "threshold_triangle") {
+        document.getElementById("cutoff_method_2").value = "1";
+    } else {
+        document.getElementById("cutoff_method_2").value = "0";
+    }
+    document.getElementById("vesselness_2").value = config["segmentation3D"]["core_vessel_2"]
+    if (document.getElementById("vesselness_2").value == 1) {
+        document.getElementById("vesselness_2").checked = true;
+    } else {
+        document.getElementById("vesselness_2").checked = false;
+    }
+    document.getElementById("post_thinning").value = config["segmentation3D"]["post_thinning"]
+    if (document.getElementById("post_thinning").value == 1) {
+        document.getElementById("post_thinning").checked = true;
+    } else {
+        document.getElementById("post_thinning").checked = false;
+    }
+    document.getElementById("graphoutput_checkbox").value = config["graphAnalysis"]["extended_output"]
+    if (document.getElementById("graphoutput_checkbox").value == 1) {
+        document.getElementById("graphoutput_checkbox").checked = true;
+    } else {
+        document.getElementById("graphoutput_checkbox").checked = false;
+    }
+    if (config["rendering"]["render_device"] == "GPU") {
+        document.getElementById("gpu_checkbox").value = 1;
+    } else {
+        document.getElementById("gpu_checkbox").value = 0;
+    }
+    if (document.getElementById("gpu_checkbox").value == 1) {
+        document.getElementById("gpu_checkbox").checked = true;
+    } else {
+        document.getElementById("gpu_checkbox").checked = false;
+    }
 
-    document.getElementById("slider-input-2").value = 0.25
 
-    function getParams() {
-        return {
-            "branching_threshold": document.getElementById("slider-input-2").value
+    // Update settings
+    // General
+    document.getElementById("dim_x").value = config["graphAnalysis"]["dim_x"]  // Prepared like this in python
+    document.getElementById("dim_y").value = config["graphAnalysis"]["dim_y"]
+    document.getElementById("dim_z").value = config["graphAnalysis"]["dim_z"]
+    // Preprocessing
+    document.getElementById("smoothing").value = config["segmentation3D"]["smoothing"]
+    document.getElementById("core_threshold").value = config["segmentation3D"]["core_threshold"]
+    // Segmentation
+    document.getElementById("gamma_1").value = config["segmentation3D"]["gamma_1"]
+    document.getElementById("sigma_1").value = config["segmentation3D"]["sigma_1"]
+    document.getElementById("gamma_2").value = config["segmentation3D"]["gamma_2"]
+    document.getElementById("sigma_2").value = config["segmentation3D"]["sigma_2"]
+    // Postprocessing
+    document.getElementById("thin").value = config["segmentation3D"]["thin"]
+    document.getElementById("min_thickness").value = config["segmentation3D"]["min_thickness"]
+    document.getElementById("postclosing").value = config["segmentation3D"]["post_closing"]
+    document.getElementById("postcleaning").value = config["segmentation3D"]["post_thinning"]
+    // Graph Analysis
+    document.getElementById("pruning_scale").value = config["graphAnalysis"]["pruning_scale"]
+    document.getElementById("length_limit").value = config["graphAnalysis"]["length_limit"]
+    document.getElementById("diameter_scale").value = config["graphAnalysis"]["diameter_scale"]
+    document.getElementById("slider-input-2").value = config["graphAnalysis"]["branching_threshold"]
+    // Rendering Preview
+    document.getElementById("image_resolution_x").value = config["rendering"]["image_resolution_x"]
+    document.getElementById("image_resolution_y").value = config["rendering"]["image_resolution_y"]
+    
+    //pixel dimensions
+    document.getElementById("pixel_dims").innerHTML = '1 pixel/voxel = ' + document.getElementById('dim_x').value + ' x ' + document.getElementById('dim_y').value + ' x ' + document.getElementById('dim_z').value + ' µm';
+    document.getElementById("branch_thresh_span").innerHTML = 'Branching threshold: ' + document.getElementById('slider-input-2').value
+    
+    function updatex(val) {
+        document.getElementById("pixel_dims").innerHTML = '1 pixel/voxel = ' + val + ' x ' + document.getElementById('dim_y').value + ' x ' + document.getElementById('dim_z').value + ' µm';
+    }
+
+    function updatey(val) {
+        document.getElementById("pixel_dims").innerHTML = '1 pixel/voxel = ' + document.getElementById('dim_x').value + ' x ' + val + ' x ' + document.getElementById('dim_z').value + ' µm';
+    }
+
+    function updatez(val) {
+        document.getElementById("pixel_dims").innerHTML = '1 pixel/voxel = ' + document.getElementById('dim_x').value + ' x ' + document.getElementById('dim_y').value + ' x ' + val + ' µm';
+    }
+
+    // Preview checkbox enable/disable parameters
+    function updatepostthinning(id) {
+        if (id.checked) {
+            document.getElementById("thin").disabled = false;
+            document.getElementById("thin").style.color = 'black';
+            document.getElementById("min_thickness").disabled = false;
+            document.getElementById("min_thickness").style.color = 'black';
+        } else {
+            document.getElementById("thin").disabled = true;
+            document.getElementById("thin").style.color = '#ababab';
+            document.getElementById("min_thickness").disabled = true;
+            document.getElementById("min_thickness").style.color = '#ababab';
         }
     }
 
-    $('#slider2').slider({
+    function getParams() {
+        return {
+            // General
+            "small_RAM_mode": document.getElementById("ram_checkbox").value,
+            "render": document.getElementById("render_checkbox").value,
+            "dim_x": document.getElementById("dim_x").value,
+            "dim_y": document.getElementById("dim_y").value,
+            "dim_z": document.getElementById("dim_z").value,
+            // Preprocessing
+            "smoothing": document.getElementById("smoothing").value,
+            "core_threshold": document.getElementById("core_threshold").value,
+            // Segmentation
+            "core_vessel_1": document.getElementById("vesselness_1").value,
+            "gamma_1": document.getElementById("gamma_1").value,
+            "sigma_1": document.getElementById("sigma_1").value,
+            "cutoff_method_1": document.getElementById("cutoff_method_1").value,
+            "core_vessel_2": document.getElementById("vesselness_2").value,
+            "gamma_2": document.getElementById("gamma_2").value,
+            "sigma_2": document.getElementById("sigma_2").value,
+            "cutoff_method_2": document.getElementById("cutoff_method_2").value,
+            // Postprocessing
+            "post_thinning": document.getElementById("post_thinning").value,
+            "thin": document.getElementById("thin").value,
+            "min_thickness": document.getElementById("min_thickness").value,
+            "post_closing": document.getElementById("postclosing").value,
+            "post_cleaning": document.getElementById("postcleaning").value,
+            // Graph Analysis
+            "pruning_scale": document.getElementById("pruning_scale").value,
+            "length_limit": document.getElementById("length_limit").value,
+            "diameter_scale": document.getElementById("diameter_scale").value,
+            "branching_threshold": document.getElementById("slider-input-2").value,
+            "extended_output": document.getElementById("graphoutput_checkbox").value,
+            // Rendering Preview
+            "image_resolution_x": document.getElementById("image_resolution_x").value,
+            "image_resolution_y": document.getElementById("image_resolution_y").value,
+            "render_device": document.getElementById("gpu_checkbox").value
+        }
+    }
+
+    function resetParams() {
+        // General
+        document.getElementById("dim_x").value = '1.0';
+        document.getElementById("dim_y").value = '1.0';
+        document.getElementById("dim_z").value = '1.0';
+        document.getElementById("ram_checkbox").checked = false;
+        document.getElementById("render_checkbox").checked = false;
+        // Preprocessing
+        document.getElementById("smoothing").value = 1;
+        document.getElementById("core_threshold").value = 3.0;
+        // Segmentation
+        document.getElementById("vesselness_1").checked = true;
+        document.getElementById("gamma_1").value = 5;
+        document.getElementById("sigma_1").value = 1.0;
+        document.getElementById("cutoff_method_1").value = '2';
+        document.getElementById("vesselness_2").checked = true,
+        document.getElementById("gamma_2").value = 5;
+        document.getElementById("sigma_2").value = 2.0;
+        document.getElementById("cutoff_method_2").value = '2';
+        // Postprocessing
+        document.getElementById("post_thinning").checked = true;
+        document.getElementById("thin").value = 1;
+        document.getElementById("min_thickness").value = 1;
+        document.getElementById("postclosing").value = 5;
+        document.getElementById("postcleaning").value = 100;
+        // Graph Analysis
+        document.getElementById("pruning_scale").value = 1.5;
+        document.getElementById("length_limit").value = 3.0;
+        document.getElementById("diameter_scale").value = 2.0;
+        document.getElementById("slider-input-2").value = 0.25;
+        document.getElementById("graphoutput_checkbox").checked = true;
+        // Rendering Preview
+        document.getElementById("image_resolution_x").value = 1920;
+        document.getElementById("image_resolution_y").value = 1080;
+        document.getElementById("gpu_checkbox").checked = true;
+    }
+
+    // Sliders
+    $("#slider2").slider({
         min: 0,
         max: 1,
-        start: 0.25,
+        start: config["graphAnalysis"]["branching_threshold"],
         step: 0.05,
         smooth: true,
-       onChange: function (value) {
+        onChange: function (value) {
             document.getElementById("slider-input-2").value = value;
-       }
-   });
+            document.getElementById("branch_thresh_span").innerHTML = 'Branching threshold: ' + value;
+        }
+    });
 
+    // AJAX
+    $("#update_config").click(function (event) {
+        event.preventDefault();  // Deactivate standard POST submit
+        // Data that is sent to backend
+        var ajax_data = [{
+            "request": "update_config",
+            "update_config": getParams()
+        }];
+        $.ajax({ // AJAX POST instructions
+            type: "POST",
+            url: {{ url_for("home.home_page")| tojson }},
+            data: JSON.stringify(ajax_data),
+            contentType: "application/json",
+            dataType: "json",
+        }).done(function (flash_collection) {
+            flash_handler(flash_collection)
+        });
+    });
+
+    $("#reset_config").click(function (event) {
+        event.preventDefault();  // Deactivate standard POST submit
+        // Data that is sent to backend
+        resetParams()
+        var ajax_data = [{
+            "request": "reset_config",
+        }];
+        $.ajax({ // AJAX POST instructions
+            type: "POST",
+            url: {{ url_for('home.home_page')| tojson }},
+            data: JSON.stringify(ajax_data),
+            contentType: "application/json",
+            dataType: "json"
+        }).done(function (flash_collection) {
+            flash_handler(flash_collection)
+        });
+    });
 </script>

@@ -18,7 +18,7 @@ RUN python3.7 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN apt-get update
-RUN apt-get upgrade
+#RUN apt-get upgrade
 
 # Setup blender
 RUN apt-get install blender -y

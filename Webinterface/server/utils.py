@@ -269,10 +269,23 @@ def update_config(form, flash_collection):
     input_values['pixel_dimensions'] = ','.join([str(input_values['dim_z']),
                                                  str(input_values['dim_y']),
                                                  str(input_values['dim_x'])])
+    if input_values['cutoff_method_1'] == 2:
+        input_values['cutoff_method_1'] = 'threshold_li'
+    elif input_values['cutoff_method_1'] == 1:
+        input_values['cutoff_method_1'] = 'threshold_triangle'
+    else:
+        input_values['cutoff_method_1'] = 'threshold_otsu'
+    if input_values['cutoff_method_2'] == 2:
+        input_values['cutoff_method_2'] = 'threshold_li'
+    elif input_values['cutoff_method_2'] == 1:
+        input_values['cutoff_method_2'] = 'threshold_triangle'
+    else:
+        input_values['cutoff_method_2'] = 'threshold_otsu'
+    print(input_values)
     # Update config #
     for category in current_config:  # Iterate through the config file to update it #
         if category not in SKIP_CATEGORIES:
-            if category in {'3D', 'render'}:  # First level options from the config file #
+            if category in {'small_RAM_mode', 'render'}:  # First level options from the config file #
                 if current_config[category] != input_values[category]:  # Did the value change? #
                     current_config[category] = input_values[category]  # Apply change #
             else:
