@@ -223,7 +223,7 @@ def segmentation(input, output, cfg):
 
         # combine the segmentations
         latest_seg_path = None
-        if cfg["core_threshold"] is not None:
+        if cfg["core_threshold"] != 0:
             latest_seg_path = threshold_path
 
         if cfg["core_vessel_1"] == 1:
@@ -247,7 +247,7 @@ def segmentation(input, output, cfg):
             latest_seg_path = merge_path
 
         # post-processing
-        if cfg["post_closing"] is not None:
+        if cfg["post_closing"] != 0:
             closing_path = tmp_path + os.sep + "closing_" + fn_base
             seg_input = da.from_zarr(latest_seg_path)
             seg_refined = ndmorph.binary_closing(
@@ -273,7 +273,7 @@ def segmentation(input, output, cfg):
             seg_refined.to_zarr(thin_path, overwrite=True)
             latest_seg_path = thin_path
 
-        if cfg["post_cleaning"] is not None:
+        if cfg["post_cleaning"] != 0:
             clean_path = tmp_path + os.sep + "clean_" + fn_base
             seg_input = da.from_zarr(latest_seg_path)
             clean_func = partial(remove_small_objects, min_size=cfg["post_cleaning"])
@@ -308,7 +308,7 @@ def segmentation(input, output, cfg):
         #######################
         # core steps
         #######################
-        if cfg["core_threshold"] is not None:
+        if cfg["core_threshold"] != 0:
             seg = threshold_by_variation(im, cfg["core_threshold"])
         else:
             seg = np.zeros_like(im) > 0
@@ -324,12 +324,12 @@ def segmentation(input, output, cfg):
         #######################
         # post-processing
         #######################
-        if cfg["post_closing"] is not None:
+        if cfg["post_closing"] != 0:
             seg = binary_closing(seg, cube(cfg["post_closing"]))
 
         if cfg["post_thinning"] == 1:
             seg = topology_preserving_thinning(seg, min_thickness=cfg["min_thickness"], thin=cfg["thin"])
-        if cfg["post_cleaning"] is not None:
+        if cfg["post_cleaning"] != 0:
             seg = remove_small_objects(seg, min_size=cfg["post_cleaning"])
 
         seg = seg.astype(np.uint8)
@@ -357,7 +357,7 @@ if __name__ == '__main__':
     parser.add_argument('-prints', type=bool, default=False, help='set to True to print runtime')
     parser.add_argument('-small_RAM_mode', type=int, default=0, help='set to 1 for processing files larger than RAM')
     parser.add_argument('-smoothing', type=int, default=1, help='set to 1 for smoothing, 0 for no smoothing')
-    parser.add_argument('-core_threshold', type=none_or_float, default=3.0)
+    parser.add_argument('-core_threshold', type=float, default=3.0, help='set to 0 for no core-threshold')
     parser.add_argument('-core_vessel_1', type=int, default=1, help='set to 1 for first vesselness filter, '
                                                                     '0 for no vesselness filter')
     parser.add_argument('-gamma_1', type=int, default=5)
@@ -368,12 +368,12 @@ if __name__ == '__main__':
     parser.add_argument('-gamma_2', type=int, default=5)
     parser.add_argument('-sigma_2', type=float, default=2.0)
     parser.add_argument('-cutoff_method_2', type=str, default='threshold_li')
-    parser.add_argument('-post_closing', type=none_or_int, default=5)
+    parser.add_argument('-post_closing', type=int, default=5, help='set to 0 for no closing')
     parser.add_argument('-post_thinning', type=int, default=0, help='set to 1 for post-processing, '
                                                                     '0 for no post-processing')
     parser.add_argument('-min_thickness', type=int, default=None)
     parser.add_argument('-thin', type=int, default=None)
-    parser.add_argument('-post_cleaning', type=none_or_int, default=100)
+    parser.add_argument('-post_cleaning', type=int, default=100, help='set to 0 for no cleaning')
     args = parser.parse_args()
 
     config = {

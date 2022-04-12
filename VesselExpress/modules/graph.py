@@ -1,3 +1,5 @@
+import os
+
 import networkx as nx
 from collections import defaultdict
 import time
@@ -8,6 +10,7 @@ import filament as fil
 from scipy.ndimage import distance_transform_edt
 import csv
 import dask.array as da
+# from dask.distributed import Client
 
 import measurements as ms
 
@@ -67,7 +70,7 @@ class Graph:
                                 with key as the segment index (start node, end node) and value = avg diameter of the segment
     """
     def __init__(self, segmentation, skeleton, networkxGraph, pixelDimensions, pruningScale, lengthLimit, diaScale,
-                 branchingThreshold, expFlag, smallRAMmode, infoFile, graphCreation):
+                 branchingThreshold, expFlag, smallRAMmode, infoFile, graphCreation, fileName):
         self.skeleton = skeleton
         self.networkxGraph = networkxGraph
         self.pixelDims = pixelDimensions
@@ -77,6 +80,7 @@ class Graph:
         self.branchingThresh = branchingThreshold
         self.infoFile = infoFile
         self.graphCreation = graphCreation
+        self.fileName = fileName
         self.expFlag = expFlag
         self.smallRAMmode = smallRAMmode
         self.segmentsDict = defaultdict(dict)
@@ -114,13 +118,9 @@ class Graph:
         if self.smallRAMmode == 0:
             self.distTransf = distance_transform_edt(segmentation, sampling=self.pixelDims)
         else:
-            im_dask = da.from_array(segmentation, chunks='auto')
-            # note: this is only for large data, when debugging, please use:
-            # im_dask = da.from_array(segmentation, chunks=(128, 128, 128))
-            # this is because for small data, 'auto' will just keep the whole data as one chunk
-            # then it is meaningless for debugging or testing
-            # here "depth=15" should be fine for most case, unless we have very thick vessels
-            # "depth" controlls how much overlap between each neighboring chunks
+            im_dask = da.from_array(segmentation, chunks=(128, 128, 128))
+            if segmentation.shape[0] * segmentation.shape[1] * segmentation.shape[2] > 16777216:
+                im_dask = da.from_array(segmentation, chunks='auto')
             edt_func = distance_transform_edt_dask(
                 sampling=self.pixelDims
             )
@@ -131,14 +131,20 @@ class Graph:
                 depth=15,
                 boundary='reflect'
             )
-
         self.radiusMatrix = self.distTransf * self.skeleton
         self.runTimeDict['distTransformation'] = round(time.time() - self.initTime, 3)
 
         # pruning: delete branches with length below the distance to its closest border
-        self._prune()
+        if self.smallRAMmode == 1:
+            # client = Client()
+            self.radiusMatrix.to_zarr('tmp_zarr' + os.sep + self.fileName + '_radiusMatrix.zarr')
+            self._prune(da.from_zarr('tmp_zarr' + os.sep + self.fileName + '_radiusMatrix.zarr'))
+            #client.submit(self._prune, da.from_zarr('tmp_zarr' + os.sep + self.fileName + '_radiusMatrix.zarr'))
+        else:
+            self._prune(self.radiusMatrix)
 
         self.filaments = list(self.connected_component_subgraphs(self.networkxGraph))
+        # print("found {} filaments".format(len(self.filaments)))
 
     def setStats(self):
         """
@@ -164,7 +170,8 @@ class Graph:
                 start = endPoints[0]  # take random end point as beginning
                 adjacencyDict = nx.to_dict_of_lists(subGraphSkeleton)
                 filament = fil.Filament(adjacencyDict, start, self.radiusMatrix, self.pixelDims, self.lengthLim,
-                                        self.diaScale, self.branchingThresh, self.expFlag)
+                                        self.diaScale, self.branchingThresh, self.expFlag, self.smallRAMmode,
+                                        self.fileName)
                 filament.dfs_iterative()
                 self.segmentsDict[ithDisjointGraph] = filament.segmentsDict
 
@@ -239,7 +246,7 @@ class Graph:
                              'comment': 'filaments=' + str(self.infoDict['filaments']) +
                                         ' segments=' + str(self.infoDict['segments'])})
 
-    def _prune(self):
+    def _prune(self, radiusMat):
         """
             This implements the pruning as described by Montero & Lang
             Skeleton pruning by contour approximation and the integer medial axis transform.
@@ -263,7 +270,7 @@ class Graph:
                         if neighbor not in visited:
                             stack.append(neighbor)
                     if len(neighbors) > 2:  # branch point found
-                        if ms.getLength(branch, self.pixelDims) <= self.radiusMatrix[vertex] * self.prunScale:
+                        if ms.getLength(branch, self.pixelDims) <= radiusMat[vertex] * self.prunScale:
                             branchesToRemove.append(branch)
                         break
         # delete branches from adjacency matrix besides branch points

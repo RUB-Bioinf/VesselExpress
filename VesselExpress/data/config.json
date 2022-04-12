@@ -3,7 +3,7 @@
   "segmentation": "segmentation3D",
   "small_RAM_mode": 0,
   "3D": 1,
-  "render": 1,
+  "render": 0,
   "marching_cubes": 0,
   "segmentation3D": {
     "smoothing": 1,

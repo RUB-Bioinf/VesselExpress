@@ -1,6 +1,8 @@
 import numpy as np
 import time
 from collections import defaultdict
+import dask.array as da
+import os
 
 import measurements as ms
 
@@ -52,7 +54,8 @@ class Filament:
         --------
         straightness = curveDisplacement / curveLength
         """
-    def __init__(self, graph, start, skelRadii, pixelDimensions, lengthLimit, diaScale, branchingThreshold, expFlag):
+    def __init__(self, graph, start, skelRadii, pixelDimensions, lengthLimit, diaScale, branchingThreshold, expFlag,
+                 smallRAMmode, fileName):
         self.graph = graph
         self.start = start
         self.skelRadii = skelRadii
@@ -61,6 +64,8 @@ class Filament:
         self.diaScale = diaScale
         self.branchingThr = branchingThreshold
         self.expFlag = expFlag
+        self.smallRAMmode = smallRAMmode
+        self.fileName = fileName
         self.endPtsList = []
         self.brPtsDict = {}
         self.segmentsDict = {}
@@ -223,7 +228,11 @@ class Filament:
         vect = [a * b for a, b in zip(vect, self.pixelDims)]  # multiply pixel length with pixel dimension
         curveDisplacement = np.linalg.norm(vect)
         self.segmentsDict[segment[0], segment[len(segment) - 1]] = segment
-        volumeDiameter = ms.getVolume(self.skelRadii, segment, segLength, self.pixelDims)
+        if self.smallRAMmode == 1:
+            volumeDiameter = ms.getVolume(da.from_zarr('tmp_zarr' + os.sep + self.fileName + '_radiusMatrix.zarr'),
+                                          segment, segLength, self.pixelDims)
+        else:
+            volumeDiameter = ms.getVolume(self.skelRadii, segment, segLength, self.pixelDims)
         branchingDegree = self._getBranchingDegree(segment, self.branchingThr)
         # fill dictionary for csv file containing all segment statistics
         self.segmentStats[segment[0], segment[len(segment) - 1]]['diameter'] = volumeDiameter[1]

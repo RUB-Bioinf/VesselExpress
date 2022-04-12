@@ -4,6 +4,7 @@ import argparse
 import networkx as nx
 import sys
 import os
+from shutil import rmtree
 
 # import modules
 package = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'modules/'))
@@ -37,7 +38,8 @@ def processImage(skelImg, binImg, parameterDict):
                         pruningScale=parameterDict.get("pruning_scale"), lengthLimit=parameterDict.get("length_limit"),
                         diaScale=parameterDict.get("dia_scale"), branchingThreshold=parameterDict.get("branching_threshold"),
                         expFlag=parameterDict.get("experimental_flag"), infoFile=finfo,
-                        graphCreation=parameterDict.get("extended_output"), smallRAMmode=parameterDict.get("small_RAM_mode"))
+                        graphCreation=parameterDict.get("extended_output"), smallRAMmode=parameterDict.get("small_RAM_mode"),
+                        fileName=file_name)
     stats.setStats()
 
     if parameterDict.get("extended_output") == 1:
@@ -103,6 +105,9 @@ def processImage(skelImg, binImg, parameterDict):
         utils.saveSegmentDictAsCSV(stats.segStatsDict, os.path.join(statsDir, file_name + '_Segment_z_Angle.csv'),
                                    'Segment z Angle', 'zAngle', '°')
         utils.saveEndPtsRelativeAsCSV(stats.endPtsTopVsBottom, dir + '_EndPtsRatio.csv', file_name)
+
+    if parameterDict.get('small_RAM_mode'):
+        rmtree('tmp_zarr' + os.sep + file_name + '_radiusMatrix.zarr')
 
 
 if __name__ == '__main__':
