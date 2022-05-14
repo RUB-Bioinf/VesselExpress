@@ -3,8 +3,9 @@
   "segmentation": "segmentation3D",
   "3D": 1,
   "render": 0,
+  "marching_cubes": 0,
+  "small_RAM_mode": 0,
   "segmentation3D": {
-    "small_RAM_mode": 0,
     "smoothing": 1,
     "core_threshold": 3.5,
     "core_vessel_1": 1,
@@ -25,7 +26,7 @@
     "length_limit": 3,
     "diameter_scale": 2,
     "branching_threshold": 0.25,
-    "all_stats": 1,
+    "extended_output": 0,
     "experimental_flag": 0
   },
   "rendering": {

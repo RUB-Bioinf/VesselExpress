@@ -143,7 +143,7 @@
             <div class="two-wide-column" style="margin-top: 15px">
                 <div>
                     <label style="font-size: 16px;"
-                           data-variation="small" data-tooltip="Check to use GPU for rendering"
+                           data-variation="small" data-tooltip="Check to use first Frangi filter"
                            data-position="top left">
                         <span id="vesselness_1_span">
                             Vesselness filter 1
@@ -151,7 +151,7 @@
                     </label>
                 </div>
                 <div class="ui checkbox" style="margin-top: -17px; margin-left: 130px;">
-                    <input type="checkbox" name="vesselness_1" id="vesselness_1">
+                    <input type="checkbox" name="vesselness_1" id="vesselness_1" onchange="updatevesselness1(this)" >
                     <label></label>
                 </div>
             </div>
@@ -162,7 +162,7 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px;" data-variation="small"
-                              data-tooltip="Perform smoothing"
+                              data-tooltip="Constant that adjusts the filter’s sensitivity to areas of high noise"
                               data-position="top left">
                             Gamma:
                         </span>
@@ -177,7 +177,7 @@
                     <div class="field">
                         <span style="font-size:16px; white-space:nowrap;overflow:hidden;text-overflow:clip;"
                               data-variation="small"
-                              data-tooltip="Pixel size of artifacts to be removed" data-position="top left">
+                              data-tooltip="Set according to expected vessel diameter in pixel" data-position="top left">
                             Sigma:
                         </span>
                         <input id="sigma_1" name="sigma_1" class="mtop"
@@ -191,7 +191,7 @@
                     <div class="field">
                         <span style="font-size:16px; white-space:nowrap;overflow:hidden;text-overflow:clip;"
                               data-variation="small"
-                              data-tooltip="Pixel size of artifacts to be removed" data-position="top right">
+                              data-tooltip="Method to split image in fore- and background" data-position="top right">
                             Cutoff method:
                         </span>
                         <select class="ui fluid dropdown mtop" id="cutoff_method_1" name="cutoff_method_1"
@@ -209,7 +209,7 @@
             <div class="two-wide-column" style="margin-top: 15px">
                 <div>
                     <label style="font-size: 16px;"
-                           data-variation="small" data-tooltip="Check to use GPU for rendering"
+                           data-variation="small" data-tooltip="Check to use second Frangi filter"
                            data-position="top left">
                         <span id="vesselness_2_span">
                             Vesselness filter 2
@@ -217,7 +217,7 @@
                     </label>
                 </div>
                 <div class="ui checkbox" style="margin-top: -17px; margin-left: 130px;">
-                    <input type="checkbox" name="vesselness_2" id="vesselness_2">
+                    <input type="checkbox" name="vesselness_2" id="vesselness_2" onchange="updatevesselness2(this)">
                     <label></label>
                 </div>
             </div>
@@ -228,7 +228,7 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px;" data-variation="small"
-                              data-tooltip="Perform smoothing"
+                              data-tooltip="Constant that adjusts the filter’s sensitivity to areas of high noise"
                               data-position="top left">
                             Gamma:
                         </span>
@@ -243,7 +243,7 @@
                     <div class="field">
                         <span style="font-size:16px; white-space:nowrap;overflow:hidden;text-overflow:clip;"
                               data-variation="small"
-                              data-tooltip="Pixel size of artifacts to be removed" data-position="top left">
+                              data-tooltip="Set according to expected vessel diameter in pixel" data-position="top left">
                             Sigma:
                         </span>
                         <input id="sigma_2" name="sigma_2" class="mtop"
@@ -257,7 +257,7 @@
                     <div class="field">
                         <span style="font-size:16px; white-space:nowrap;overflow:hidden;text-overflow:clip;"
                               data-variation="small"
-                              data-tooltip="Pixel size of artifacts to be removed" data-position="top right">
+                              data-tooltip="Method to split image in fore- and background" data-position="top right">
                             Cutoff method:
                         </span>
                         <select class="ui fluid dropdown mtop" id="cutoff_method_2" name="cutoff_method_2"
@@ -280,7 +280,7 @@
             <div class="two-wide-column" style="margin-top: 15px">
                 <div>
                     <label style="font-size: 16px;"
-                           data-variation="small" data-tooltip="Check to use GPU for rendering"
+                           data-variation="small" data-tooltip="Check to perform postthinning"
                            data-position="top left">
                         <span id="post_thinning_span">
                             Postthinning
@@ -298,7 +298,7 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px;" data-variation="small"
-                              data-tooltip="Perform smoothing"
+                              data-tooltip="Pixel size for thinning"
                               data-position="top left">
                             Thin:
                         </span>
@@ -313,7 +313,7 @@
                     <div class="field">
                         <span style="font-size:16px; white-space:nowrap;overflow:hidden;text-overflow:clip;"
                               data-variation="small"
-                              data-tooltip="Pixel size of artifacts to be removed" data-position="top left">
+                              data-tooltip="Minimum pixel thickness to maintain" data-position="top left">
                             Min thickness:
                         </span>
                         <input id="min_thickness" name="min_thickness" class="mtop"
@@ -326,7 +326,7 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px;" data-variation="small"
-                              data-tooltip="Perform smoothing"
+                              data-tooltip="Pixel size of struct. element, set to 0 for no closing"
                               data-position="top right">
                             Closing:
                         </span>
@@ -341,7 +341,7 @@
                     <div class="field">
                         <span style="font-size:16px; white-space:nowrap;overflow:hidden;text-overflow:clip;"
                               data-variation="small"
-                              data-tooltip="Pixel size of artifacts to be removed" data-position="top right">
+                              data-tooltip="Pixel size of artifacts to be cleaned, set to 0 for no cleaning" data-position="top right">
                             Cleaning:
                         </span>
                         <input id="postcleaning" name="postcleaning" class="mtop"
@@ -388,7 +388,7 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px;" data-variation="small"
-                              data-tooltip="Minimum length of vessels in µm" data-position="top right">
+                              data-tooltip="Vessels with a length below the diameter scaled by this factor are pruned" data-position="top right">
                             Diam. scale:
                         </span>
                         <input id="diameter_scale" name="diameter_scale" class="mtop"
@@ -415,7 +415,7 @@
             <div class="eight wide column">
                 <div>
                     <label style="font-size: 16px;"
-                           data-variation="small" data-tooltip="Check to use GPU for rendering"
+                           data-variation="small" data-tooltip="Check to receive graph output"
                            data-position="top right">
                         <span id="graphoutput_span">
                             Graph output
@@ -627,6 +627,44 @@
             document.getElementById("thin").style.color = '#ababab';
             document.getElementById("min_thickness").disabled = true;
             document.getElementById("min_thickness").style.color = '#ababab';
+        }
+    }
+
+    function updatevesselness1(id){
+        if (id.checked){
+            document.getElementById("gamma_1").disabled = false;
+            document.getElementById("gamma_1").style.color = 'black';
+            document.getElementById("sigma_1").disabled = false;
+            document.getElementById("sigma_1").style.color = 'black';
+            document.getElementById("cutoff_method_1").disabled = false;
+            document.getElementById("cutoff_method_1").style.color = 'black';
+        }
+        else {
+            document.getElementById("gamma_1").disabled = true;
+            document.getElementById("gamma_1").style.color = '#ababab';
+            document.getElementById("sigma_1").disabled = true;
+            document.getElementById("sigma_1").style.color = '#ababab';
+            document.getElementById("cutoff_method_1").disabled = true;
+            document.getElementById("cutoff_method_1").style.color = '#ababab';
+        }
+    }
+
+    function updatevesselness2(id){
+        if (id.checked){
+            document.getElementById("gamma_2").disabled = false;
+            document.getElementById("gamma_2").style.color = 'black';
+            document.getElementById("sigma_2").disabled = false;
+            document.getElementById("sigma_2").style.color = 'black';
+            document.getElementById("cutoff_method_2").disabled = false;
+            document.getElementById("cutoff_method_2").style.color = 'black';
+        }
+        else {
+            document.getElementById("gamma_2").disabled = true;
+            document.getElementById("gamma_2").style.color = '#ababab';
+            document.getElementById("sigma_2").disabled = true;
+            document.getElementById("sigma_2").style.color = '#ababab';
+            document.getElementById("cutoff_method_2").disabled = true;
+            document.getElementById("cutoff_method_2").style.color = '#ababab';
         }
     }
 
