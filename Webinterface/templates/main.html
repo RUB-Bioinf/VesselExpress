@@ -325,7 +325,7 @@
                     prog_socket.emit('get_progress');
                 }
             }, 500)
-            document.getElementById("progbar_message").classList.remove("hidden")
+            //document.getElementById("progbar_message").classList.remove("hidden")
             $.ajax({ // AJAX POST instructions
                 type: "POST",
                 url: {{ url_for('home.home_page')| tojson }},
@@ -432,6 +432,7 @@
                 dataType: 'json'
             }).done(function (flash_collection) {
                 flash_handler(flash_collection)
+                Dropzone.forElement('#myDropzone').removeAllFiles(true)
             });
         });
 

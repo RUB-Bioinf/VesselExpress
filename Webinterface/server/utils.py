@@ -12,7 +12,6 @@ from multiprocessing import (
     Queue
 )
 from os import (
-    chdir,
     listdir,
     path,
     remove as osremove,
@@ -64,16 +63,23 @@ def clear_files(flash_collection):
         flash_collection.append({'message': 'No files to delete', 'type': 'error'})
         return flash_collection
     else:
-        number_of_files, subdirlist = 0, []
+        number_of_files, subdirlist, subsubdirlist = 0, [], []
         for dir, subdirs, files in walk(current_app.config['UPLOAD_FOLDER']):
             if dir == current_app.config['UPLOAD_FOLDER'] and len(subdirs) > 0:
-                subdirlist = subdirs  # Saves subdir folder names to delete separately #
+                for entry in subdirs:
+                    if path.join(dir, entry) not in subdirlist:
+                        subdirlist.append(path.join(dir, entry))  # Saves subdir folder names to delete separately #
+            if dir != current_app.config['UPLOAD_FOLDER'] and len(subdirs) > 0:
+                for entry in subdirs:
+                    if path.join(dir, entry) not in subsubdirlist:
+                        subsubdirlist.append(path.join(dir, entry))  # Saves subsubdir folder names to delete separately #
             for file in files:
                 if not file.endswith('.json'):  # Deletes all files except the config files #
                     osremove(path.join(dir, file))
                     number_of_files += 1
         if len(subdirlist) > 0:  # Delete subdir folders after all files have been counted #
-            [rmdir(path.join(current_app.config['UPLOAD_FOLDER'], subdir)) for subdir in subdirlist]
+            [rmdir(subsubdir) for subsubdir in subsubdirlist]
+            [rmdir(subdir) for subdir in subdirlist]
         if number_of_files > 1:
             flash_collection.append({'message': f'{number_of_files} Files deleted', 'type': 'success'})
         else:
@@ -128,7 +134,7 @@ def download_images(all_results=None, flash_collection=None, firstrun=None):
                     osremove(path.join(current_app.config['UPLOAD_FOLDER'], 'progbar.json'))
                 else:  # Zip only .csv and .PNG files <- basic low size files #
                     [zip_filename.write(path.join(dir, filename), path.join(zipdir, filename)) \
-                     for filename in files if filename.endswith(('.csv', '.PNG'))]
+                     for filename in files if filename.endswith(('.csv'))]
             return 0
 
 
