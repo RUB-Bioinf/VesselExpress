@@ -108,13 +108,13 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px;" data-variation="small"
-                              data-tooltip="Perform smoothing"
+                              data-tooltip="Set to 1 for smoothing, otherwise 0"
                               data-position="top left">
                             Smoothing:
                         </span>
                         <input id="smoothing" name="smoothing" class="mtop"
                                style="height:45px; background-color: #F0F0F0"
-                               type="number" step="1" value="1">
+                               type="number" step="1" value="1" min="0" max="1">
                     </div>
                 </div>
             </div>
@@ -122,8 +122,8 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px; white-space:nowrap;overflow:hidden;text-overflow:clip;"
-                              data-variation="small"
-                              data-tooltip="Pixel size of artifacts to be removed" data-position="top left">
+                              data-variation="fixed small"
+                              data-tooltip="Thresh. value is determined by mean + the std. dev. scaled by this factor, set to 0 for no thresholding" data-position="top left">
                             Core threshold:
                         </span>
                         <input id="core_threshold" name="core_threshold" class="mtop"
@@ -325,8 +325,8 @@
             <div class="column">
                 <div class="ui form">
                     <div class="field">
-                        <span style="font-size:16px;" data-variation="small"
-                              data-tooltip="Pixel size of struct. element, set to 0 for no closing"
+                        <span style="font-size:16px;" data-variation="fixed small"
+                              data-tooltip="Pixel size of structuring element of closing, set to 0 for no closing"
                               data-position="top right">
                             Closing:
                         </span>
@@ -387,7 +387,7 @@
             <div class="four wide column">
                 <div class="ui form">
                     <div class="field">
-                        <span style="font-size:16px;" data-variation="small"
+                        <span style="font-size:16px;" data-variation="fixed small"
                               data-tooltip="Vessels with a length below the diameter scaled by this factor are pruned" data-position="top right">
                             Diam. scale:
                         </span>
@@ -712,6 +712,7 @@
         document.getElementById("dim_x").value = '1.0';
         document.getElementById("dim_y").value = '1.0';
         document.getElementById("dim_z").value = '1.0';
+        document.getElementById("pixel_dims").innerHTML = '1 pixel/voxel = ' + document.getElementById('dim_x').value + ' x ' + document.getElementById('dim_y').value + ' x ' + document.getElementById('dim_z').value + ' µm';
         document.getElementById("ram_checkbox").checked = false;
         document.getElementById("render_checkbox").checked = false;
         // Preprocessing

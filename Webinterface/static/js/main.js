@@ -1,4 +1,40 @@
 $(document).ready(function () {
+    // vesselness fields
+    var isCheckedVes1 = $("#vesselness_1").prop('checked');
+    var isCheckedVes2 = $("#vesselness_2").prop('checked');
+    if (isCheckedVes2 === true){
+        document.getElementById("gamma_2").disabled = false;
+            document.getElementById("gamma_2").style.color = 'black';
+            document.getElementById("sigma_2").disabled = false;
+            document.getElementById("sigma_2").style.color = 'black';
+            document.getElementById("cutoff_method_2").disabled = false;
+            document.getElementById("cutoff_method_2").style.color = 'black';
+        }
+    else {
+        document.getElementById("gamma_2").disabled = true;
+        document.getElementById("gamma_2").style.color = '#ababab';
+        document.getElementById("sigma_2").disabled = true;
+        document.getElementById("sigma_2").style.color = '#ababab';
+        document.getElementById("cutoff_method_2").disabled = true;
+        document.getElementById("cutoff_method_2").style.color = '#ababab';
+    }
+    if (isCheckedVes1 === true){
+        document.getElementById("gamma_1").disabled = false;
+            document.getElementById("gamma_1").style.color = 'black';
+            document.getElementById("sigma_1").disabled = false;
+            document.getElementById("sigma_1").style.color = 'black';
+            document.getElementById("cutoff_method_1").disabled = false;
+            document.getElementById("cutoff_method_1").style.color = 'black';
+        }
+    else {
+        document.getElementById("gamma_1").disabled = true;
+        document.getElementById("gamma_1").style.color = '#ababab';
+        document.getElementById("sigma_1").disabled = true;
+        document.getElementById("sigma_1").style.color = '#ababab';
+        document.getElementById("cutoff_method_1").disabled = true;
+        document.getElementById("cutoff_method_1").style.color = '#ababab';
+    }
+
     // Executed on page load. Define standard behaviour of objects in here.
     $('.message .close').on('click', function () {
         $(this).closest('.message').transition('fade');
@@ -31,6 +67,8 @@ $(document).ready(function () {
         document.getElementById('dim_x').value + ' x ' +
         document.getElementById('dim_y').value + ' x ' +
         document.getElementById('dim_z').value + ' µm');
+
+
 })
 
 // flash message handler

@@ -11,15 +11,15 @@
     "core_vessel_1": 1,
     "gamma_1": 5,
     "sigma_1": 1.0,
-    "cutoff_method_1": "threshold_li",
+    "cutoff_method_1": "threshold_triangle",
     "core_vessel_2": 1,
     "gamma_2": 5,
     "sigma_2": 2.0,
     "cutoff_method_2": "threshold_li",
     "post_closing": 5,
     "post_thinning": 1,
-    "thin": 1,
     "min_thickness": 1,
+    "thin": 1,
     "post_cleaning": 100
   },
   "graphAnalysis": {
@@ -28,7 +28,7 @@
     "length_limit": 3,
     "diameter_scale": 2,
     "branching_threshold": 0.25,
-    "extended_output": 0,
+    "extended_output": 1,
     "experimental_flag": 0
   },
   "rendering": {

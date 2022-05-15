@@ -24,11 +24,11 @@
   },
   "graphAnalysis": {
     "pixel_dimensions": "2.0,1.015625,1.015625",
-    "pruning_scale": 1.5,
+    "pruning_scale": 10.0,
     "length_limit": 3,
     "diameter_scale": 2,
     "branching_threshold": 0.25,
-    "extended_output": 0,
+    "extended_output": 1,
     "experimental_flag": 0
   },
   "rendering": {
