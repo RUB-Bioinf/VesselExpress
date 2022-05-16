@@ -102,19 +102,6 @@
                         or only the numerical data by clicking "Download statistics".
                     </div>
                     <div class="six wide column">
-                        <div class="ui icon hidden message" id="progbar_message"
-                             style="background-color: white; margin-top: -7px; margin-bottom: -5px; box-shadow: none;">
-                            <i class="notched circle loading icon" style="margin-top: 0px"></i>
-                            <div class="content" style="margin-top: -5px">
-                                <div><b style="font-size: 18px">Preparing download</b></div>
-                                <div class="ui inverted progress" style="margin-bottom: -10px; margin-top: 6px;"
-                                     id="progbar_progress">
-                                    <div class="bar">
-                                        <div class="centered progress" style="color: white"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 </p>
@@ -153,6 +140,13 @@
                             Download all results
                         </button>
                     </form>
+                    <div class="mini ui icon block-center hidden message" id="progbar_message" 
+                            style="margin-top: 0px; margin-left: 0px; height: 45px; width: 100%; background-color: #00796b !important; color: white !important;">
+                        <i class="mini notched circle loading icon" style="margin-top: 0px"></i>
+                        <div class="content" style="margin-top: -1px; margin-left: -15px;">
+                            <div><b style="font-size: 14px">Preparing download</b></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="column">
                     <form style="padding: 0; margin: 0;" method="POST" id="download_stat_form">
@@ -273,16 +267,25 @@
 
         var prog_socket = io.connect('http://127.0.0.1:5000/progbar', {transports: ['websocket']});
         // Function when receiving 'newlog'
+        var default_dl_button = document.getElementById("download_img_form").style.display
         prog_socket.on('newprogress', function (msg) {
-            //flash_handler([{'message': 'Progress: ' + msg.data.current + '/' + msg.data.sum, 'type': 'success'}])
+            /*flash_handler([{'message': 'Progress: ' + msg.data.current + '/' + msg.data.sum, 'type': 'success'}])
             $('#progbar_progress').progress({
                 percent: (msg.data.current / msg.data.sum) * 100
-            })
+            })*/
+            if (msg.data == 1) {
+                document.getElementById("download_img_form").style.display="none";
+                document.getElementById("progbar_message").classList.remove("hidden");
+                
+            } else if (msg.data == 0) {
+                document.getElementById("download_img_form").style.display=default_dl_button;
+                document.getElementById("progbar_message").classList.add("hidden");
+            }
         });
-
-        $("#progbar_message").click(function () {
-            document.getElementById('progbar_message').classList.add('hidden')
-        })
+        
+        //$("#progbar_message").click(function () {
+        //    document.getElementById('progbar_message').classList.add('hidden')
+        //})
 
 
         // AJAX
@@ -326,7 +329,6 @@
                     prog_socket.emit('get_progress');
                 }
             }, 500)
-            //document.getElementById("progbar_message").classList.remove("hidden")
             $.ajax({ // AJAX POST instructions
                 type: "POST",
                 url: {{ url_for('home.home_page')| tojson }},

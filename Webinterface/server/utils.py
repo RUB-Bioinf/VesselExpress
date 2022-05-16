@@ -4,7 +4,6 @@ from glob import (
 from json import (
     dump,
     load,
-    JSONDecodeError
 )
 from multiprocessing import (
     Event,
@@ -105,9 +104,7 @@ def download_images(all_results=None, flash_collection=None, firstrun=None):
             return flash_collection
     else:
         # Zip everything except files that end with .zip and the config_standard.json #
-        current_filecount = 0
         zip_ignore = len(glob(path.join(current_app.config['UPLOAD_FOLDER'], '*zip')))
-        sum_of_files = sum([len(files) for _, _, files in walk(current_app.config['UPLOAD_FOLDER'])]) - 1 - zip_ignore
         with ZipFile(path.join(current_app.config['UPLOAD_FOLDER'], DOWNLOAD_RESULTS), 'w') as zip_filename:
             # Iterating over upload_folder and all subdirs to write them into a zip file #
             for dir, _, files in walk(current_app.config['UPLOAD_FOLDER']):
@@ -116,22 +113,13 @@ def download_images(all_results=None, flash_collection=None, firstrun=None):
                 zipdir = dir.replace('VesselExpress/data/', '') if 'VesselExpress/data/' in dir \
                     else dir.replace('VesselExpress/data', '')
                 if all_results == 1:  # Write all files into the zip file except config_standard and itself (loop) #
+                    with open(current_app.config['UPLOAD_FOLDER'] + '/progbar.json', 'w') as progbar_json:
+                        dump({'process': 'on'}, progbar_json, indent=2)
                     for filename in files:
                         if not (filename.endswith('.zip') or
                                 filename == 'config_standard.json' or
                                 filename == 'progbar.json'):
                             zip_filename.write(path.join(dir, filename), path.join(zipdir, filename))
-                            # Log progress to json for progress bar #
-                            current_filecount += 1
-                            progbar = {'current': current_filecount, 'sum': sum_of_files}
-                            try:
-                                with open(current_app.config['UPLOAD_FOLDER'] + '/progbar.json', 'w') as progbar_json:
-                                    dump(progbar, progbar_json, indent=2)
-                            except JSONDecodeError:
-                                sleep(0.05)
-                                with open(current_app.config['UPLOAD_FOLDER'] + '/progbar.json', 'w') as progbar_json:
-                                    dump(progbar, progbar_json, indent=2)
-                    sleep(0.55)  # makes sure progbar gets updated to 100%
                     osremove(path.join(current_app.config['UPLOAD_FOLDER'], 'progbar.json'))
                 else:  # Zip only .csv and .PNG files <- basic low size files #
                     [zip_filename.write(path.join(dir, filename), path.join(zipdir, filename)) \
@@ -182,12 +170,10 @@ def get_last_logfile():
 
 
 def get_progress():
-    try:
-        with open(current_app.config['UPLOAD_FOLDER'] + '/progbar.json', 'r') as progbar_json:
-            progbar_status = load(progbar_json)
-        return progbar_status
-    except FileNotFoundError:
-        return []
+    if 'progbar.json' in listdir(current_app.config['UPLOAD_FOLDER']):
+        return 1
+    else:
+        return 0
 
 
 def get_rendered_files():
@@ -288,7 +274,6 @@ def update_config(form, flash_collection):
         input_values['cutoff_method_2'] = 'threshold_triangle'
     else:
         input_values['cutoff_method_2'] = 'threshold_otsu'
-    print(input_values)
     # Update config #
     for category in current_config:  # Iterate through the config file to update it #
         if category not in SKIP_CATEGORIES:

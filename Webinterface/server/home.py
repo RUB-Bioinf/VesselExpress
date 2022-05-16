@@ -123,9 +123,6 @@ def render_serve_file(render_filename):  # Is called during render.html initiali
     '''
     dir_folder = render_filename.replace('Binary_', '') if 'Binary_' in render_filename \
         else render_filename.replace('Skeleton_', '')
-    # Checks if an image file is in the result folder #
-    if any((image.endswith(tuple(ALLOWED_EXTENSIONS))) for image in
-           listdir(path.join(current_app.config['UPLOAD_FOLDER'], dir_folder)) if render_filename + '.'):
-        # Expose the file to render.html to be opened in the model viewer #
-        return send_from_directory(path.join('../..', current_app.config["UPLOAD_FOLDER"], dir_folder),
-                                   secure_filename(render_filename + '.glb'))
+    # Expose the file to render.html to be opened in the model viewer #
+    return send_from_directory(path.join('../..', current_app.config["UPLOAD_FOLDER"], dir_folder),
+                                secure_filename(render_filename + '.glb'))

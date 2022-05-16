@@ -92,10 +92,10 @@ def communicate_render():  # Communicates with Websocket '/renderfiles' when rec
 @socketio.on('get_progress', namespace='/progbar')
 def communicate_progbar():  # Communicates with Websocket '/progbar' when receiving 'get_progress' trigger #
     progbar_status = utils.get_progress()
-    if 'current' in progbar_status:
-        emit('newprogress', {'data': progbar_status})
-    else:
-        emit('nonewprogress', {'data': 'Currently no progress.'})
+    #if 'current' in progbar_status:
+    emit('newprogress', {'data': progbar_status})
+    #else:
+        #emit('nonewprogress', {'data': 'Currently no progress.'})
 
 
 ##### Start website #####
