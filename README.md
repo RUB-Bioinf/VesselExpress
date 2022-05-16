@@ -139,9 +139,9 @@ https://www.uni-due.de/experimental-immunology
 
 ## Example Data
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5733151.svg)](https://doi.org/10.5281/zenodo.5733151)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6025935.svg)](https://doi.org/10.5281/zenodo.6025935)
 
-Download our example data from [Zenodo](https://zenodo.org/record/5733151#.YajQ1S9Xb5k) containing 3D light sheet microscopic images of the mouse brain.
+Download our example data from [Zenodo](https://zenodo.org/record/6025935#.YajQ1S9Xb5k) containing 3D light sheet microscopic images of the mouse brain.
 
 ## Feedback & Bug Reports
 
