@@ -80,10 +80,11 @@ def clear_files(flash_collection):
         if len(subdirlist) > 0:  # Delete subdir folders after all files have been counted #
             [rmdir(subsubdir) for subsubdir in subsubdirlist]
             [rmdir(subdir) for subdir in subdirlist]
-        if number_of_files > 1:
-            flash_collection.append({'message': f'{number_of_files} Files deleted', 'type': 'success'})
-        else:
-            flash_collection.append({'message': f'{number_of_files} File deleted', 'type': 'success'})
+        #if number_of_files > 1:
+        #    flash_collection.append({'message': f'{number_of_files} Files deleted', 'type': 'success'})
+        #else:
+        #    flash_collection.append({'message': f'{number_of_files} File deleted', 'type': 'success'})
+        flash_collection.append({'message': f'Files cleared', 'type': 'success'})
         return flash_collection
 
 

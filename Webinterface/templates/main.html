@@ -289,7 +289,7 @@
         $("#start_pipeline").click(function (event) {
             event.preventDefault();  // Deactivate standard POST submit
             // Data that is sent to backend
-            var ajax_data = [{
+            /* var ajax_data = [{
                 "request": "update_config",
                 "update_config": getParams()
             }];
@@ -300,22 +300,23 @@
                 contentType: "application/json",
                 dataType: 'json'
             }).done(function (flash_collection) {
+                flash_handler(flash_collection)*/
+            ajax_data = [{
+                "request": "start_pipeline",
+                "update_config": getParams()
+            }];
+            $.ajax({ // AJAX POST instructions
+                type: "POST",
+                url: {{ url_for('home.home_page')| tojson }},
+                data: JSON.stringify(ajax_data),
+                contentType: "application/json",
+                dataType: 'json'
+            }).done(function (flash_collection) {
                 flash_handler(flash_collection)
-                ajax_data = [{
-                    "request": "start_pipeline",
-                    "update_config": getParams()
-                }];
-                $.ajax({ // AJAX POST instructions
-                    type: "POST",
-                    url: {{ url_for('home.home_page')| tojson }},
-                    data: JSON.stringify(ajax_data),
-                    contentType: "application/json",
-                    dataType: 'json'
-                }).done(function (flash_collection) {
-                    flash_handler(flash_collection)
-                });
+                Dropzone.forElement('#myDropzone').removeAllFiles(true)
             });
         });
+        //});
 
         var proginterval
         $("#download_image").click(function (event) {
