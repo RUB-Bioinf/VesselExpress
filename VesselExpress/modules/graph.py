@@ -198,10 +198,11 @@ class Graph:
 
                     # fill dictionaries containing all filament, segment and branch point statistics
                     self.segStatsDict[ithDisjointGraph] = filament.segmentStats
-                    if self.countSegmentsDict[ithDisjointGraph] > 4:
-                        self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = self.countEndPointsDict[ithDisjointGraph]
-                    else:
-                        self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = 0
+                    self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = self.countEndPointsDict[ithDisjointGraph]
+                    # if self.countSegmentsDict[ithDisjointGraph] > 4:
+                    #     self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = self.countEndPointsDict[ithDisjointGraph]
+                    # else:
+                    #     self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = 0
                     self.filStatsDict[ithDisjointGraph]['BranchPoints'] = self.countBranchPointsDict[ithDisjointGraph]
                     self.filStatsDict[ithDisjointGraph]['Segments'] = self.countSegmentsDict[ithDisjointGraph]
                     self.branchesBrPtDict[ithDisjointGraph] = filament.brPtsDict

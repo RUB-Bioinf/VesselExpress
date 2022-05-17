@@ -1,7 +1,7 @@
 
 <p style="text-align:center; margin-bottom: 0px"><img src="VesselExpress/imgs/logo.svg" alt="Logo" style="width: 15%;"></p>
 <h1 style="margin:0px; padding-top: 0px">VesselExpress</h1>
-<h3 style="margin-top: 0px">Rapid and fully automated blood vasculature analysis in 3D light sheet image volumes of different organs.</h3>
+<h3 style="margin-top: 0px">Rapid and fully automated blood vasculature analysis in 3D light-sheet image volumes of different organs.</h3>
 
 [![GitHub Stars](https://img.shields.io/github/stars/RUB-Bioinf/VesselExpress.svg?style=social&label=Star)](https://github.com/RUB-Bioinf/VesselExpress) 
 &nbsp;
@@ -125,7 +125,7 @@ There is a lot of useful information in our [wiki](https://github.com/RUB-Bioinf
 
 Two important pages are:
  - Our [FAQ](https://github.com/RUB-Bioinf/VesselExpress/wiki/FAQ)
- - Our detailed overview over VesselExpress' [parameters](https://github.com/RUB-Bioinf/VesselExpress/wiki/Parameters-for-VesselExpress) for a customized execution.
+ - Our detailed overview over VesselExpress' [parameters](https://github.com/RUB-Bioinf/VesselExpress/wiki/Parameters-for-VesselExpress) for a customized execution. 
 
 ## Correspondence
 
@@ -141,7 +141,7 @@ https://www.uni-due.de/experimental-immunology
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5733150.svg)](https://doi.org/10.5281/zenodo.5733150)
 
-Download our example data from [Zenodo](https://zenodo.org/record/5733150#.YajQ1S9Xb5k) containing 3D light sheet microscopic images of the mouse brain.
+Download our example data from [Zenodo](https://zenodo.org/record/5733150#.YajQ1S9Xb5k) containing 3D light-sheet microscopic images of different organs with corresponding preset parameters for each organ. For segmentation parameter tuning you can use our [Napari plugin](https://www.napari-hub.org/plugins/vessel-express).
 
 ## Feedback & Bug Reports
 
@@ -153,12 +153,12 @@ Should you encounter an error, bug or need help, please feel free to reach out t
 Thank you for your help. Your feedback is much appreciated.
 
 ## References
-1. The Vascular Modeling Toolkit. http://www.vmtk.org
+1. Chen, J., et al. The Allen Cell Structure Segmenter: a new open source toolkit for segmenting 3D intracellular structures in fluorescence microscopy images. bioRxiv, 491035 (2018)
 2. Fu, W. Frangi-Net on High-Resolution Fundus (HRF) image database. (2019). https://doi.org/10.24433/CO.5016803.v2 
 3. Pesavento, M & Vemuri, P. 3D Image Skeletonization Tools.  (2019). https://github.com/pranathivemuri/skeletonization/commit/b7bd1ce06e557905a32307677c77c1b94305ba5c
 ****
 
-**Keywords**: stroke; Neuronal Vessel Morphology; High Throughput Light Sheet Microscopy; 3D Skeletonization
+**Keywords**: Neuronal Vessel Morphology; High Throughput Light-Sheet Microscopy; 3D Skeletonization
 
 ****
 
