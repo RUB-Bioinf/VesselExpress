@@ -1,4 +1,4 @@
-<p align="center"> <img src="VesselExpress/imgs/logo.svg" height="270" width="277" /> </p>
+<p align="center"> <img src="VesselExpress/imgs/logo.svg" height="200" width="200" /> </p>
 <h2 align="center"> VesselExpress: Rapid and fully automated blood vasculature analysis in 3D light-sheet image volumes of different organs </h2>
 
 [![GitHub Stars](https://img.shields.io/github/stars/RUB-Bioinf/VesselExpress.svg?style=social&label=Star)](https://github.com/RUB-Bioinf/VesselExpress) 
