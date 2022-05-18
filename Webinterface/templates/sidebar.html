@@ -162,7 +162,7 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px;" data-variation="small"
-                              data-tooltip="Constant that adjusts the filter’s sensitivity to areas of high noise"
+                              data-tooltip="The sensitivity of the filter to tubular shapes"
                               data-position="top left">
                             Gamma:
                         </span>
@@ -190,8 +190,8 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px; white-space:nowrap;overflow:hidden;text-overflow:clip;"
-                              data-variation="small"
-                              data-tooltip="Method to split image in fore- and background" data-position="top right">
+                              data-variation="fixed small"
+                              data-tooltip="Method for determining the cutoff-value which splits the image in fore- and background" data-position="top right">
                             Cutoff method:
                         </span>
                         <select class="ui fluid dropdown mtop" id="cutoff_method_1" name="cutoff_method_1"
@@ -209,7 +209,7 @@
             <div class="two-wide-column" style="margin-top: 15px">
                 <div>
                     <label style="font-size: 16px;"
-                           data-variation="small" data-tooltip="Check to use second Frangi filter"
+                           data-variation="small" data-tooltip="Check to use second Frangi filter to detect larger vessels than previous filter"
                            data-position="top left">
                         <span id="vesselness_2_span">
                             Vesselness filter 2
@@ -228,7 +228,7 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px;" data-variation="small"
-                              data-tooltip="Constant that adjusts the filter’s sensitivity to areas of high noise"
+                              data-tooltip="The sensitivity of the filter to tubular shapes"
                               data-position="top left">
                             Gamma:
                         </span>
@@ -256,8 +256,8 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px; white-space:nowrap;overflow:hidden;text-overflow:clip;"
-                              data-variation="small"
-                              data-tooltip="Method to split image in fore- and background" data-position="top right">
+                              data-variation="fixed small"
+                              data-tooltip="Method for determining the cutoff-value which splits the image in fore- and background" data-position="top right">
                             Cutoff method:
                         </span>
                         <select class="ui fluid dropdown mtop" id="cutoff_method_2" name="cutoff_method_2"
@@ -298,7 +298,7 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px;" data-variation="small"
-                              data-tooltip="Pixel size for thinning"
+                              data-tooltip="The amount of pixels to thin"
                               data-position="top left">
                             Thin:
                         </span>
@@ -312,8 +312,8 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px; white-space:nowrap;overflow:hidden;text-overflow:clip;"
-                              data-variation="small"
-                              data-tooltip="Minimum pixel thickness to maintain" data-position="top left">
+                              data-variation="fixed small"
+                              data-tooltip="Half of the minimum width you want to keep from being thinned" data-position="top left">
                             Min thickness:
                         </span>
                         <input id="min_thickness" name="min_thickness" class="mtop"
@@ -341,7 +341,7 @@
                     <div class="field">
                         <span style="font-size:16px; white-space:nowrap;overflow:hidden;text-overflow:clip;"
                               data-variation="small"
-                              data-tooltip="Pixel size of artifacts to be cleaned, set to 0 for no cleaning" data-position="top right">
+                              data-tooltip="The smallest allowable object size in pixels, set to 0 for no cleaning" data-position="top right">
                             Cleaning:
                         </span>
                         <input id="postcleaning" name="postcleaning" class="mtop"
@@ -361,8 +361,8 @@
             <div class="four wide column">
                 <div class="ui form">
                     <div class="field">
-                        <span style="font-size:16px;" data-variation="small"
-                              data-tooltip="Scaling factor to determine spurious branches" data-position="top left">
+                        <span style="font-size:16px;" data-variation="fixed small"
+                              data-tooltip="Scaling factor for pruning (see more information)" data-position="top left">
                             Pruning:
                         </span>
                         <input id="pruning_scale" name="pruning_scale" class="mtop"
@@ -375,7 +375,7 @@
                 <div class="ui form">
                     <div class="field">
                         <span style="font-size:16px;" data-variation="small"
-                              data-tooltip="Minimum length of vessels in µm" data-position="top left">
+                              data-tooltip="The smallest allowable vessel length in µm" data-position="top left">
                             Length limit:
                         </span>
                         <input id="length_limit" name="length_limit" class="mtop"

@@ -17,7 +17,7 @@ from flask_socketio import (
 )
 
 ##### Define global variables #####
-ALLOWED_EXTENSIONS = {'tiff', 'tif', 'jpeg', 'jpg', 'png'}  # For uploaded images #
+ALLOWED_EXTENSIONS = {'tiff', 'tif'}  # For uploaded images #
 DOWNLOAD_LOGS = 'VesselExpress_logs.zip'  # Filename of the logs #
 DOWNLOAD_RESULTS = 'VesselExpress_results.zip'  # Filename of the zipped results #
 INTSET = {'render', 'small_RAM_mode', 'smoothing', 'core_vessel_1', 'gamma_1', 'core_vessel_2', 
