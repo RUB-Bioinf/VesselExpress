@@ -1,7 +1,5 @@
-
-<p style="text-align:center; margin-bottom: 0px"><img src="VesselExpress/imgs/logo.svg" alt="Logo" style="width: 15%;"></p>
-<h1 style="margin:0px; padding-top: 0px">VesselExpress</h1>
-<h3 style="margin-top: 0px">Rapid and fully automated blood vasculature analysis in 3D light-sheet image volumes of different organs.</h3>
+<p align="center"> <img src="VesselExpress/imgs/logo.svg" height="270" width="277" /> </p>
+<h2 align="center"> VesselExpress: Rapid and fully automated blood vasculature analysis in 3D light-sheet image volumes of different organs </h2>
 
 [![GitHub Stars](https://img.shields.io/github/stars/RUB-Bioinf/VesselExpress.svg?style=social&label=Star)](https://github.com/RUB-Bioinf/VesselExpress) 
 &nbsp;
@@ -150,7 +148,7 @@ We hope to make it as easy to use as possible.
 For your convinience we have set up a [FAQ here](https://github.com/RUB-Bioinf/VesselExpress/wiki/FAQ).
 
 Should you encounter an error, bug or need help, please feel free to reach out to us via the [Issues](https://github.com/RUB-Bioinf/VesselExpress/issues) page.
-Thank you for your help. Your feedback is much appreciated.
+Thank you for your help. Your feedback is much appreciated. 👍
 
 ## References
 1. Chen, J., et al. The Allen Cell Structure Segmenter: a new open source toolkit for segmenting 3D intracellular structures in fluorescence microscopy images. bioRxiv, 491035 (2018)
@@ -158,10 +156,6 @@ Thank you for your help. Your feedback is much appreciated.
 3. Pesavento, M & Vemuri, P. 3D Image Skeletonization Tools.  (2019). https://github.com/pranathivemuri/skeletonization/commit/b7bd1ce06e557905a32307677c77c1b94305ba5c
 ****
 
-**Keywords**: Neuronal Vessel Morphology; High Throughput Light-Sheet Microscopy; 3D Skeletonization
-
-****
-
 **Funding**: This research received no external funding.
 
-**Conflicts of Interest**: The authors declare no conflict of interest
+**Conflicts of Interest**: The authors declare no conflict of interest.
