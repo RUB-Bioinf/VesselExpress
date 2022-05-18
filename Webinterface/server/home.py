@@ -1,5 +1,4 @@
 from os import (
-    listdir,
     path
 )
 
@@ -26,7 +25,6 @@ render = Blueprint('render', __name__)
 ##### Import functions #####
 import utils
 from app import (
-    ALLOWED_EXTENSIONS,
     DOWNLOAD_RESULTS
 )
 

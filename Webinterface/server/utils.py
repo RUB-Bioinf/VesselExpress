@@ -104,7 +104,6 @@ def download_images(all_results=None, flash_collection=None, firstrun=None):
             return flash_collection
     else:
         # Zip everything except files that end with .zip and the config_standard.json #
-        zip_ignore = len(glob(path.join(current_app.config['UPLOAD_FOLDER'], '*zip')))
         with ZipFile(path.join(current_app.config['UPLOAD_FOLDER'], DOWNLOAD_RESULTS), 'w') as zip_filename:
             # Iterating over upload_folder and all subdirs to write them into a zip file #
             for dir, _, files in walk(current_app.config['UPLOAD_FOLDER']):
@@ -226,7 +225,7 @@ def run_pipeline(flash_collection):
     '''
     if not any((image.endswith(tuple(ALLOWED_EXTENSIONS))) for image in
                listdir(current_app.config['UPLOAD_FOLDER'])):
-        flash_collection.append({'message': 'No image found!', 'type': 'warning'})
+        flash_collection.append({'message': 'Found nothing to process!', 'type': 'warning'})
         return flash_collection
     else:
         is_pipeline_not_done = True

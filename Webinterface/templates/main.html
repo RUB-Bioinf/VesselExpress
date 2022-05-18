@@ -95,7 +95,7 @@
             <div class="ui raised segment">
                 Try VesselExpress by uploading single-channel grayscale TIF image stacks. You may want to change the
                 parameters in the sidebar. Hover over the labels for description. We provide a
-                <a href="https://www.napari-hub.org/plugins/vessel-express" target="_blank" style="color: #00796b">Napari plugin</a>
+                <a href="https://www.napari-hub.org/plugins/vessel-express-napari" target="_blank" style="color: #00796b">Napari plugin</a>
                  for segmentation parameter tuning and parameter presets for our
                 <a href="https://doi.org/10.5281/zenodo.5733150" target="_blank" style="color: #00796b">example data</a>.
                 Make your changes in the sidebar and confirm by clicking "Apply configurations". As soon as you start
@@ -312,7 +312,6 @@
                 dataType: 'json'
             }).done(function (flash_collection) {
                 flash_handler(flash_collection)
-                Dropzone.forElement('#myDropzone').removeAllFiles(true)
             });
         });
         //});

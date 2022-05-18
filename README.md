@@ -141,7 +141,7 @@ https://www.uni-due.de/experimental-immunology
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5733150.svg)](https://doi.org/10.5281/zenodo.5733150)
 
-Download our example data from [Zenodo](https://zenodo.org/record/5733150#.YajQ1S9Xb5k) containing 3D light-sheet microscopic images of different organs with corresponding preset parameters for each organ. For segmentation parameter tuning you can use our [Napari plugin](https://www.napari-hub.org/plugins/vessel-express).
+Download our example data from [Zenodo](https://zenodo.org/record/5733150#.YajQ1S9Xb5k) containing 3D light-sheet microscopic images of different organs with corresponding preset parameters for each organ. For segmentation parameter tuning you can use our [Napari plugin](https://www.napari-hub.org/plugins/vessel-express-napari).
 
 ## Feedback & Bug Reports
 
