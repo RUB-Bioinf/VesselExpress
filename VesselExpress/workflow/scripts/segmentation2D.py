@@ -60,7 +60,8 @@ if __name__ == '__main__':
         plt.show()
 
     if args.back_sub == 1:
-        background = restoration.rolling_ball(img, radius=30)
+        #background = restoration.rolling_ball(img, radius=30)
+        background = restoration.rolling_ball(img, radius=80)
         img = img - background
 
         if args.plot:

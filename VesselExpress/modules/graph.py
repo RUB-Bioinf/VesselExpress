@@ -70,7 +70,8 @@ class Graph:
                                 with key as the segment index (start node, end node) and value = avg diameter of the segment
     """
     def __init__(self, segmentation, skeleton, networkxGraph, pixelDimensions, pruningScale, lengthLimit, diaScale,
-                 branchingThreshold, expFlag, smallRAMmode, infoFile, graphCreation, fileName):
+                 branchingThreshold, expFlag, smallRAMmode, infoFile, graphCreation, fileName, removeBorderEndPts,
+                 removeEndPtsFromSmallFilaments, interpolate, cut_neighbor_brpt_segs):
         self.skeleton = skeleton
         self.networkxGraph = networkxGraph
         self.pixelDims = pixelDimensions
@@ -81,6 +82,10 @@ class Graph:
         self.infoFile = infoFile
         self.graphCreation = graphCreation
         self.fileName = fileName
+        self.removeBorderEndPts = removeBorderEndPts
+        self.removeEndPtsFromSmallFilaments = removeEndPtsFromSmallFilaments
+        self.interpolate = interpolate
+        self.cut_neighbor_brpt_segs = cut_neighbor_brpt_segs
         self.expFlag = expFlag
         self.smallRAMmode = smallRAMmode
         self.segmentsDict = defaultdict(dict)
@@ -171,7 +176,8 @@ class Graph:
                 adjacencyDict = nx.to_dict_of_lists(subGraphSkeleton)
                 filament = fil.Filament(adjacencyDict, start, self.radiusMatrix, self.pixelDims, self.lengthLim,
                                         self.diaScale, self.branchingThresh, self.expFlag, self.smallRAMmode,
-                                        self.fileName)
+                                        self.fileName, self.removeBorderEndPts, self.removeEndPtsFromSmallFilaments,
+                                        self.interpolate, self.cut_neighbor_brpt_segs)
                 filament.dfs_iterative()
                 self.segmentsDict[ithDisjointGraph] = filament.segmentsDict
 
@@ -186,10 +192,7 @@ class Graph:
                     self.branchPointsDict[ithDisjointGraph] = filament.brPtsDict
                     self.endPointsDict[ithDisjointGraph] = filament.endPtsList
                     self.countBranchPointsDict[ithDisjointGraph] = len(filament.brPtsDict)
-                    if self.countSegmentsDict[ithDisjointGraph] > 4:
-                        self.countEndPointsDict[ithDisjointGraph] = len(filament.endPtsList)
-                    else:
-                        self.countEndPointsDict[ithDisjointGraph] = 0
+                    self.countEndPointsDict[ithDisjointGraph] = len(filament.endPtsList)
                     self.infoDict['segments'] += len(self.segmentsDict[ithDisjointGraph])
                     self.runTimeDict['dfsComp'] += filament.compTime
                     self.runTimeDict['postProcessing'] += filament.postprocessTime
@@ -199,10 +202,6 @@ class Graph:
                     # fill dictionaries containing all filament, segment and branch point statistics
                     self.segStatsDict[ithDisjointGraph] = filament.segmentStats
                     self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = self.countEndPointsDict[ithDisjointGraph]
-                    # if self.countSegmentsDict[ithDisjointGraph] > 4:
-                    #     self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = self.countEndPointsDict[ithDisjointGraph]
-                    # else:
-                    #     self.filStatsDict[ithDisjointGraph]['TerminalPoints'] = 0
                     self.filStatsDict[ithDisjointGraph]['BranchPoints'] = self.countBranchPointsDict[ithDisjointGraph]
                     self.filStatsDict[ithDisjointGraph]['Segments'] = self.countSegmentsDict[ithDisjointGraph]
                     self.branchesBrPtDict[ithDisjointGraph] = filament.brPtsDict

@@ -6,9 +6,6 @@ RUN python3.7 -m pip install --upgrade pip
 
 RUN python3.7 -m pip install snakemake==6.7.0
 
-RUN python3.7 -m pip install "napari[all]"
-RUN python3.7 -m pip install vessel-express
-
 RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
     wget --quiet https://repo.continuum.io/miniconda/Miniconda3-4.3.14-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \

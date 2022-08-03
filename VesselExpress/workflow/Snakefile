@@ -35,6 +35,10 @@ def get_graphAnalysis_command(os, script_path):
         -pruning_scale {config[graphAnalysis][pruning_scale]} -length_limit {config[graphAnalysis][length_limit]} \
         -dia_scale {config[graphAnalysis][diameter_scale]} -branching_threshold {config[graphAnalysis][branching_threshold]} \
         -extended_output {config[graphAnalysis][extended_output]} -small_RAM_mode {config[small_RAM_mode]} \
+        -remove_border_end_pts {config[graphAnalysis][remove_border_end_pts]} \
+        -remove_end_pts_from_small_filaments {config[graphAnalysis][remove_end_pts_from_small_filaments]} \
+        -seg_interpolate {config[graphAnalysis][seg_interpolate]} \
+        -cut_neighbor_brpt_segs {config[graphAnalysis][cut_neighbor_brpt_segs]} \
         -experimental_flag {config[graphAnalysis][experimental_flag]}"
     #if os == 'Linux' or os == 'Darwin':
     #    command_str = command_str + "\nchmod ugo+rwx \"{output}\""

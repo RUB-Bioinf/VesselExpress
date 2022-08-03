@@ -1,10 +1,10 @@
 {
   "imgFolder": "data",
   "segmentation": "segmentation3D",
-  "small_RAM_mode": 0,
   "3D": 1,
   "render": 0,
   "marching_cubes": 0,
+  "small_RAM_mode": 0,
   "segmentation3D": {
     "smoothing": 1,
     "core_threshold": 3.0,
@@ -50,13 +50,17 @@
     "batch_size": "1"
   },
   "graphAnalysis": {
-    "pixel_dimensions": "1.0,1.0,1.0",
+    "pixel_dimensions": "2.0,1.015625,1.015625",
     "pruning_scale": 1.5,
     "length_limit": 3,
     "diameter_scale": 2,
     "branching_threshold": 0.25,
     "extended_output": 1,
-    "experimental_flag": 0
+    "experimental_flag": 0,
+    "remove_border_end_pts": 0,
+    "remove_end_pts_from_small_filaments": 0,
+    "seg_interpolate": 0,
+    "cut_neighbor_brpt_segs": 1
   },
   "rendering": {
     "save_raw": 1,

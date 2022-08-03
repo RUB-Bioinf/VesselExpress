@@ -39,7 +39,10 @@ def processImage(skelImg, binImg, parameterDict):
                         diaScale=parameterDict.get("dia_scale"), branchingThreshold=parameterDict.get("branching_threshold"),
                         expFlag=parameterDict.get("experimental_flag"), infoFile=finfo,
                         graphCreation=parameterDict.get("extended_output"), smallRAMmode=parameterDict.get("small_RAM_mode"),
-                        fileName=file_name)
+                        fileName=file_name, removeBorderEndPts=parameterDict.get("remove_border_end_pts"),
+                        removeEndPtsFromSmallFilaments=parameterDict.get("remove_end_pts_from_small_filaments"),
+                        interpolate=parameterDict.get("seg_interpolate"),
+                        cut_neighbor_brpt_segs=parameterDict.get("cut_neighbor_brpt_segs"))
     stats.setStats()
 
     if parameterDict.get("extended_output") == 1:
@@ -129,6 +132,13 @@ if __name__ == '__main__':
                         help='if set to 1 outputs tif files with branch and terminal points and graph')
     parser.add_argument('-experimental_flag', type=int, default=0,
                         help='set to 1 for experimental statistics')
+    parser.add_argument('-remove_border_end_pts', type=int, default=0, help='set to 1 to remove terminal points at the '
+                                                                            'volume border')
+    parser.add_argument('-remove_end_pts_from_small_filaments', type=int, default=0,
+                        help='set to 1 to remove terminal points from small filaments with less than 5 segments')
+    parser.add_argument('-seg_interpolate', type=int, default=0, help='set to 1 to interpolate segments')
+    parser.add_argument('-cut_neighbor_brpt_segs', type=int, default=1, help='set to 0 to not cut segments which '
+                                                                             'consists of 2 neighboring branch points')
     parser.add_argument('-small_RAM_mode', type=int, default=0, help='set to 1 for small RAM mode')
     parser.add_argument('-prints', type=bool, default=False, help='set to True to print runtime')
     args = parser.parse_args()
@@ -145,6 +155,10 @@ if __name__ == '__main__':
         "branching_threshold": args.branching_threshold,
         "extended_output": args.extended_output,
         "experimental_flag": args.experimental_flag,
+        "remove_border_end_pts": args.remove_border_end_pts,
+        "remove_end_pts_from_small_filaments": args.remove_end_pts_from_small_filaments,
+        "seg_interpolate": args.seg_interpolate,
+        "cut_neighbor_brpt_segs": args.cut_neighbor_brpt_segs,
         "small_RAM_mode": args.small_RAM_mode
     }
 
