@@ -154,8 +154,12 @@ Thank you for your help. Your feedback is much appreciated. 👍
 1. Chen, J., et al. The Allen Cell Structure Segmenter: a new open source toolkit for segmenting 3D intracellular structures in fluorescence microscopy images. bioRxiv, 491035 (2018)
 2. Fu, W. Frangi-Net on High-Resolution Fundus (HRF) image database. (2019). https://doi.org/10.24433/CO.5016803.v2 
 3. Pesavento, M & Vemuri, P. 3D Image Skeletonization Tools.  (2019). https://github.com/pranathivemuri/skeletonization/commit/b7bd1ce06e557905a32307677c77c1b94305ba5c
+4. Bumgarner, J., Nelson, R. Open-source analysis and visualization of segmented vasculature datasets with VesselVio. Cell Reports Methods (2022),
+https://doi.org/10.1016/j.crmeth.2022.100189.
 ****
 
 **Funding**: This research received no external funding.
 
 **Conflicts of Interest**: The authors declare no conflict of interest.
+
+**Corresponding publication**: https://doi.org/10.1101/2022.09.14.507895
