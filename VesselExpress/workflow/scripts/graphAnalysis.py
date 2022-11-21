@@ -41,7 +41,7 @@ def processImage(skelImg, binImg, parameterDict):
                         graphCreation=parameterDict.get("extended_output"), smallRAMmode=parameterDict.get("small_RAM_mode"),
                         fileName=file_name, removeBorderEndPts=parameterDict.get("remove_border_end_pts"),
                         removeEndPtsFromSmallFilaments=parameterDict.get("remove_end_pts_from_small_filaments"),
-                        interpolate=parameterDict.get("seg_interpolate"),
+                        interpolate=parameterDict.get("seg_interpolate"), splineDegree=parameterDict.get("spline_degree"),
                         cut_neighbor_brpt_segs=parameterDict.get("cut_neighbor_brpt_segs"))
     stats.setStats()
 
@@ -137,6 +137,7 @@ if __name__ == '__main__':
     parser.add_argument('-remove_end_pts_from_small_filaments', type=int, default=0,
                         help='set to 1 to remove terminal points from small filaments with less than 5 segments')
     parser.add_argument('-seg_interpolate', type=int, default=0, help='set to 1 to interpolate segments')
+    parser.add_argument('-spline_degree', type=int, default=3, help='degree of b-spline for segment interpolation')
     parser.add_argument('-cut_neighbor_brpt_segs', type=int, default=1, help='set to 0 to not cut segments which '
                                                                              'consists of 2 neighboring branch points')
     parser.add_argument('-small_RAM_mode', type=int, default=0, help='set to 1 for small RAM mode')
@@ -158,6 +159,7 @@ if __name__ == '__main__':
         "remove_border_end_pts": args.remove_border_end_pts,
         "remove_end_pts_from_small_filaments": args.remove_end_pts_from_small_filaments,
         "seg_interpolate": args.seg_interpolate,
+        "spline_degree": args.spline_degree,
         "cut_neighbor_brpt_segs": args.cut_neighbor_brpt_segs,
         "small_RAM_mode": args.small_RAM_mode
     }

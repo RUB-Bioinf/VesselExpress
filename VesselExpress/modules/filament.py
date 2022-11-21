@@ -58,7 +58,7 @@ class Filament:
         straightness = curveDisplacement / curveLength
         """
     def __init__(self, graph, start, skelRadii, pixelDimensions, lengthLimit, diaScale, branchingThreshold, expFlag,
-                 smallRAMmode, fileName, removeBorderEndPts, removeEndPtsFromSmallFilaments, interpolate,
+                 smallRAMmode, fileName, removeBorderEndPts, removeEndPtsFromSmallFilaments, interpolate, splineDegree,
                  cut_neighbor_brpt_segs):
         self.graph = graph
         self.start = start
@@ -73,6 +73,7 @@ class Filament:
         self.removeBorderEndPts = removeBorderEndPts
         self.removeEndPtsFromSmallFilaments = removeEndPtsFromSmallFilaments
         self.interpolate = interpolate
+        self.splineDegree = splineDegree
         self.cut_neighbor_brpt_segs = cut_neighbor_brpt_segs
         self.endPtsList = []
         self.brPtsDict = {}
@@ -146,9 +147,9 @@ class Filament:
             if seg[1] in self.brPtsDict.keys():
                 self.segmentStats[seg]['branching Points'] += 1
 
-    #############################
-    ### Segment Interpolation ###
-    #############################
+    # Segment interpolation functions copied from
+    # https://github.com/JacobBumgarner/VesselVio/blob/main/library/feature_extraction.py
+    # and adjusted degree settings
     # Build interpolation delta
     def _delta_calc(self, num_verts, vis_radius):
         # base = 3 if num_verts > 50 else 2
@@ -157,7 +158,7 @@ class Filament:
             delta = int(delta / 2)
         return delta
 
-    def _seg_interpolate(self, point_coords, vis_radius):
+    def _seg_interpolate(self, point_coords, vis_radius, spline_deg=3):
         # Find basis-spline (BSpline) of points to smooth jaggedness of skeleton.
         # The resources I used to learn about BSplines can be examined below:
         # https://web.mit.edu/hyperbook/Patrikalakis-Maekawa-Cho/node17.html
@@ -166,8 +167,8 @@ class Filament:
 
         # Set appropriate degree of our BSpline
         num_verts = point_coords.shape[0]
-        if num_verts > 4:
-            spline_degree = 3
+        if num_verts > spline_deg + 1:
+            spline_degree = spline_deg
         else:
             spline_degree = max(1, num_verts - 1)
 
@@ -285,7 +286,7 @@ class Filament:
             radius = ms.getRadius(self.skelRadii, segment)
 
         if interpolate:
-            coords = self._seg_interpolate(np.asarray(segment), radius)
+            coords = self._seg_interpolate(np.asarray(segment), radius, self.splineDegree)
         else:
             coords = segment
 

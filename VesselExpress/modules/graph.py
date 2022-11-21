@@ -71,7 +71,7 @@ class Graph:
     """
     def __init__(self, segmentation, skeleton, networkxGraph, pixelDimensions, pruningScale, lengthLimit, diaScale,
                  branchingThreshold, expFlag, smallRAMmode, infoFile, graphCreation, fileName, removeBorderEndPts,
-                 removeEndPtsFromSmallFilaments, interpolate, cut_neighbor_brpt_segs):
+                 removeEndPtsFromSmallFilaments, interpolate, splineDegree, cut_neighbor_brpt_segs):
         self.skeleton = skeleton
         self.networkxGraph = networkxGraph
         self.pixelDims = pixelDimensions
@@ -85,6 +85,7 @@ class Graph:
         self.removeBorderEndPts = removeBorderEndPts
         self.removeEndPtsFromSmallFilaments = removeEndPtsFromSmallFilaments
         self.interpolate = interpolate
+        self.splineDegree = splineDegree
         self.cut_neighbor_brpt_segs = cut_neighbor_brpt_segs
         self.expFlag = expFlag
         self.smallRAMmode = smallRAMmode
@@ -177,7 +178,7 @@ class Graph:
                 filament = fil.Filament(adjacencyDict, start, self.radiusMatrix, self.pixelDims, self.lengthLim,
                                         self.diaScale, self.branchingThresh, self.expFlag, self.smallRAMmode,
                                         self.fileName, self.removeBorderEndPts, self.removeEndPtsFromSmallFilaments,
-                                        self.interpolate, self.cut_neighbor_brpt_segs)
+                                        self.interpolate, self.splineDegree, self.cut_neighbor_brpt_segs)
                 filament.dfs_iterative()
                 self.segmentsDict[ithDisjointGraph] = filament.segmentsDict
 

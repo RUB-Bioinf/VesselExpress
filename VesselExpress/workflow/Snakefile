@@ -38,6 +38,7 @@ def get_graphAnalysis_command(os, script_path):
         -remove_border_end_pts {config[graphAnalysis][remove_border_end_pts]} \
         -remove_end_pts_from_small_filaments {config[graphAnalysis][remove_end_pts_from_small_filaments]} \
         -seg_interpolate {config[graphAnalysis][seg_interpolate]} \
+        -spline_degree {config[graphAnalysis][spline_degree]} \
         -cut_neighbor_brpt_segs {config[graphAnalysis][cut_neighbor_brpt_segs]} \
         -experimental_flag {config[graphAnalysis][experimental_flag]}"
     #if os == 'Linux' or os == 'Darwin':
