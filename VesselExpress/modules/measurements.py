@@ -30,10 +30,17 @@ def getLength(path, dimensions):
     return length
 
 
-def getRadius(distTrans, segment):
+def getRadius(distTrans, segment, smallRAMmode=0):
     sumRadii = 0
-    for skelPt in segment:
-        sumRadii += distTrans[skelPt]
+    if not smallRAMmode:
+        for skelPt in segment:
+            sumRadii += distTrans[skelPt]
+    else:
+        for i, skelPt in enumerate(segment):
+            sumRadii += distTrans[skelPt]
+            if i % 100 == 99:
+                sumRadii = sumRadii.compute()
+        sumRadii = sumRadii.compute()
     return sumRadii / len(segment)
 
 
