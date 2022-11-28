@@ -281,7 +281,7 @@ class Filament:
         """
         self.segmentsDict[segment[0], segment[len(segment) - 1]] = segment
         if self.smallRAMmode == 1:
-            radius = ms.getRadius(da.from_zarr('tmp_zarr' + os.sep + self.fileName + '_radiusMatrix.zarr'), segment)
+            radius = ms.getRadius(da.from_zarr('tmp_zarr' + os.sep + self.fileName + '_radiusMatrix.zarr'), segment, 1)
         else:
             radius = ms.getRadius(self.skelRadii, segment)
 
@@ -302,7 +302,7 @@ class Filament:
         if interpolate:
             if self.smallRAMmode == 1:
                 volume = ms.getVolume(da.from_zarr('tmp_zarr' + os.sep + self.fileName + '_radiusMatrix.zarr'),
-                                      coords, self.pixelDims)
+                                      coords, self.pixelDims).compute()
             else:
                 #volume = ms.getVolume(self.skelRadii, coords, self.pixelDims)
                 volume = ms.getVolumeCylinder(radius, segLength)
