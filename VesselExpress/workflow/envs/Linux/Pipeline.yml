@@ -1,4 +1,4 @@
-name: Segmentation
+name: Pipeline
 channels:
   - defaults
 dependencies:

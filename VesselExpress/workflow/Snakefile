@@ -181,7 +181,7 @@ rule renderBinary:
     shell:
             BLENDER_PATH + " --background --python " + SCRIPT_PATH + "/render_object.py -- -model_file_path \"{input}\" -out_dir \"{PATH}/{wildcards.img}/\" \
             -save_raw {config[rendering][save_raw]} -save_glb {config[rendering][save_glb]} -render_device {config[rendering][render_device]} \
-            -render_distance {config[rendering][render_distance]} \
+            -background_transparent {config[rendering][background_transparent]} -render_distance {config[rendering][render_distance]} \
             -image_resolution_x {config[rendering][image_resolution_x]} \
             -image_resolution_y {config[rendering][image_resolution_y]} \
             -image_compression {config[rendering][image_compression]} \
@@ -206,7 +206,7 @@ rule renderSkeleton:
     shell:
             BLENDER_PATH + " --background --python " + SCRIPT_PATH + "/render_object.py -- -model_file_path \"{input}\" -out_dir \"{PATH}/{wildcards.img}/\" \
             -save_raw {config[rendering][save_raw]} -save_glb {config[rendering][save_glb]} -render_device {config[rendering][render_device]} \
-            -render_distance {config[rendering][render_distance]} \
+            -background_transparent {config[rendering][background_transparent]} -render_distance {config[rendering][render_distance]} \
             -image_resolution_x {config[rendering][image_resolution_x]} \
             -image_resolution_y {config[rendering][image_resolution_y]} \
             -image_compression {config[rendering][image_compression]} \
