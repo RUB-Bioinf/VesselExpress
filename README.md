@@ -58,20 +58,20 @@ Learn more about the video [here](https://github.com/RUB-Bioinf/VesselExpress/wi
 
 | Browser-Based User Interface | Command-Line only |
 | --- | --- |
-| [![Docker Build](https://img.shields.io/docker/automated/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)       | [![Docker Build](https://img.shields.io/docker/automated/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)       |
-| [![Docker Image Size](https://img.shields.io/docker/image-size/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress) | [![Docker Image Size](https://img.shields.io/docker/image-size/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli) |
-| [![Docker Downloads](https://img.shields.io/docker/pulls/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)       | [![Docker Downloads](https://img.shields.io/docker/pulls/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)       |
-| [![Docker Stars](https://img.shields.io/docker/stars/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)           | [![Docker Stars](https://img.shields.io/docker/stars/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)           |
-| [![Docker Version](https://img.shields.io/docker/v/philippasp/vesselexpress?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress)             | [![Docker Version](https://img.shields.io/docker/v/philippasp/vesselexpress_cli?style=flat)](https://hub.docker.com/r/philippasp/vesselexpress_cli)             |
+| [![Docker Build](https://img.shields.io/docker/automated/phispa1812/vesselexpress?style=flat)](https://hub.docker.com/r/phispa1812/vesselexpress)       | [![Docker Build](https://img.shields.io/docker/automated/phispa1812/vesselexpress_cli?style=flat)](https://hub.docker.com/r/phispa1812/vesselexpress_cli)       |
+| [![Docker Image Size](https://img.shields.io/docker/image-size/phispa1812/vesselexpress?style=flat)](https://hub.docker.com/r/phispa1812/vesselexpress) | [![Docker Image Size](https://img.shields.io/docker/image-size/phispa1812/vesselexpress_cli?style=flat)](https://hub.docker.com/r/phispa1812/vesselexpress_cli) |
+| [![Docker Downloads](https://img.shields.io/docker/pulls/phispa1812/vesselexpress?style=flat)](https://hub.docker.com/r/phispa1812/vesselexpress)       | [![Docker Downloads](https://img.shields.io/docker/pulls/phispa1812/vesselexpress_cli?style=flat)](https://hub.docker.com/r/phispa1812/vesselexpress_cli)       |
+| [![Docker Stars](https://img.shields.io/docker/stars/phispa1812/vesselexpress?style=flat)](https://hub.docker.com/r/phispa1812/vesselexpress)           | [![Docker Stars](https://img.shields.io/docker/stars/phispa1812/vesselexpress_cli?style=flat)](https://hub.docker.com/r/phispa1812/vesselexpress_cli)           |
+| [![Docker Version](https://img.shields.io/docker/v/phispa1812/vesselexpress?style=flat)](https://hub.docker.com/r/phispa1812/vesselexpress)             | [![Docker Version](https://img.shields.io/docker/v/phispa1812/vesselexpress_cli?style=flat)](https://hub.docker.com/r/phispa1812/vesselexpress_cli)             |
 
 If you want to use the **browser version**, follow these instructions:
 1. Install Docker for your operating system from [here](https://docs.docker.com/get-docker/).
 2. Start Docker.
 3. Get the Docker image
-   1. from DockerHub via `docker pull philippasp/vesselexpress`
+   1. from DockerHub via `docker pull phispa1812/vesselexpress`
    2. or build the Docker image by calling `docker build -f ./Webinterface/Dockerfile -t vesselexpress .`
 4. Run VesselExpress via 
-   1. `docker run -p 5000:5000 philippasp/vesselexpress` if you've pulled the image from DockerHub 
+   1. `docker run -p 5000:5000 phispa1812/vesselexpress` if you've pulled the image from DockerHub 
    2. or via `docker run -p 5000:5000 vesselexpress` if you've manually built the image as described above.
 5. Navigate to `localhost:5000` in your browser (e.g. Firefox or Google Chrome) to open the web interface. On macOS Monterey you need to uncheck "AirPlay Receiver" in the "Sharing" system preference to use the web interface on port 5000.
 
@@ -80,10 +80,10 @@ If you want to use the **command-line interface**, follow these instructions:
 1. Install Docker for your operating system from [here](https://docs.docker.com/get-docker/).
 2. Start Docker.
 3. Get the Docker image
-   1. from DockerHub via ```docker pull philippasp/vesselexpress_cli```
+   1. from DockerHub via ```docker pull phispa1812/vesselexpress_cli```
    2. by calling ```docker build -t vesselexpress_cli .``` from the [VesselExpress](VesselExpress) directory.
 4. Run VesselExpress
-   1. via `docker run -v path-to-data-and-config:/home/user/VesselExpress/data philippasp/vesselexpress_cli`
+   1. via `docker run -v path-to-data-and-config:/home/user/VesselExpress/data phispa1812/vesselexpress_cli`
       if you've pulled the image from DockerHub 
    2. or via `docker run -v path-to-data-and-config:/home/user/VesselExpress/data vesselexpress_cli`
       if you've manually built the image as described above. \
@@ -109,8 +109,8 @@ For the **command-line version** follow these instructions:
 1. Install Blender from [here](https://www.blender.org/download/) (see descriptions above). 
 2. Install Anaconda following the [installation instructions](https://docs.anaconda.com/anaconda/install/index.html).
 3. Install Snakemake following the [installation instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
-4. In a terminal navigate to the project's root folder and type
-`snakemake --use-conda --cores all --conda-frontend conda`.
+4. In a terminal navigate to the [VesselExpress](VesselExpress) folder and type
+`snakemake --use-conda --cores all --conda-frontend conda --snakefile "./workflow/Snakefile"`.
 
 Different parameters can be set by using the command line option '--config' or by changing the parameters in the
 [config.json](VesselExpress/data/config.json) file. A full description of command line arguments for Snakemake can be found

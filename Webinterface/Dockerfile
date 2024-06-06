@@ -1,7 +1,7 @@
 # Dockerfile for VesselExpress-Flask
 
 # Pull base image
-FROM python:3.7
+FROM python:3.11
 
 # Pull conda
 RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
@@ -14,7 +14,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 ENV VIRTUAL_ENV=/opt/venv
-RUN python3.7 -m venv $VIRTUAL_ENV
+RUN python3.11 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN apt-get update
@@ -35,12 +35,13 @@ RUN pip install -r Webinterface/requirements.txt
 # Setup conda
 ENV PATH /opt/conda/bin:$PATH
 RUN ln -sf /bin/bash /bin/sh
+RUN conda config --set ssl_verify false
 RUN conda update conda
 
 # Setup envs for pipeline
-RUN snakemake --use-conda --cores all --conda-frontend conda --snakefile "./VesselExpress/workflow/Snakefile" --conda-create-envs-only
+RUN snakemake --use-conda --cores all --conda-frontend conda --snakefile "./VesselExpress/workflow/Snakefile" --conda-create-envs-only --directory "VesselExpress"
 
 RUN rm VesselExpress/data/test.tiff
 
 EXPOSE 5000
-CMD ["python3.7", "Webinterface/server/app.py"]
+CMD ["python3.11", "Webinterface/server/app.py"]

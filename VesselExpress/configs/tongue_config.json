@@ -28,7 +28,7 @@
     "length_limit": 3,
     "diameter_scale": 2,
     "branching_threshold": 0.25,
-    "all_stats": 1,
+    "extended_output": 1,
     "experimental_flag": 0,
     "remove_border_end_pts": 1,
     "remove_end_pts_from_small_filaments": 1,

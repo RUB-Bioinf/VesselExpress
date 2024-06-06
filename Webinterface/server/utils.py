@@ -148,7 +148,7 @@ def execute_pipeline(queue):
     :param queue: allows communication with the main Process (the website)
     :return: None
     '''
-    sbsrun('snakemake --use-conda --cores all --conda-frontend conda --snakefile "./VesselExpress/workflow/Snakefile"',
+    sbsrun('snakemake --use-conda --cores all --conda-frontend conda --snakefile "VesselExpress/workflow/Snakefile" --directory "VesselExpress"',
            shell=True)
     queue.put(1)
 
@@ -159,7 +159,7 @@ def get_last_logfile():
     :return: processed log
     '''
     try:  # If log present return it to the console window #
-        list_of_logfiles = glob(r'.snakemake/log/*log')  # List of log files #
+        list_of_logfiles = glob(r'VesselExpress/.snakemake/log/*log')  # List of log files #
         latest_logfile = max(list_of_logfiles, key=path.getctime)  # Get the latest log #
         with open(latest_logfile, 'r') as logfile:
             processed_log = ''.join([line for line in logfile])[:-1]  # [:-1] to align blinking marker behind it #

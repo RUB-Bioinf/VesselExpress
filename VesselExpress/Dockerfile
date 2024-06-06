@@ -1,10 +1,11 @@
-FROM python:3.7
+FROM python:3.11
 
 ENV CORES=all
 
-RUN python3.7 -m pip install --upgrade pip
+RUN python3.11 -m pip install --upgrade pip
 
-RUN python3.7 -m pip install snakemake==6.7.0
+#RUN python3.7 -m pip install snakemake==6.7.0
+RUN python3.11 -m pip install snakemake==8.4.0
 
 RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
     wget --quiet https://repo.continuum.io/miniconda/Miniconda3-4.3.14-Linux-x86_64.sh -O ~/miniconda.sh && \
@@ -28,6 +29,7 @@ WORKDIR /home/user/VesselExpress/
 
 RUN ln -sf /bin/bash /bin/sh
 
+RUN conda config --set ssl_verify false
 RUN conda update conda
 
 RUN snakemake --use-conda --cores all --conda-frontend conda --snakefile "./workflow/Snakefile" --conda-create-envs-only

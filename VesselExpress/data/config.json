@@ -57,9 +57,9 @@
     "branching_threshold": 0.25,
     "extended_output": 1,
     "experimental_flag": 0,
-    "remove_border_end_pts": 0,
-    "remove_end_pts_from_small_filaments": 0,
-    "seg_interpolate": 1,
+    "remove_border_end_pts": 1,
+    "remove_end_pts_from_small_filaments": 1,
+    "seg_interpolate": 0,
     "spline_degree": 3,
     "cut_neighbor_brpt_segs": 1
   },

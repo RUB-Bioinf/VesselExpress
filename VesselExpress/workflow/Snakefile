@@ -8,7 +8,7 @@ def get_config_file(path):
         if fname.endswith("config.json"):
             return os.path.join(path, fname)
 
-configfile: get_config_file(os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'data'))
+configfile: get_config_file('data')
 
 
 def get_files_and_extensions(path):
@@ -81,10 +81,10 @@ def get_input(imgs, exts, blender_exists, path, input_list=[]):
     return input_list
 
 
-PATH = os.path.abspath(os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'data'))
+PATH = 'data'
 #PATH = config['imgFolder']
-SCRIPT_PATH = snakemake.workflow.srcdir('scripts')
-FRANGINET_PATH = os.path.join(snakemake.workflow.srcdir('scripts'), '../..', 'FrangiNet')
+SCRIPT_PATH = 'workflow/scripts'
+FRANGINET_PATH = 'FrangiNet'
 IMGS, EXTS = get_files_and_extensions(path=PATH)
 OS = platform.system()
 
